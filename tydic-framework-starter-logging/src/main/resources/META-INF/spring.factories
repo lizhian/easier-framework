@@ -1,0 +1,2 @@
+org.springframework.boot.env.EnvironmentPostProcessor=\
+tydic.framework.starter.logging.TydicLoggingAutoConfiguration

@@ -1,0 +1,134 @@
+package tydic.framework.starter.web;
+
+import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.web.embedded.undertow.UndertowDeploymentInfoCustomizer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.env.Environment;
+import org.springframework.format.FormatterRegistry;
+import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import tydic.framework.core.spring.RewriteEnvironmentAware;
+import tydic.framework.core.util.SpringUtil;
+import tydic.framework.core.util.StrUtil;
+import tydic.framework.starter.cache.EnableTydicCache;
+import tydic.framework.starter.jackson.EnableTydicJackson;
+import tydic.framework.starter.job.EnableTydicJob;
+import tydic.framework.starter.web.converter.StringToEnumConverterFactory;
+import tydic.framework.starter.web.converter.TimeConverters;
+import tydic.framework.starter.web.filter.TraceIdServletFilter;
+import tydic.framework.starter.web.handler.GlobalExceptionHandler;
+
+import java.lang.management.ManagementFactory;
+import java.time.format.DateTimeFormatter;
+
+/**
+ * @author tgd
+ */
+@Slf4j
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+@EnableTydicJackson
+@EnableTydicCache
+@EnableTydicJob
+@Import(TraceIdServletFilter.class)
+public class TydicWebConfiguration implements WebMvcConfigurer, RewriteEnvironmentAware {
+
+    @Override
+    public void setEnvironment(Environment environment) {
+        this.setBlankProperty("""
+                #接口超时时间
+                spring.mvc.async.request-timeout=30S
+                                
+                #文件上传大小限制
+                spring.servlet.multipart.max-file-size=1GB
+                                
+                #请求大小限制
+                spring.servlet.multipart.max-request-size=1GB
+                """);
+    }
+
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        DateTimeFormatterRegistrar registrar = new DateTimeFormatterRegistrar();
+        registrar.setTimeFormatter(DateTimeFormatter.ofPattern(DatePattern.NORM_TIME_PATTERN));
+        registrar.setDateFormatter(DateTimeFormatter.ofPattern(DatePattern.NORM_DATE_PATTERN));
+        registrar.setDateTimeFormatter(DateTimeFormatter.ofPattern(DatePattern.NORM_DATETIME_PATTERN));
+        registrar.registerFormatters(registry);
+        //Date
+        registry.addConverter(TimeConverters.stringToDate);
+        //DateTime
+        registry.addConverter(TimeConverters.stringToDateTime);
+        //LocalTime
+        registry.addConverter(TimeConverters.stringToLocalTime);
+        //LocalDate
+        registry.addConverter(TimeConverters.stringToLocalDate);
+        //LocalDateTime
+        registry.addConverter(TimeConverters.stringToLocalDateTime);
+        //枚举
+        registry.addConverterFactory(StringToEnumConverterFactory.instance);
+    }
+
+
+    @Bean
+    public UndertowDeploymentInfoCustomizer undertowDeploymentInfoCustomizer() {
+        return deploymentInfo -> {
+            GlobalExceptionHandler handler = new GlobalExceptionHandler();
+            deploymentInfo.setExceptionHandler(handler);
+        };
+    }
+
+
+    @EventListener
+    public void showTydicWebBanner(ApplicationReadyEvent event) {
+        String banner = StrUtil.format("""
+                        ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+                        ┃ 服务 : {}
+                        ┃ 端口 : {}
+                        ┃ 状态 : 启动成功
+                        ┃ 时间 : {}
+                        ┃ 耗时 : {}
+                        ┃ 实例 : {}
+                        ┃ 接口 : {}
+                        ┃ 文档 : http://127.0.0.1:{}/doc.html
+                        ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+                        """.trim()
+                , SpringUtil.getApplicationName()
+                , SpringUtil.getServerPort()
+                , DateTime.now().toMsStr()
+                , DateUtil.formatBetween(ManagementFactory.getRuntimeMXBean().getUptime())
+                , SpringUtil.getApplicationContext().getBeanDefinitionCount()
+                , this.requestMethodSize()
+                , SpringUtil.getServerPort()
+        );
+        System.out.println(banner);
+    }
+
+    private int requestMethodSize() {
+        try {
+            RequestMappingHandlerMapping handlerMapping = SpringUtil
+                    .getBeansOfType(RequestMappingHandlerMapping.class)
+                    .values()
+                    .stream()
+                    .filter(it -> it.getClass().equals(RequestMappingHandlerMapping.class))
+                    .findAny()
+                    .orElse(null);
+            if (handlerMapping == null) {
+                return -1;
+            }
+            return handlerMapping.getHandlerMethods().size();
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+
+
+}

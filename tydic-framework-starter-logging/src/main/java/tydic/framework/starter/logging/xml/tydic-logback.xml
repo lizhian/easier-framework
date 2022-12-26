@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="tydic/framework/starter/logging/xml/conversion-rule.xml"/>
+    <include resource="tydic/framework/starter/logging/xml/property.xml"/>
+    <include resource="tydic/framework/starter/logging/xml/logger.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+    <include resource="org/springframework/boot/logging/logback/file-appender.xml"/>
+    <appender name="PLUME_LOG" class="tydic.framework.starter.logging.appender.RedissonAppender"/>
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="PLUME_LOG"/>
+        <springProfile name="prod">
+            <appender-ref ref="FILE"/>
+        </springProfile>
+    </root>
+</configuration>

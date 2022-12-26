@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>tydic.framework</groupId>
+        <artifactId>tydic-framework-parent</artifactId>
+        <version>2022.12.11-2.7.6</version>
+    </parent>
+    <artifactId>tydic-framework-starter-logging</artifactId>
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>tydic.framework</groupId>
+            <artifactId>tydic-framework-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tydic.framework</groupId>
+            <artifactId>tydic-framework-starter-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.plumelog</groupId>
+            <artifactId>plumelog-logback</artifactId>
+            <version>3.5.3</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+            </resource>
+        </resources>
+    </build>
+</project>
