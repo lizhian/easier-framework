@@ -3,6 +3,7 @@ package tydic.framework.starter.web;
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.net.NetUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -29,6 +30,8 @@ import tydic.framework.starter.web.handler.GlobalExceptionHandler;
 
 import java.lang.management.ManagementFactory;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 /**
  * @author tgd
@@ -89,8 +92,13 @@ public class TydicWebConfiguration implements WebMvcConfigurer, RewriteEnvironme
 
     @EventListener
     public void showTydicWebBanner(ApplicationReadyEvent event) {
+        String doc = NetUtil.localIpv4s()
+                            .stream()
+                            .sorted(Comparator.comparingLong(NetUtil::ipv4ToLong))
+                            .map(it -> "http://" + it + ":" + SpringUtil.getServerPort() + "/doc.html")
+                            .collect(Collectors.joining("\n┃ 　　   "));
         String banner = StrUtil.format("""
-                        ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+                        ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
                         ┃ 服务 : {}
                         ┃ 端口 : {}
                         ┃ 状态 : 启动成功
@@ -98,8 +106,8 @@ public class TydicWebConfiguration implements WebMvcConfigurer, RewriteEnvironme
                         ┃ 耗时 : {}
                         ┃ 实例 : {}
                         ┃ 接口 : {}
-                        ┃ 文档 : http://127.0.0.1:{}/doc.html
-                        ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+                        ┃ 文档 : {}
+                        ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
                         """.trim()
                 , SpringUtil.getApplicationName()
                 , SpringUtil.getServerPort()
@@ -107,7 +115,7 @@ public class TydicWebConfiguration implements WebMvcConfigurer, RewriteEnvironme
                 , DateUtil.formatBetween(ManagementFactory.getRuntimeMXBean().getUptime())
                 , SpringUtil.getApplicationContext().getBeanDefinitionCount()
                 , this.requestMethodSize()
-                , SpringUtil.getServerPort()
+                , doc
         );
         System.out.println(banner);
     }
