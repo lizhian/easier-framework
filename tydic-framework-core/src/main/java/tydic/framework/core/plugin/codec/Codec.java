@@ -1,13 +1,8 @@
 package tydic.framework.core.plugin.codec;
 
-import cn.hutool.core.util.ReflectUtil;
-import tydic.framework.core.plugin.mq.fallback.MQListenerFallback;
-import tydic.framework.core.util.InstanceUtil;
-import tydic.framework.core.util.SpringUtil;
-
 public interface Codec {
 
-    static <T extends MQListenerFallback> T getInstances(Class<T> clazz) {
+    /*static <T extends MQListenerFallback> T getInstances(Class<T> clazz) {
         return InstanceUtil.in(Codec.class)
                            .getInstance(clazz, Codec::newInstance);
     }
@@ -18,7 +13,7 @@ public interface Codec {
             return bean;
         }
         return ReflectUtil.newInstance(clazz);
-    }
+    }*/
 
     byte[] serialize(Object object);
 

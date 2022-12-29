@@ -6,7 +6,7 @@
     <parent>
         <groupId>tydic.framework</groupId>
         <artifactId>tydic-framework-parent</artifactId>
-        <version>2022.12.11-2.7.6</version>
+        <version>2022.12.29-2.7.6</version>
     </parent>
     <artifactId>tydic-framework-starter-cache</artifactId>
     <properties>

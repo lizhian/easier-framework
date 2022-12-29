@@ -91,7 +91,7 @@ public class SysApp extends BaseLogicEntity {
     @BindEntityByMid(
             conditions = @MidCondition(
                     midEntity = AppToDict.class
-                    , selfField = Fields.appCode
+                    , selfField = AppToDict.Fields.appCode
                     , selfMidField = AppToDict.Fields.appCode
                     , joinMidField = AppToDict.Fields.dictCode
                     , joinField = SysDict.Fields.dictCode
