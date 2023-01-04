@@ -58,11 +58,12 @@ fun main() {
         }*/
 
 
-    Date()
+    var date = Date()
         .toDateTime()
         .toLocalDateTime()
         .toJsonString()
         .jsonToBean<Date>()
+        .nullToNow()
     var toEnumValueString = RCode.success.toEnumLabel()
 }
 
