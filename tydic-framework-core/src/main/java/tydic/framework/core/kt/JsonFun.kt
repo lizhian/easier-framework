@@ -2,7 +2,10 @@ package tydic.framework.core.kt
 
 import tydic.framework.core.plugin.jackson.ObjectMapperHolder
 import tydic.framework.core.util.JacksonUtil
-
+/**
+ * 拓展Json转换方法
+ */
+class JsonFun
 inline fun <reified T> String?.jsonToBean(): T? {
     val json = this
     if (json.isNullOrBlank()) {

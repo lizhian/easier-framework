@@ -7,7 +7,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.util.SaFoxUtil;
 import lombok.extern.slf4j.Slf4j;
 import tydic.framework.core.plugin.auth.AuthContext;
-import tydic.framework.core.plugin.auth.detail.UserAuthDetail;
+import tydic.framework.core.plugin.auth.detail.BaseAuthDetail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 public class DefaultTydicAuthTemplate implements TydicAuthTemplate {
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
-        UserAuthDetail detail = AuthContext.getDetail(UserAuthDetail.class);
+        BaseAuthDetail detail = AuthContext.getDetail(BaseAuthDetail.class);
         if (detail == null) {
             return new ArrayList<>();
         }
@@ -26,7 +26,7 @@ public class DefaultTydicAuthTemplate implements TydicAuthTemplate {
 
     @Override
     public List<String> getRoleList(Object loginId, String loginType) {
-        UserAuthDetail detail = AuthContext.getDetail(UserAuthDetail.class);
+        BaseAuthDetail detail = AuthContext.getDetail(BaseAuthDetail.class);
         if (detail == null) {
             return new ArrayList<>();
         }

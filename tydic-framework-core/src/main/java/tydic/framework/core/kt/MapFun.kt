@@ -10,6 +10,10 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.*
 
+/**
+ * 拓展转换方法
+ */
+class MapFun
 fun <T> T.toR(
     code: Int = RCode.success.toEnumValueInt(),
     message: String = RCode.success.toEnumLabel()

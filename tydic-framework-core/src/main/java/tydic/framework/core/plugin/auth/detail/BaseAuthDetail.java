@@ -8,12 +8,15 @@ import lombok.experimental.FieldNameConstants;
 
 import java.util.List;
 
+/**
+ * 基础用户信息:权限编码+角色编码
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldNameConstants
 @Builder(toBuilder = true)
-public class UserAuthDetail {
+public final class BaseAuthDetail implements IAuthDetail {
     private List<String> permissionList;
     private List<String> roleList;
 }

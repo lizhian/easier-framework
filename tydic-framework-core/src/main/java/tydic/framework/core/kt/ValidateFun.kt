@@ -3,6 +3,11 @@ package tydic.framework.core.kt
 import tydic.framework.core.plugin.exception.biz.BizException
 import tydic.framework.core.util.ValidUtil
 
+/**
+ * 拓展校验方法
+ */
+class ValidateFun
+
 fun <T : Any> T.validate(vararg groups: Class<Any>): T = this.also { ValidUtil.valid(it, *groups) }
 fun <T : Any> T.validate(): T = this.also { ValidUtil.validOnUpdate(it) }
 data class Require<out T>(val matched: Boolean, val value: T)

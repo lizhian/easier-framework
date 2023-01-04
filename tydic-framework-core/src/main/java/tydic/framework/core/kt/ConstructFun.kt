@@ -1,7 +1,30 @@
 package tydic.framework.core.kt
 
+import tydic.framework.core.plugin.cache.Cache
+import tydic.framework.core.plugin.cache.CacheBuilder
+import tydic.framework.core.plugin.innerRequest.InnerRequest
+import tydic.framework.core.plugin.innerRequest.InnerRequestBuilder
+import tydic.framework.core.plugin.mq.MQ
+import tydic.framework.core.plugin.mq.MQBuilder
+import kotlin.reflect.KClass
+
+/**
+ * 拓展构造方法
+ */
+class ConstructFun
 
 infix fun <T> Pair<Boolean, T>.or(that: T): T = if (this.first) this.second else that
+infix fun <A, B, C> Pair<A, B>.and(third: C): Triple<A, B, C> = Triple(this.first, this.second, third)
 fun emptyByteArray(): ByteArray = ByteArray(0)
 fun emptyCharArray(): CharArray = CharArray(0)
 fun emptyString(): String = String()
+fun <T : Cache> Class<T>.build(): T = CacheBuilder.build(this)
+fun <T : Cache> KClass<T>.build(): T = CacheBuilder.build(this.java)
+inline fun <reified T : Cache> buildCache(): T = CacheBuilder.build(T::class.java)
+fun <T : MQ> Class<T>.build(): T = MQBuilder.build(this)
+fun <T : MQ> KClass<T>.build(): T = MQBuilder.build(this.java)
+inline fun <reified T : MQ> buildMQ(): T = MQBuilder.build(T::class.java)
+fun <T : InnerRequest> Class<T>.build(): T = InnerRequestBuilder.build(this)
+fun <T : InnerRequest> KClass<T>.build(): T = InnerRequestBuilder.build(this.java)
+inline fun <reified T : InnerRequest> buildInnerRequest(): T = InnerRequestBuilder.build(T::class.java)
+

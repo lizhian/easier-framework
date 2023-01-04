@@ -6,6 +6,7 @@ import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollUtil;
+import tydic.framework.core.plugin.auth.detail.IAuthDetail;
 import tydic.framework.core.util.SpringUtil;
 import tydic.framework.core.util.StrUtil;
 
@@ -70,7 +71,7 @@ public class AuthContext {
     }
 
 
-    public static <T> void setDetail(Class<T> clazz, T t) {
+    public static <T extends IAuthDetail> void setDetail(Class<T> clazz, T t) {
         mustLogin();
         SaSession session = StpUtil.getSession();
         if (clazz == null) {
@@ -80,7 +81,7 @@ public class AuthContext {
     }
 
     @Nullable
-    public static <T> T getDetail(Class<T> clazz) {
+    public static <T extends IAuthDetail> T getDetail(Class<T> clazz) {
         mustLogin();
         if (clazz == null) {
             return null;

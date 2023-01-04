@@ -7,8 +7,9 @@ import java.time.LocalTime
 import java.util.*
 
 /**
- * null 转 非null 的方法
+ * 拓展null转换方法
  */
+class NullToFun
 infix fun <T> T?.nullTo(block: () -> T): T = this ?: block.invoke()
 infix fun <T> T?.nullTo(that: T): T = this ?: that
 
