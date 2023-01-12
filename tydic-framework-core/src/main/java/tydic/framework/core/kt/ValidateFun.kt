@@ -9,7 +9,7 @@ import tydic.framework.core.util.ValidUtil
 class ValidateFun
 
 fun <T : Any> T.validate(vararg groups: Class<Any>): T = this.also { ValidUtil.valid(it, *groups) }
-fun <T : Any> T.validate(): T = this.also { ValidUtil.validOnUpdate(it) }
+fun <T : Any> T.validOnUpdate(): T = this.also { ValidUtil.validOnUpdate(it) }
 data class Require<out T>(val matched: Boolean, val value: T)
 
 fun <T> T.require(block: (T) -> Boolean): Require<T> = Require(block.invoke(this), this)
