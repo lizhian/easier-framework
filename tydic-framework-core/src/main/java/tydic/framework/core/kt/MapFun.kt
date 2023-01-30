@@ -28,6 +28,9 @@ fun LocalDateTime.toDateTime(): DateTime = DateTime(this)
 fun LocalDateTime.toJdkDate(): Date = this.toDateTime().toJdkDate()
 fun String?.smartSplit(): List<String> = StrUtil.smartSplit(this);
 
+fun String.toUnderlineCase(): String = StrUtil.toUnderlineCase(this);
+
+
 inline fun <E, reified T : Enum<E>> T.toEnumValue(): Any = EnumCodec.of(T::class.java).any2Value(this)
 inline fun <E, reified T : Enum<E>> T.toEnumValueString(): String = toEnumValue().toString()
 inline fun <E, reified T : Enum<E>> T.toEnumValueInt(): Int = toEnumValue() as Int
