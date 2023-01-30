@@ -9,8 +9,15 @@ import java.util.*
 /**
  * 拓展null转换方法
  */
-class NullToFun
+
+/**
+ * 空值转换,懒加载
+ */
 infix fun <T> T?.nullTo(block: () -> T): T = this ?: block()
+
+/**
+ * 空值转换
+ */
 infix fun <T> T?.nullTo(that: T): T = this ?: that
 
 fun Date?.nullToNow(): Date = this nullTo { Date() }

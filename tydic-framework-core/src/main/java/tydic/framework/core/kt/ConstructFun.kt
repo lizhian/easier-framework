@@ -11,9 +11,17 @@ import kotlin.reflect.KClass
 /**
  * 拓展构造方法
  */
-class ConstructFun
 
+/**
+ * 问号表达式
+ * v = bool to v1 or v2
+ */
 infix fun <T> Pair<Boolean, T>.or(that: T): T = if (this.first) this.second else that
+
+/**
+ * 三连体
+ * v = a to b and c
+ */
 infix fun <A, B, C> Pair<A, B>.and(third: C): Triple<A, B, C> = Triple(this.first, this.second, third)
 fun emptyByteArray(): ByteArray = ByteArray(0)
 fun emptyCharArray(): CharArray = CharArray(0)

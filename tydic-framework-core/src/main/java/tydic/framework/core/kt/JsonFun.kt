@@ -2,10 +2,14 @@ package tydic.framework.core.kt
 
 import tydic.framework.core.plugin.jackson.ObjectMapperHolder
 import tydic.framework.core.util.JacksonUtil
+
 /**
  * 拓展Json转换方法
  */
-class JsonFun
+
+/**
+ * json字符串转bean
+ */
 inline fun <reified T> String?.jsonToBean(): T? {
     val json = this
     if (json.isNullOrBlank()) {
@@ -16,6 +20,9 @@ inline fun <reified T> String?.jsonToBean(): T? {
     return objectMapper.readValue(json, T::class.java)
 }
 
+/**
+ * json字符串转list
+ */
 inline fun <reified T> String?.jsonToList(): List<T> {
     val json = this
     if (json.isNullOrBlank()) {
@@ -42,6 +49,7 @@ inline fun <reified T> String?.jsonToSet(): Set<T> {
 
 fun String?.jsonToMap(): Map<String, Any> {
     val json = this
+    json.let { }
     if (json.isNullOrBlank()) {
         return mapOf()
     }

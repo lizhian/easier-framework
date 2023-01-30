@@ -13,7 +13,9 @@ import java.util.*
 /**
  * 拓展转换方法
  */
-class MapFun
+/**
+ * 转换成R
+ */
 fun <T> T.toR(
     code: Int = RCode.success.toEnumValueInt(),
     message: String = RCode.success.toEnumLabel()
