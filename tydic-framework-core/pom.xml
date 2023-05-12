@@ -28,6 +28,13 @@
             <artifactId>hutool-all</artifactId>
             <version>5.8.10</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>31.1-jre</version>
+        </dependency>
+
         <dependency>
             <groupId>com.github.oshi</groupId>
             <artifactId>oshi-core</artifactId>
@@ -93,22 +100,22 @@
         <dependency>
             <groupId>com.tangzc</groupId>
             <artifactId>mybatis-plus-ext-annotation</artifactId>
-            <version>3.5.2-EXT146</version>
+            <version>3.5.2-EXT201</version>
         </dependency>
         <dependency>
             <groupId>com.tangzc</groupId>
             <artifactId>mybatis-plus-ext-datasource</artifactId>
-            <version>3.5.2-EXT146</version>
+            <version>3.5.2-EXT201</version>
         </dependency>
         <dependency>
             <groupId>com.tangzc</groupId>
             <artifactId>mybatis-plus-ext-bind</artifactId>
-            <version>3.5.2-EXT146</version>
+            <version>3.5.2-EXT201</version>
         </dependency>
         <dependency>
             <groupId>com.tangzc</groupId>
             <artifactId>mybatis-plus-ext-actable-annotation</artifactId>
-            <version>3.5.2-EXT146</version>
+            <version>3.5.2-EXT201</version>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>

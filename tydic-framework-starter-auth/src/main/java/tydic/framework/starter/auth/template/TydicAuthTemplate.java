@@ -5,6 +5,4 @@ import cn.dev33.satoken.stp.StpInterface;
 
 public interface TydicAuthTemplate extends StpInterface, SaTokenListener {
     String tokenToAccount(String tokenValue);
-
-
 }

@@ -1,6 +1,7 @@
 package tydic.framework.starter.auth.Interceptor;
 
 import cn.hutool.core.annotation.AnnotationUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -43,26 +44,35 @@ public class AuthHandlerInterceptor implements HandlerInterceptor {
         Method method = handlerMethod.getMethod();
         Annotation[] annotations = ArrayUtil.append(method.getAnnotations(), method.getDeclaringClass().getAnnotations());
         List<Annotation> allAuthAnnotations = Arrays.stream(annotations)
-                                                    .filter(annotation -> AnnotationUtil.hasAnnotation(annotation.annotationType(), AuthExpand.class))
-                                                    .collect(Collectors.toList());
+                .filter(annotation -> AnnotationUtil.hasAnnotation(annotation.annotationType(), AuthExpand.class))
+                .collect(Collectors.toList());
         this.beforeAuth();
-        for (Annotation annotation : allAuthAnnotations) {
-            AuthExpand authExpand = AnnotationUtil.getAnnotation(annotation.annotationType(), AuthExpand.class);
-            for (Class<? extends AuthExpander<?>> expanderClass : authExpand.expandBy()) {
-                AuthExpandContext context = AuthExpandContext.builder()
-                                                             .request(request)
-                                                             .response(response)
-                                                             .handlerMethod(handlerMethod)
-                                                             .method(method)
-                                                             .annotation(annotation)
-                                                             .allAuthAnnotations(allAuthAnnotations)
-                                                             .build();
-                AuthExpander expander = InstanceUtil.in(AuthHandlerInterceptor.class)
-                                                    .getInstance(expanderClass, ReflectUtil::newInstance);
-                expander.doExpand(annotation, context);
-            }
+        for (Annotation authAnnotation : allAuthAnnotations) {
+            List<Annotation> otherAuthAnnotations = CollUtil.removeAny(allAuthAnnotations, authAnnotation);
+            AuthExpandContext context = AuthExpandContext.builder()
+                    .request(request)
+                    .response(response)
+                    .handlerMethod(handlerMethod)
+                    .method(method)
+                    .authAnnotation(authAnnotation)
+                    .otherAuthAnnotations(otherAuthAnnotations)
+                    .build();
+            doAuth(context);
         }
         return true;
+    }
+
+    private void doAuth(AuthExpandContext context) {
+        Annotation authAnnotation = context.getAuthAnnotation();
+        AuthExpand authExpand = AnnotationUtil.getAnnotation(authAnnotation.annotationType(), AuthExpand.class);
+        for (Class<? extends AuthExpander<?>> expanderClass : authExpand.expandBy()) {
+            AuthExpander expander = InstanceUtil.in(AuthHandlerInterceptor.class).getInstance(expanderClass, ReflectUtil::newInstance);
+            expander.doExpand(authAnnotation, context);
+        }
+    }
+
+    private void doAuth(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod, Method method, Annotation authAnnotation, List<Annotation> otherAuthAnnotations) {
+
     }
 
     private void beforeAuth() {

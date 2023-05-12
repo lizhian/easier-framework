@@ -20,28 +20,22 @@ import java.util.stream.Collectors;
 @FieldNameConstants
 @SuperBuilder(toBuilder = true)
 public class AuthExpandContext {
-    private HttpServletRequest request;
-    private HttpServletResponse response;
-    private HandlerMethod handlerMethod;
-    private Method method;
-    private Annotation annotation;
-    private List<Annotation> allAuthAnnotations;
+    private final HttpServletRequest request;
+    private final HttpServletResponse response;
+    private final HandlerMethod handlerMethod;
+    private final Method method;
+    private final Annotation authAnnotation;
+    private final List<Annotation> otherAuthAnnotations;
 
     public <A extends Annotation> boolean hasAnnotation(Class<A> annotationType) {
         return AnnotationUtil.hasAnnotation(this.method, annotationType)
                 || AnnotationUtil.hasAnnotation(this.method.getDeclaringClass(), annotationType);
     }
 
-    public <A extends Annotation> A gasAnnotation(Class<A> annotationType) {
+    public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
         if (AnnotationUtil.hasAnnotation(this.method, annotationType)) {
             return AnnotationUtil.getAnnotation(this.method, annotationType);
         }
         return AnnotationUtil.getAnnotation(this.method.getDeclaringClass(), annotationType);
-    }
-
-    public List<Annotation> getOtherAuthAnnotation() {
-        return this.allAuthAnnotations.stream()
-                                      .filter(it -> !it.equals(this.annotation))
-                                      .collect(Collectors.toList());
     }
 }

@@ -2,88 +2,61 @@ package tydic.framework.core.domain;
 
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import tydic.framework.core.util.StrUtil;
 import tydic.framework.core.util.TreeUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.Serializable;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 @Getter
+@Builder(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public class TreeBuilder<T> {
     /**
      * 树节点主键
      */
-    private SFunction<T, String> keyFunction;
+    private final SFunction<T, Serializable> key;
     /**
      * 树节点名称
      */
-    private SFunction<T, String> nameFunction;
+    private final SFunction<T, String> name;
     /**
      * 树父节点主键
      */
-    private SFunction<T, String> parentKeyFunction;
+    private final SFunction<T, Serializable> parentKey;
     /**
      * 树排序
      * 正序
      */
-    private SFunction<T, Number> sortFunction;
+    private final SFunction<T, Number> sort;
 
-    private boolean hasSortColumn;
+    private final boolean hasSort;
     /**
      * 树跟节点值
      */
-    private String rootKey;
+    private final Serializable rootKey;
 
-    public TreeBuilder() {
-        this.nameFunction = t -> null;
-        this.sortFunction = t -> 0;
-        this.hasSortColumn = false;
-        this.rootKey = TreeNode.ROOT_KEY;
-    }
+    private final BiConsumer<T, List<T>> children;
 
-    public TreeBuilder<T> key(SFunction<T, String> keyFunction) {
-        this.keyFunction = keyFunction;
-        return this;
-    }
 
-    public TreeBuilder<T> name(SFunction<T, String> nameFunction) {
-        this.nameFunction = nameFunction;
-        return this;
-    }
-
-    public TreeBuilder<T> parentKey(SFunction<T, String> parentKeyFunction) {
-        this.parentKeyFunction = parentKeyFunction;
-        return this;
-    }
-
-    public TreeBuilder<T> sort(SFunction<T, Number> sortFunction) {
-        this.sortFunction = sortFunction;
-        this.hasSortColumn = this.sortFunction != null;
-        return this;
-    }
-
-    public TreeBuilder<T> rootKey(String rootKey) {
-        this.rootKey = rootKey;
-        return this;
-    }
-
-    public boolean hasSortColumn() {
-        return false;
-    }
-
-    public int getSort(T t) {
+    public int getSortValue(T t) {
         try {
-            return this.sortFunction.apply(t).intValue();
+            return this.sort.apply(t).intValue();
         } catch (Exception e) {
             return 0;
         }
     }
 
-    public int getSort(TreeNode<T> t) {
+    public int getSortValue(TreeNode<T> t) {
         try {
-            return this.sortFunction.apply(t.getNodeData()).intValue();
+            return this.sort.apply(t.getNodeData()).intValue();
         } catch (Exception e) {
             return 0;
         }
@@ -91,11 +64,12 @@ public class TreeBuilder<T> {
 
 
     public boolean enable() {
-        return this.keyFunction != null
-                && this.nameFunction != null
-                && this.parentKeyFunction != null
-                && this.sortFunction != null
-                && StrUtil.isNotBlank(this.rootKey)
+        return this.key != null
+                && this.name != null
+                && this.parentKey != null
+                && this.sort != null
+                && this.rootKey != null
+                && StrUtil.isNotBlank(this.rootKey.toString())
                 ;
     }
 
@@ -109,7 +83,7 @@ public class TreeBuilder<T> {
     }
 
     @Nonnull
-    public List<TreeNode<T>> build(List<T> all, String key) {
+    public List<TreeNode<T>> build(List<T> all, Serializable key) {
         return TreeUtil.build(this, all, key);
     }
 
@@ -120,9 +94,9 @@ public class TreeBuilder<T> {
         }
         //获取当前节点数据
         T nodeData = all.stream()
-                        .filter(it -> rootKey.equals(this.keyFunction.apply(it)))
-                        .findAny()
-                        .orElse(null);
+                .filter(it -> rootKey.equals(this.getParentKey().apply(it)))
+                .findAny()
+                .orElse(null);
         if (nodeData == null) {
             return null;
         }
@@ -138,11 +112,11 @@ public class TreeBuilder<T> {
         if (nodeData == null || this.disable()) {
             return null;
         }
-        String key = this.keyFunction.apply(nodeData);
-        String name = this.nameFunction.apply(nodeData);
-        String parentKey = this.parentKeyFunction.apply(nodeData);
+        Serializable key = this.key.apply(nodeData);
+        String name = this.name.apply(nodeData);
+        Serializable parentKey = this.parentKey.apply(nodeData);
         boolean hasChildren = CollUtil.isNotEmpty(children);
-        if (StrUtil.isBlank(key) || StrUtil.isBlank(parentKey)) {
+        if (StrUtil.isBlankIfStr(key) || StrUtil.isBlankIfStr(parentKey)) {
             return null;
         }
         TreeNode<T> treeNode = new TreeNode<>();
@@ -165,5 +139,55 @@ public class TreeBuilder<T> {
         treeNode.setChildren(null);
         treeNode.setHasChildren(hasChildren);
         return treeNode;
+    }
+
+
+    static class TreeConfigurer<T> {
+        private SFunction<T, Serializable> key;
+        private SFunction<T, String> name;
+        private SFunction<T, Serializable> parentKey;
+        private SFunction<T, Number> sort;
+        private boolean hasSort;
+        private Serializable rootKey;
+        private BiConsumer<T, List<T>> children;
+
+        public TreeConfigurer() {
+            this.name = t -> null;
+            this.sort = t -> 0;
+            this.hasSort = false;
+            this.rootKey = TreeNode.ROOT_KEY;
+        }
+
+        public TreeConfigurer<T> key(SFunction<T, Serializable> key) {
+            this.key = key;
+            return this;
+        }
+
+        public TreeConfigurer<T> name(SFunction<T, String> name) {
+            this.name = name;
+            return this;
+        }
+
+        public TreeConfigurer<T> parentKey(SFunction<T, Serializable> parentKey) {
+            this.parentKey = parentKey;
+            return this;
+        }
+
+        public TreeConfigurer<T> sort(SFunction<T, Number> sort) {
+            this.sort = sort;
+            this.hasSort = this.sort != null;
+            return this;
+        }
+
+        public TreeConfigurer<T> rootKey(String rootKey) {
+            this.rootKey = rootKey;
+            return this;
+        }
+
+        public TreeConfigurer<T> children(BiConsumer<T, List<T>> children) {
+            this.children = children;
+            return this;
+        }
+
     }
 }

@@ -16,25 +16,25 @@ import java.util.stream.Stream;
 public interface ExpandQueryMethod<T> extends TypedSelf<MPJLambdaWrapper<T>> {
 
     default Long count() {
-        MPJBaseMapper<T> baseMapper = this.self().getBaseMapper();
-        Integer result = baseMapper.selectJoinCount(this.self());
+        MPJBaseMapper<T> mapper = this.self().getMapper();
+        Integer result = mapper.selectJoinCount(this.self());
         return result == null ? 0 : result.longValue();
     }
 
     default <DTO> List<DTO> list(Class<DTO> clazz) {
-        MPJBaseMapper<T> baseMapper = this.self().getBaseMapper();
-        List<DTO> list = baseMapper.selectJoinList(clazz, this.self());
+        MPJBaseMapper<T> mapper = this.self().getMapper();
+        List<DTO> list = mapper.selectJoinList(clazz, this.self());
         return list == null ? new ArrayList<>() : list;
     }
 
     default <DTO> DTO one(Class<DTO> clazz) {
-        MPJBaseMapper<T> baseMapper = this.self().getBaseMapper();
-        return baseMapper.selectJoinOne(clazz, this.self());
+        MPJBaseMapper<T> mapper = this.self().getMapper();
+        return mapper.selectJoinOne(clazz, this.self());
     }
 
     default <DTO, P extends IPage<DTO>> P page(Class<DTO> clazz, P page) {
-        MPJBaseMapper<T> baseMapper = this.self().getBaseMapper();
-        IPage<DTO> result = baseMapper.selectJoinPage(page, clazz, this.self());
+        MPJBaseMapper<T> mapper = this.self().getMapper();
+        IPage<DTO> result = mapper.selectJoinPage(page, clazz, this.self());
         return (P) result;
     }
 

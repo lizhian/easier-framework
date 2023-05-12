@@ -26,8 +26,6 @@ import tydic.framework.test.repository.SysAppRepo;
 import tydic.framework.test.repository.SysDictRepo;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -40,6 +38,8 @@ public class TydicFrameworkTestApplication {
 
     @SneakyThrows
     public static void main(String[] args) {
+        SysApp eo = new SysApp();
+
         for (int i = 1; i < 6000; i++) {
             String url = "https://www.1024zyz.com/" + i + ".html";
             Connection.Response response = null;
@@ -69,7 +69,7 @@ public class TydicFrameworkTestApplication {
         SysAppRepo sysAppRepo = SpringUtil.getBean(SysAppRepo.class);
         SysDictRepo sysDictRepo = SpringUtil.getBean(SysDictRepo.class);
         AppToDictRepo appToDictRepo = SpringUtil.getBean(AppToDictRepo.class);
-        List<SysApp> all = sysAppRepo.all();
+        //List<SysApp> all = sysAppRepo.all();
         for (int i = 0; i < 10; i++) {
             SysApp app = SysApp.builder()
                                .appCode(i + "")
@@ -89,7 +89,7 @@ public class TydicFrameworkTestApplication {
                                            .appCode(i + "")
                                            .dictCode(i + "")
                                            .build();
-            appToDictRepo.add(appToDict);
+            //appToDictRepo.add(appToDict);
         }
         sysAppRepo.newUpdate()
                   .set(SysApp::getAppName, "222")
@@ -100,14 +100,14 @@ public class TydicFrameworkTestApplication {
         var appCodes = list.stream()
                            .map(SysApp::getAppCode)
                            .toList();
-        var list1 = sysAppRepo.newQuery()
+        /*var list1 = sysAppRepo.newQuery()
                               .ifNotEmpty().in(SysApp::getAppCode, appCodes)
                               .list();
         boolean b = sysAppRepo.withRelateDelete()
                               .deleteByCodes(appCodes);
         log.info("");
         new Date().getTime();
-        System.currentTimeMillis();
+        System.currentTimeMillis();*/
 
 
     }
@@ -122,5 +122,6 @@ public class TydicFrameworkTestApplication {
                    .filter(StrUtil::isNotBlank)
                    .collect(Collectors.joining(","));
     }
+
 
 }

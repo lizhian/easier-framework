@@ -42,7 +42,7 @@ public class TreeSelect implements Serializable {
     private List<TreeSelect> children;
 
     public <T> TreeSelect(TreeNode<T> treeNode) {
-        this.key = treeNode.getKey();
+        //this.key = treeNode.getKey();
         this.name = treeNode.getName();
         if (CollUtil.isNotEmpty(treeNode.getChildren())) {
             this.children = treeNode.getChildren()

@@ -10,11 +10,7 @@ public class DefaultTydicMybatisTemplate implements TydicMybatisTemplate {
 
     @Override
     public String currentHandler() {
-        String account = AuthContext.getAccount(false);
-        if (StrUtil.isNotBlank(account)) {
-            return account;
-        }
-        return "unknown";
+        return AuthContext.getAccountOr("unknown");
     }
 
     @Override

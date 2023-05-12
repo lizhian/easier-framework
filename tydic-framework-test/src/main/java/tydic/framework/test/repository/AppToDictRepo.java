@@ -1,8 +1,6 @@
 package tydic.framework.test.repository;
 
 import org.springframework.stereotype.Component;
-import tydic.framework.starter.mybatis.base.RelationRepo;
-import tydic.framework.starter.mybatis.base.holder.RelationHolder;
 import tydic.framework.test.eo.relation.AppToDict;
 
 @Component

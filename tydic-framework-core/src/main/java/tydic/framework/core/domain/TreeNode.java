@@ -26,8 +26,7 @@ public class TreeNode<T> implements Serializable {
 
     @JsonID
     @ApiModelProperty("树节点主键")
-    private String key;
-
+    private Serializable key;
     @ApiModelProperty("树节点名称")
     private String name;
 
@@ -36,7 +35,7 @@ public class TreeNode<T> implements Serializable {
 
     @JsonSerializeAlias("parentId")
     @ApiModelProperty("树父节点主键")
-    private String parentKey;
+    private Serializable parentKey;
 
     @JsonReverse("isLeaf")
     @ApiModelProperty("是否有子节点")

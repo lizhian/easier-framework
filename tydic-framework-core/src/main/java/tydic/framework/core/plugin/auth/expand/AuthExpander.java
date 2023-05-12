@@ -6,5 +6,5 @@ import java.lang.annotation.Annotation;
  * 认证拓展器
  */
 public interface AuthExpander<A extends Annotation> {
-    void doExpand(A a, AuthExpandContext context);
+    void doExpand(A authAnnotation, AuthExpandContext context);
 }

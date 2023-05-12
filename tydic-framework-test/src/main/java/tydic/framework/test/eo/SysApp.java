@@ -17,8 +17,10 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 import tydic.framework.core.domain.BaseEntity;
 import tydic.framework.core.domain.BaseLogicEntity;
+import tydic.framework.core.domain.TreeBuilder;
 import tydic.framework.core.plugin.enums.Dict;
 import tydic.framework.core.plugin.jackson.annotation.JsonID;
+import tydic.framework.core.plugin.mybatis.TableCode;
 import tydic.framework.test.enums.EnableStatus;
 import tydic.framework.test.enums.SysAppType;
 import tydic.framework.test.eo.relation.AppToDict;
@@ -36,6 +38,10 @@ import java.util.List;
 @Table(value = "sys_app", dsName = "test", comment = "系统应用表")
 public class SysApp extends BaseLogicEntity {
 
+    static final TreeBuilder<SysApp> treeBuilder = new TreeBuilder<SysApp>()
+            .key(SysApp::getAppId)
+            .children(SysApp::setChildren);
+
     @ApiModelProperty("应用主键")
     @Column(comment = "应用主键")
     @JsonID
@@ -45,6 +51,7 @@ public class SysApp extends BaseLogicEntity {
     @ApiModelProperty("应用编码")
     @Column(comment = "应用编码", notNull = true)
     @NotBlank
+    @TableCode
     //@CodeValid
     private String appCode;
 
@@ -87,6 +94,11 @@ public class SysApp extends BaseLogicEntity {
     private String appDesc;
 
 
+    @ApiModelProperty("应用描述")
+    @Column(comment = "应用描述")
+    private List<SysApp> children;
+
+
     @ApiModelProperty("绑定的数据字典")
     @BindEntityByMid(
             conditions = @MidCondition(
@@ -100,4 +112,13 @@ public class SysApp extends BaseLogicEntity {
     )
     private List<SysDict> dictList;
 
+
+    public static void main(String[] args) {
+        SysApp sysApp = new SysApp();
+        TreeBuilder<SysApp> objectTreeBuilder =
+    }
+
+    public String getParameter( String s) {
+        return null;
+    }
 }

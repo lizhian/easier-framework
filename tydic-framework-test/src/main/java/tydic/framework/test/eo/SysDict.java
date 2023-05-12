@@ -56,4 +56,5 @@ public class SysDict extends BaseLogicEntity {
     @Column(comment = "启用状态", notNull = true)
     private EnableStatus enableStatus;
 
+    
 }

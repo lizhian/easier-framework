@@ -14,8 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import tydic.framework.core.domain.TreeBuilder;
 import tydic.framework.core.domain.TreeNode;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -25,33 +25,31 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TreeUtil {
 
-    public static <T> List<TreeNode<T>> build(TreeBuilder<T> treeBuilder, List<T> all, String rootKey) {
-        if (StrUtil.isBlank(rootKey) || CollUtil.isEmpty(all) || treeBuilder.disable()) {
+    public static <T> List<TreeNode<T>> build(TreeBuilder<T> treeBuilder, List<T> all, Serializable rootKey) {
+        if (StrUtil.isBlankIfStr(rootKey) || CollUtil.isEmpty(all) || treeBuilder.disable()) {
             return new ArrayList<>();
         }
         return all.stream()
-                  .filter(Objects::nonNull)
-                  //匹配
-                  .filter(nodeData -> TreeUtil.isChildren(treeBuilder, rootKey, nodeData))
-                  //转换节点数据
-                  .map(nodeData -> TreeUtil.toTreeNode(treeBuilder, nodeData, all))
-                  //过滤空数据
-                  .filter(Objects::nonNull)
-                  //排序
-                  .sorted(Comparator.comparingInt(treeBuilder::getSort))
-                  .collect(Collectors.toList());
+                .filter(Objects::nonNull)
+                //匹配
+                .filter(nodeData -> TreeUtil.isChildren(treeBuilder, rootKey, nodeData))
+                //转换节点数据
+                .map(nodeData -> TreeUtil.toTreeNode(treeBuilder, nodeData, all))
+                //过滤空数据
+                .filter(Objects::nonNull)
+                //排序
+                //.sorted(Comparator.comparingInt(treeBuilder::getSort))
+                .collect(Collectors.toList());
     }
 
-    private static <T> boolean isChildren(TreeBuilder<T> treeBuilder, String rootKey, T nodeData) {
-        String parentKey = treeBuilder.getParentKeyFunction()
-                                      .apply(nodeData);
-        return rootKey.equals(parentKey);
+    private static <T> boolean isChildren(TreeBuilder<T> treeBuilder, Serializable key, T nodeData) {
+        Serializable parentKey = treeBuilder.getParentKey().apply(nodeData);
+        return key.equals(parentKey);
     }
 
     private static <T> TreeNode<T> toTreeNode(TreeBuilder<T> treeBuilder, T nodeData, List<T> all) {
         //当前节点key
-        String key = treeBuilder.getKeyFunction()
-                                .apply(nodeData);
+        Serializable key = treeBuilder.getKey().apply(nodeData);
         //递归获取子节点
         List<TreeNode<T>> children = treeBuilder.build(all, key);
         //构造节点数据

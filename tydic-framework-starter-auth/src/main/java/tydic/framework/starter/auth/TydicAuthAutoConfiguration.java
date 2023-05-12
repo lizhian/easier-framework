@@ -20,7 +20,7 @@ import tydic.framework.core.plugin.exception.ExceptionHandlerRegister;
 import tydic.framework.core.spring.RewriteEnvironmentAware;
 import tydic.framework.core.util.SpringUtil;
 import tydic.framework.starter.auth.Interceptor.AuthHandlerInterceptor;
-import tydic.framework.starter.auth.satoken.RedissonTokenDao;
+import tydic.framework.starter.auth.dao.SaTokenDaoForRedissonClients;
 import tydic.framework.starter.auth.template.DefaultTydicAuthTemplate;
 import tydic.framework.starter.auth.template.TydicAuthTemplate;
 import tydic.framework.starter.cache.EnableTydicCache;
@@ -30,7 +30,7 @@ import tydic.framework.starter.cache.EnableTydicCache;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @EnableSpringUtil
 @EnableTydicCache
-@Import(RedissonTokenDao.class)
+@Import(SaTokenDaoForRedissonClients.class)
 public class TydicAuthAutoConfiguration implements WebMvcConfigurer, RewriteEnvironmentAware {
 
     @Override
@@ -87,9 +87,9 @@ public class TydicAuthAutoConfiguration implements WebMvcConfigurer, RewriteEnvi
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         TydicAuthTemplate authTemplate = SpringUtil.getBean(TydicAuthTemplate.class);
+        AuthHandlerInterceptor interceptor = new AuthHandlerInterceptor(authTemplate);
         //打开鉴权功能
-        registry.addInterceptor(new AuthHandlerInterceptor(authTemplate))
-                .addPathPatterns("/**");
+        registry.addInterceptor(interceptor).addPathPatterns("/**");
     }
 
     @Bean
@@ -101,31 +101,22 @@ public class TydicAuthAutoConfiguration implements WebMvcConfigurer, RewriteEnvi
 
     private void registerExceptionHandler() {
         //未登录异常
-        ExceptionHandlerRegister.register(
-                NotLoginException.class,
-                HttpStatus.UNAUTHORIZED,
-                exception -> {
-                    R<Object> failed = R.failed(exception.getMessage());
-                    failed.setCode(RCode.not_login.getValue());
-                    return failed;
-                });
+        ExceptionHandlerRegister.register(NotLoginException.class, HttpStatus.UNAUTHORIZED, exception -> {
+            R<Object> failed = R.failed(exception.getMessage());
+            failed.setCode(RCode.not_login.getValue());
+            return failed;
+        });
         //没权限异常
-        ExceptionHandlerRegister.register(
-                NotPermissionException.class,
-                HttpStatus.FORBIDDEN,
-                exception -> {
-                    R<Object> failed = R.failed(exception.getMessage());
-                    failed.setCode(RCode.not_permission.getValue());
-                    return failed;
-                });
+        ExceptionHandlerRegister.register(NotPermissionException.class, HttpStatus.FORBIDDEN, exception -> {
+            R<Object> failed = R.failed(exception.getMessage());
+            failed.setCode(RCode.not_permission.getValue());
+            return failed;
+        });
         //没角色异常
-        ExceptionHandlerRegister.register(
-                NotRoleException.class,
-                HttpStatus.FORBIDDEN,
-                exception -> {
-                    R<Object> failed = R.failed(exception.getMessage());
-                    failed.setCode(RCode.not_permission.getValue());
-                    return failed;
-                });
+        ExceptionHandlerRegister.register(NotRoleException.class, HttpStatus.FORBIDDEN, exception -> {
+            R<Object> failed = R.failed(exception.getMessage());
+            failed.setCode(RCode.not_permission.getValue());
+            return failed;
+        });
     }
 }

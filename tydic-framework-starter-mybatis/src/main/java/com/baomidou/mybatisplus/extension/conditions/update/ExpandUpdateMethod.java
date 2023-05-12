@@ -1,16 +1,14 @@
 package com.baomidou.mybatisplus.extension.conditions.update;
 
-import cn.hutool.core.date.DateField;
-import cn.hutool.core.date.DateTime;
+import cn.hutool.core.util.ReflectUtil;
 import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
-import tydic.framework.core.domain.BaseEntity;
+import tydic.framework.core.plugin.mybatis.MybatisPlusEntity;
 import tydic.framework.core.proxy.TypedSelf;
-import tydic.framework.core.util.SpringUtil;
-import tydic.framework.starter.mybatis.template.TydicMybatisTemplate;
 
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 拓展更新方法
@@ -18,7 +16,7 @@ import java.util.Date;
 public interface ExpandUpdateMethod<T> extends ChainUpdate<T>
         , TypedSelf<LambdaUpdateChainWrapper<T>> {
 
-    void afterUpdate(String updateBy, Date updateTime, int updateSize);
+    void afterUpdate(Map<SFunction, Object> updateSets, int updateSize);
 
     void beforeRemove();
 
@@ -31,20 +29,13 @@ public interface ExpandUpdateMethod<T> extends ChainUpdate<T>
      */
     @Override
     default boolean update() {
-        TydicMybatisTemplate template = SpringUtil.getAndCache(TydicMybatisTemplate.class);
-        String updateBy = template.currentHandler();
-        Date updateTime = DateTime.now().setField(DateField.MILLISECOND, 0);
-        try {
-            this.updateBaseField(updateBy, updateTime);
-        } catch (Exception e) {
-            updateBy = null;
-            updateTime = null;
-        }
+        Map<SFunction, Object> updateSets = this.tryUpdateSets();
         int updateSize = this.getBaseMapper().update(null, this.getWrapper());
-        this.afterUpdate(updateBy, updateTime, updateSize);
+        this.afterUpdate(updateSets, updateSize);
         return SqlHelper.retBool(updateSize);
 
     }
+
 
     /**
      * 更新数据
@@ -64,13 +55,7 @@ public interface ExpandUpdateMethod<T> extends ChainUpdate<T>
      */
     @Override
     default boolean remove() {
-        TydicMybatisTemplate template = SpringUtil.getAndCache(TydicMybatisTemplate.class);
-        String updateBy = template.currentHandler();
-        Date updateTime = DateTime.now().setField(DateField.MILLISECOND, 0);
-        try {
-            this.updateBaseField(updateBy, updateTime);
-        } catch (Exception ignored) {
-        }
+        this.tryUpdateSets();
         this.beforeRemove();
         boolean remove = SqlHelper.retBool(this.getBaseMapper().delete(this.getWrapper()));
         if (remove) {
@@ -79,10 +64,23 @@ public interface ExpandUpdateMethod<T> extends ChainUpdate<T>
         return remove;
     }
 
-    private void updateBaseField(String updateBy, Date updateTime) {
-        SFunction<BaseEntity, Object> updateBySFunction = BaseEntity::getUpdateBy;
-        SFunction<BaseEntity, Object> updateTimeSFunction = BaseEntity::getUpdateTime;
-        this.self().set((SFunction) updateBySFunction, updateBy);
-        this.self().set((SFunction) updateTimeSFunction, updateTime);
+
+    private Map<SFunction, Object> tryUpdateSets() {
+        try {
+            Class<T> entityClass = this.self().getWrapper().getEntityClass();
+            T t = ReflectUtil.newInstanceIfPossible(entityClass);
+            if (t instanceof MybatisPlusEntity mybatisPlusEntity) {
+                Map<SFunction, Object> updateSets = new HashMap<>();
+                mybatisPlusEntity.preLambdaUpdate(updateSets);
+                for (SFunction column : updateSets.keySet()) {
+                    Object value = updateSets.get(column);
+                    this.self().set(column, value);
+                }
+                return updateSets;
+            }
+            return new HashMap<>();
+        } catch (Exception ignored) {
+            return new HashMap<>();
+        }
     }
 }
