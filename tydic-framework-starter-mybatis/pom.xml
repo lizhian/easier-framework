@@ -6,7 +6,7 @@
     <parent>
         <groupId>tydic.framework</groupId>
         <artifactId>tydic-framework-parent</artifactId>
-        <version>2022.12.29-2.7.6</version>
+        <version>2023.05.20-2.7.12</version>
     </parent>
     <artifactId>tydic-framework-starter-mybatis</artifactId>
     <properties>
@@ -48,6 +48,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.23</version>
         </dependency>
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>

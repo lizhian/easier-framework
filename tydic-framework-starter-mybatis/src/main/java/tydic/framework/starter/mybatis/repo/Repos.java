@@ -2,6 +2,7 @@ package tydic.framework.starter.mybatis.repo;
 
 import cn.hutool.core.lang.TypeReference;
 import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
+import com.github.yulichang.base.MPJBaseMapper;
 import tydic.framework.core.util.SpringUtil;
 
 import java.util.Map;
@@ -19,10 +20,10 @@ public class Repos {
             if (CACHE.containsKey(entityClass.getName())) {
                 return (EntityRepo<T>) CACHE.get(entityClass.getName());
             }
-            EntityMapper<T> entityMapper = SpringUtil.getBean(new TypeReference<EntityMapper<T>>() {
+            MPJBaseMapper<T> entityMapper = SpringUtil.getBean(new TypeReference<MPJBaseMapper<T>>() {
             });
             if (entityMapper == null) {
-                throw new MybatisPlusException("未找到[EntityMapper<" + entityClass.getSimpleName() + ">]");
+                throw new MybatisPlusException("未找到[MPJBaseMapper<" + entityClass.getSimpleName() + ">]");
             }
             EntityRepo<T> entityRepo = new EntityRepo<>(entityMapper);
             CACHE.put(entityClass.getName(), entityRepo);

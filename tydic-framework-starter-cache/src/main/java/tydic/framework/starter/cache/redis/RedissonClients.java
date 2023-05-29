@@ -80,13 +80,14 @@ public class RedissonClients implements InitializingBean, DisposableBean {
 
     @Override
     public void afterPropertiesSet() {
-        SpringUtil.getExecutor().execute(this::resetWorkerID);
+        SpringUtil.getExecutor().submit(this::resetWorkerID);
     }
 
     @SneakyThrows
     private void resetWorkerID() {
         if (this.notHas(RedisSources.snowflake)) {
             log.warn("未配置【snowflake】缓存源,【IdUtil】生成的主键可能会重复");
+            return;
         }
         RedissonClient client = this.get(RedisSources.snowflake);
         for (int dataCenterId = 0; dataCenterId < 32; dataCenterId++) {

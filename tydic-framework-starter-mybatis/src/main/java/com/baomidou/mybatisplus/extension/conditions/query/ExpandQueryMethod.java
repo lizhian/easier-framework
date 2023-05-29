@@ -1,3 +1,4 @@
+/*
 package com.baomidou.mybatisplus.extension.conditions.query;
 
 import cn.hutool.core.util.StrUtil;
@@ -14,24 +15,38 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+*/
 /**
  * 拓展查询方法
- */
+ * <p>
+ * 查询后置处理
+ * <p>
+ * 查询后置处理
+ * <p>
+ * 查询后置处理
+ *//*
+
 public interface ExpandQueryMethod<T> extends ChainQuery<T>, TypedSelf<LambdaQueryChainWrapper<T>> {
 
-    /**
-     * 查询后置处理
-     */
+    */
+/**
+ * 查询后置处理
+ *//*
+
     void afterQuery(T t);
 
-    /**
-     * 查询后置处理
-     */
+    */
+/**
+ * 查询后置处理
+ *//*
+
     void afterQuery(List<T> list);
 
-    /**
-     * 查询后置处理
-     */
+    */
+/**
+ * 查询后置处理
+ *//*
+
     void afterQuery(IPage<T> page);
 
     @Override
@@ -168,3 +183,4 @@ public interface ExpandQueryMethod<T> extends ChainQuery<T>, TypedSelf<LambdaQue
                    .collect(Collectors.toMap(keyColumn, valueColumn));
     }
 }
+*/

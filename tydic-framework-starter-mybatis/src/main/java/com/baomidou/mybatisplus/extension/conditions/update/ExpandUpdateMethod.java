@@ -1,3 +1,4 @@
+/*
 package com.baomidou.mybatisplus.extension.conditions.update;
 
 import cn.hutool.core.util.ReflectUtil;
@@ -10,9 +11,22 @@ import tydic.framework.core.proxy.TypedSelf;
 import java.util.HashMap;
 import java.util.Map;
 
+*/
 /**
  * 拓展更新方法
- */
+ * <p>
+ * 更新数据
+ *
+ * @return 是否成功
+ * <p>
+ * 更新数据
+ * @param entity 实体类
+ * @return 是否成功
+ * <p>
+ * 删除数据
+ * @return 是否成功
+ *//*
+
 public interface ExpandUpdateMethod<T> extends ChainUpdate<T>
         , TypedSelf<LambdaUpdateChainWrapper<T>> {
 
@@ -22,11 +36,13 @@ public interface ExpandUpdateMethod<T> extends ChainUpdate<T>
 
     void afterRemove();
 
-    /**
-     * 更新数据
-     *
-     * @return 是否成功
-     */
+    */
+/**
+ * 更新数据
+ *
+ * @return 是否成功
+ *//*
+
     @Override
     default boolean update() {
         Map<SFunction, Object> updateSets = this.tryUpdateSets();
@@ -37,22 +53,26 @@ public interface ExpandUpdateMethod<T> extends ChainUpdate<T>
     }
 
 
-    /**
-     * 更新数据
-     *
-     * @param entity 实体类
-     * @return 是否成功
-     */
+    */
+/**
+ * 更新数据
+ *
+ * @param entity 实体类
+ * @return 是否成功
+ *//*
+
     @Override
     default boolean update(T entity) {
         throw new MybatisPlusException("【LambdaUpdateChainWrapper】不允许使用【update(T entity)】方法");
     }
 
-    /**
-     * 删除数据
-     *
-     * @return 是否成功
-     */
+    */
+/**
+ * 删除数据
+ *
+ * @return 是否成功
+ *//*
+
     @Override
     default boolean remove() {
         this.tryUpdateSets();
@@ -84,3 +104,4 @@ public interface ExpandUpdateMethod<T> extends ChainUpdate<T>
         }
     }
 }
+*/

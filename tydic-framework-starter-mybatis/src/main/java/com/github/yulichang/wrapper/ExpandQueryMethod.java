@@ -1,3 +1,4 @@
+/*
 package com.github.yulichang.wrapper;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -10,13 +11,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+*/
 /**
  * 拓展查询方法
- */
+ *//*
+
 public interface ExpandQueryMethod<T> extends TypedSelf<MPJLambdaWrapper<T>> {
 
     default Long count() {
-        MPJBaseMapper<T> mapper = this.self().getMapper();
+        MPJLambdaWrapper<T> self = this.self();
+        MPJBaseMapper<T> mapper = self.;
         Integer result = mapper.selectJoinCount(this.self());
         return result == null ? 0 : result.longValue();
     }
@@ -135,3 +139,4 @@ public interface ExpandQueryMethod<T> extends TypedSelf<MPJLambdaWrapper<T>> {
                    .collect(Collectors.toMap(keyColumn, valueColumn));
     }
 }
+*/

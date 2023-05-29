@@ -129,18 +129,19 @@ public class TreeHolder<T> {
         }
 
         //获取子节点数据
-        List<T> list = this.repo.getChildren(key);
+        //List<T> list = this.repo.getChildren(key); todo
+        List<T> list = new ArrayList<>();
         if (CollUtil.isEmpty(list)) {
             return new ArrayList<>();
         }
-        SFunction<T, String> keyFunction = this.treeBuilder.getKeyFunction();
-        SFunction<T, String> parentKeyFunction = this.treeBuilder.getParentKeyFunction();
+        SFunction<T, Serializable> keyFunction = this.treeBuilder.getKey();
+        SFunction<T, Serializable> parentKeyFunction = this.treeBuilder.getParentKey();
         //获取子节点的树主键集合
-        List<String> childrenKeys = list.stream()
+        List<Serializable> childrenKeys = list.stream()
                 .map(keyFunction)
                 .toList();
         //拥有子节点的后代节点
-        Set<String> hasChildrenKeys = this.repo.newQuery()
+        Set<Serializable> hasChildrenKeys = this.repo.newQuery()
                 .select(parentKeyFunction)
                 .in(parentKeyFunction, childrenKeys)
                 .list()
@@ -150,7 +151,7 @@ public class TreeHolder<T> {
                 .collect(Collectors.toSet());
         List<TreeNode<T>> treeNodes = list.stream()
                 .map(entity -> {
-                    String thisKey = keyFunction.apply(entity);
+                    Serializable thisKey = keyFunction.apply(entity);
                     //判断节点是否包含后代节点
                     boolean hasChildren = hasChildrenKeys.contains(thisKey);
                     return this.treeBuilder.createTreeNode(entity, hasChildren);

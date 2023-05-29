@@ -1,3 +1,4 @@
+/*
 package com.github.yulichang.wrapper;
 
 import cn.hutool.core.collection.CollUtil;
@@ -10,28 +11,42 @@ import tydic.framework.core.proxy.TypedSelf;
 import java.util.Collection;
 import java.util.function.Predicate;
 
+*/
 /**
  * 拓展条件方法
- */
+ * <p>
+ * 字段非空字符串
+ * <p>
+ * 字段非空
+ * <p>
+ * 集合非空
+ *//*
+
 public interface ExpandCompareMethod<T> extends TypedSelf<MPJLambdaWrapper<T>> {
 
-    /**
-     * 字段非空字符串
-     */
+    */
+/**
+ * 字段非空字符串
+ *//*
+
     default WrapperHolderForValue<T, String> ifNotBlank() {
         return new WrapperHolderForValue<>(StrUtil::isNotBlank, this.self());
     }
 
-    /**
-     * 字段非空
-     */
+    */
+/**
+ * 字段非空
+ *//*
+
     default WrapperHolderForValue<T, Object> ifNotNull() {
         return new WrapperHolderForValue<>(ObjectUtil::isNotNull, this.self());
     }
 
-    /**
-     * 集合非空
-     */
+    */
+/**
+ * 集合非空
+ *//*
+
     default <V> WrapperHolderForCollection<T> ifNotEmpty() {
         return new WrapperHolderForCollection<>(CollUtil::isNotEmpty, this.self());
     }
@@ -147,3 +162,4 @@ public interface ExpandCompareMethod<T> extends TypedSelf<MPJLambdaWrapper<T>> {
         }
     }
 }
+*/

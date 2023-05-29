@@ -33,7 +33,7 @@ public @interface BaseAuth {
             if (AuthContext.isInnerRequest()) {
                 return;
             }
-            List<Annotation> otherAuthAnnotation = context.getOtherAuthAnnotation();
+            List<Annotation> otherAuthAnnotation = context.getOtherAuthAnnotations();
             if (CollUtil.isNotEmpty(otherAuthAnnotation)) {
                 return;
             }

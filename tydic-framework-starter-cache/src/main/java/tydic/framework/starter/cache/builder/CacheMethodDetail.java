@@ -105,7 +105,7 @@ public class CacheMethodDetail {
         Dict dict = Dict.create();
         for (Integer index : this.keyParameters) {
             Object arg = args[index];
-            dict.put(index + "", arg == null ? "" : arg.toString());
+            dict.put(String.valueOf(index), arg == null ? "" : arg.toString());
         }
         String key = StrUtil.format(this.key, dict);
         if (StrUtil.isNotBlank(this.name)) {

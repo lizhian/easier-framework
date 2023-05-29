@@ -21,7 +21,8 @@ public abstract class BaseRepo<T>
         , MethodForLambda<T, BaseRepo<T>>
         , MethodForList<T, BaseRepo<T>>
         , MethodForUnique<T, BaseRepo<T>>
-        , MethodForUpdate<T, BaseRepo<T>> {
+        , MethodForUpdate<T, BaseRepo<T>>
+        , MethodForWith<T, BaseRepo<T>> {
     @Getter
     private final int defaultBatchSize = 1000;
     @Getter

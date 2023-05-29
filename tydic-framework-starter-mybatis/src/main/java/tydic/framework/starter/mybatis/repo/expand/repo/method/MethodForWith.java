@@ -15,7 +15,7 @@ public interface MethodForWith<T, SELF extends BaseRepo<T>> extends TypedSelf<SE
     /**
      * 绑定注入字段
      */
-    default BindHolder<T> withBind(SFunction<T, ?>... bindFields) {
+    default BindHolder<T> withBind(SFunction<T, Object>... bindFields) {
         return new BindHolder<>(this.self(), CollUtil.newArrayList(bindFields));
     }
 
@@ -26,9 +26,9 @@ public interface MethodForWith<T, SELF extends BaseRepo<T>> extends TypedSelf<SE
         return new RelatedDeleteHolder<>(this.self(), CollUtil.newArrayList(classes));
     }
 
-    default TreeNodeHolder<T> withTreeNode(TreeBuilder<T> treeBuilder) {
+    default TreeHolder<T> withTreeNode(TreeBuilder<T> treeBuilder) {
 
-        return new TreeNodeHolder<>(this.self(), treeBuilder)
+        return new TreeHolder<>(this.self(), treeBuilder)
                 .withChildren(true)
                 .childrenNullToEmpty(false);
     }
