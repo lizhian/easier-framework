@@ -7,7 +7,7 @@ import com.tangzc.mpe.bind.Binder;
 import lombok.RequiredArgsConstructor;
 import tydic.framework.core.domain.TreeBuilder;
 import tydic.framework.core.domain.TreeNode;
-import tydic.framework.starter.mybatis.repo.BaseRepo;
+import tydic.framework.starter.mybatis.repo.Repo;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class TreeHolder<T> {
-    private final BaseRepo<T> repo;
+    private final Repo<T> repo;
     private final TreeBuilder<T> treeBuilder;
     private boolean bind;
     private List<SFunction<T, ?>> bindFields;

@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
 import org.apache.ibatis.binding.MapperMethod;
 import tydic.framework.core.proxy.TypedSelf;
-import tydic.framework.starter.mybatis.repo.BaseRepo;
+import tydic.framework.starter.mybatis.repo.Repo;
 import tydic.framework.starter.mybatis.util.MybatisPlusUtil;
 
 import java.util.Collection;
@@ -15,7 +15,7 @@ import java.util.Collection;
 /*
  * 查询单条数据
  */
-public interface MethodForUpdate<T, SELF extends BaseRepo<T>> extends TypedSelf<SELF> {
+public interface MethodForUpdate<T> extends TypedSelf<Repo<T>> {
 
     /**
      * 修改实体数据
@@ -47,9 +47,9 @@ public interface MethodForUpdate<T, SELF extends BaseRepo<T>> extends TypedSelf<
             return false;
         }
         list.forEach(MybatisPlusUtil::preUpdate);
-        SELF self = this.self();
-        String sqlStatement = SqlHelper.getSqlStatement(self.getMapperClass(), SqlMethod.UPDATE_BY_ID);
-        boolean result = self.executeBatch(
+        Repo<T> repo = this.self();
+        String sqlStatement = SqlHelper.getSqlStatement(repo.getMapperClass(), SqlMethod.UPDATE_BY_ID);
+        boolean result = repo.executeBatch(
                 list,
                 batchSize,
                 (sqlSession, entity) -> {

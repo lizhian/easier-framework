@@ -3,7 +3,7 @@ package tydic.framework.starter.mybatis.repo.expand.repo.method;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import tydic.framework.core.proxy.TypedSelf;
-import tydic.framework.starter.mybatis.repo.BaseRepo;
+import tydic.framework.starter.mybatis.repo.Repo;
 import tydic.framework.starter.mybatis.repo.expand.lambda.method.ColumnMethod;
 
 import java.io.Serializable;
@@ -13,7 +13,7 @@ import java.util.Collection;
 /*
  * 查询单条数据
  */
-public interface MethodForCount<T, SELF extends BaseRepo<T>> extends TypedSelf<SELF>, ColumnMethod<T> {
+public interface MethodForCount<T> extends ColumnMethod<T>, TypedSelf<Repo<T>> {
     /**
      * 查询总数
      */
@@ -25,7 +25,7 @@ public interface MethodForCount<T, SELF extends BaseRepo<T>> extends TypedSelf<S
      * 查询数量
      */
     default long countByIds(Collection<Serializable> ids) {
-        SFunction<T, ?> tableIdColumn = this.getTableIdColumnFor("countByIds");
+        SFunction<T, ?> tableIdColumn = this.getTableIdColumn();
         if (CollUtil.isEmpty(ids)) {
             return 0;
         }
@@ -39,7 +39,7 @@ public interface MethodForCount<T, SELF extends BaseRepo<T>> extends TypedSelf<S
      * 查询数量
      */
     default long countByCodes(Collection<String> codes) {
-        SFunction<T, ?> tableColeColumn = this.getTableColeColumnFor("countByCodes");
+        SFunction<T, ?> tableColeColumn = this.getTableColeColumn();
         if (CollUtil.isEmpty(codes)) {
             return 0;
         }

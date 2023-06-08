@@ -2,7 +2,7 @@ package tydic.framework.starter.mybatis.repo.expand.repo.holder;
 
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import lombok.RequiredArgsConstructor;
-import tydic.framework.starter.mybatis.repo.BaseRepo;
+import tydic.framework.starter.mybatis.repo.Repo;
 import tydic.framework.starter.mybatis.util.MybatisPlusUtil;
 
 import java.io.Serializable;
@@ -11,7 +11,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class RelatedDeleteHolder<T> {
-    private final BaseRepo<T> repo;
+    private final Repo<T> repo;
     private final List<Class<?>> relatedDeleteClasses;
 
     /**

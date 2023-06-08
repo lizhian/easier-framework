@@ -2,7 +2,7 @@ package tydic.framework.starter.mybatis.repo.expand.repo.method;
 
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import tydic.framework.core.proxy.TypedSelf;
-import tydic.framework.starter.mybatis.repo.BaseRepo;
+import tydic.framework.starter.mybatis.repo.Repo;
 import tydic.framework.starter.mybatis.repo.lambda.query.LambdaQuery;
 import tydic.framework.starter.mybatis.repo.lambda.update.LambdaUpdate;
 
@@ -10,7 +10,7 @@ import tydic.framework.starter.mybatis.repo.lambda.update.LambdaUpdate;
 /*
  * 查询单条数据
  */
-public interface MethodForLambda<T, SELF extends BaseRepo<T>> extends TypedSelf<SELF> {
+public interface MethodForLambda<T> extends TypedSelf<Repo<T>> {
 
 
     /**

@@ -4,14 +4,14 @@ import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import tydic.framework.core.domain.TreeBuilder;
 import tydic.framework.core.proxy.TypedSelf;
-import tydic.framework.starter.mybatis.repo.BaseRepo;
+import tydic.framework.starter.mybatis.repo.Repo;
 import tydic.framework.starter.mybatis.repo.expand.repo.holder.*;
 
 
 /*
  * 查询单条数据
  */
-public interface MethodForWith<T, SELF extends BaseRepo<T>> extends TypedSelf<SELF> {
+public interface MethodForWith<T> extends TypedSelf<Repo<T>> {
     /**
      * 绑定注入字段
      */

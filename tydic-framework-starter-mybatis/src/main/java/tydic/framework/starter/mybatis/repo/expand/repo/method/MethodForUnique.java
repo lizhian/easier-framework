@@ -3,7 +3,7 @@ package tydic.framework.starter.mybatis.repo.expand.repo.method;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import tydic.framework.core.proxy.TypedSelf;
-import tydic.framework.starter.mybatis.repo.BaseRepo;
+import tydic.framework.starter.mybatis.repo.Repo;
 
 import java.io.Serializable;
 
@@ -11,7 +11,7 @@ import java.io.Serializable;
 /*
  * 查询单条数据
  */
-public interface MethodForUnique<T, SELF extends BaseRepo<T>> extends TypedSelf<SELF> {
+public interface MethodForUnique<T> extends TypedSelf<Repo<T>> {
 
 
     /**

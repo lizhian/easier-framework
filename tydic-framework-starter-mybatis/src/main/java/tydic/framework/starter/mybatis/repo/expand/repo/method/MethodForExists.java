@@ -3,7 +3,7 @@ package tydic.framework.starter.mybatis.repo.expand.repo.method;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import tydic.framework.core.proxy.TypedSelf;
-import tydic.framework.starter.mybatis.repo.BaseRepo;
+import tydic.framework.starter.mybatis.repo.Repo;
 import tydic.framework.starter.mybatis.repo.expand.lambda.method.ColumnMethod;
 
 import java.io.Serializable;
@@ -12,14 +12,14 @@ import java.io.Serializable;
 /*
  * 查询单条数据
  */
-public interface MethodForExists<T, SELF extends BaseRepo<T>> extends TypedSelf<SELF>, ColumnMethod<T> {
+public interface MethodForExists<T> extends TypedSelf<Repo<T>>, ColumnMethod<T> {
 
 
     /**
      * 根据主键判断
      */
     default boolean existsById(Serializable id) {
-        SFunction<T, ?> tableIdColumn = this.getTableIdColumnFor("existsById");
+        SFunction<T, ?> tableIdColumn = this.getTableIdColumn();
         if (StrUtil.isBlankIfStr(id)) {
             return false;
         }
@@ -33,7 +33,7 @@ public interface MethodForExists<T, SELF extends BaseRepo<T>> extends TypedSelf<
      * 根据编码判断
      */
     default boolean existsByCode(String code) {
-        SFunction<T, ?> tableColeColumn = this.getTableColeColumnFor("existsByCode");
+        SFunction<T, ?> tableColeColumn = this.getTableColeColumn();
         if (StrUtil.isBlank(code)) {
             return false;
         }

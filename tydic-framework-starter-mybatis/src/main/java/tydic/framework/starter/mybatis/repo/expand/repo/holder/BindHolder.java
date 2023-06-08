@@ -3,7 +3,7 @@ package tydic.framework.starter.mybatis.repo.expand.repo.holder;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.tangzc.mpe.bind.Binder;
 import lombok.AllArgsConstructor;
-import tydic.framework.starter.mybatis.repo.BaseRepo;
+import tydic.framework.starter.mybatis.repo.Repo;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @AllArgsConstructor
 public class BindHolder<T> {
-    private final BaseRepo<T> repo;
+    private final Repo<T> repo;
     private List<SFunction<T, ?>> bindFields;
     /**
      * 根据主键查询

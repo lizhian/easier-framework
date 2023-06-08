@@ -4,7 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import tydic.framework.core.proxy.TypedSelf;
-import tydic.framework.starter.mybatis.repo.BaseRepo;
+import tydic.framework.starter.mybatis.repo.Repo;
 import tydic.framework.starter.mybatis.repo.expand.lambda.method.ColumnMethod;
 
 import javax.annotation.Nonnull;
@@ -17,7 +17,7 @@ import java.util.List;
 /*
  * 查询单条数据
  */
-public interface MethodForList<T, SELF extends BaseRepo<T>> extends TypedSelf<SELF>, ColumnMethod<T> {
+public interface MethodForList<T> extends TypedSelf<Repo<T>>, ColumnMethod<T> {
 
     /**
      * 查询全表
@@ -44,7 +44,7 @@ public interface MethodForList<T, SELF extends BaseRepo<T>> extends TypedSelf<SE
      */
     @Nonnull
     default List<T> listByCodes(Collection<String> codes) {
-        SFunction<T, ?> tableColeColumn = this.getTableColeColumnFor("listByCodes");
+        SFunction<T, ?> tableColeColumn = this.getTableColeColumn();
         if (CollUtil.isEmpty(codes)) {
             return new ArrayList<>();
         }

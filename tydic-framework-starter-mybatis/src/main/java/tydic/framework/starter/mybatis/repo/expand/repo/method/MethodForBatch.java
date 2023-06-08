@@ -5,7 +5,7 @@ import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.session.SqlSession;
 import tydic.framework.core.proxy.TypedSelf;
-import tydic.framework.starter.mybatis.repo.BaseRepo;
+import tydic.framework.starter.mybatis.repo.Repo;
 
 import java.util.Collection;
 import java.util.function.BiConsumer;
@@ -14,7 +14,7 @@ import java.util.function.BiConsumer;
 /*
  * 批量执行方法
  */
-public interface MethodForBatch<T, SELF extends BaseRepo<T>> extends TypedSelf<SELF> {
+public interface MethodForBatch<T> extends TypedSelf<Repo<T>> {
 
     /**
      * 批量执行
@@ -28,9 +28,9 @@ public interface MethodForBatch<T, SELF extends BaseRepo<T>> extends TypedSelf<S
      * 批量执行
      */
     default <E> boolean executeBatch(Collection<E> list, int batchSize, BiConsumer<SqlSession, E> consumer) {
-        SELF self = this.self();
-        Log log = LogFactory.getLog(self.getClass());
-        Class<T> entityClass = self.getEntityClass();
+        Repo<T> repo = this.self();
+        Log log = LogFactory.getLog(repo.getClass());
+        Class<T> entityClass = repo.getEntityClass();
         return SqlHelper.executeBatch(entityClass, log, list, batchSize, consumer);
     }
 }

@@ -4,7 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.enums.SqlMethod;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
 import tydic.framework.core.proxy.TypedSelf;
-import tydic.framework.starter.mybatis.repo.BaseRepo;
+import tydic.framework.starter.mybatis.repo.Repo;
 import tydic.framework.starter.mybatis.util.MybatisPlusUtil;
 
 import java.util.Collection;
@@ -13,7 +13,7 @@ import java.util.Collection;
 /*
  * 新增方法
  */
-public interface MethodForAdd<T, SELF extends BaseRepo<T>> extends TypedSelf<SELF> {
+public interface MethodForAdd<T> extends TypedSelf<Repo<T>> {
 
     /**
      * 新增
@@ -38,16 +38,16 @@ public interface MethodForAdd<T, SELF extends BaseRepo<T>> extends TypedSelf<SEL
     /**
      * 批量新增
      */
-    default boolean addBatch(Collection<T> entityList, int batchSize) {
-        if (CollUtil.isEmpty(entityList)) {
+    default boolean addBatch(Collection<T> list, int batchSize) {
+        if (CollUtil.isEmpty(list)) {
             return false;
         }
-        entityList.forEach(MybatisPlusUtil::preInsert);
-        SELF self = this.self();
-        Class<?> mapperClass = self.getMapperClass();
+        list.forEach(MybatisPlusUtil::preInsert);
+        Repo<T> repo = this.self();
+        Class<?> mapperClass = repo.getMapperClass();
         String sqlStatement = SqlHelper.getSqlStatement(mapperClass, SqlMethod.INSERT_ONE);
-        return self.executeBatch(
-                entityList,
+        return repo.executeBatch(
+                list,
                 batchSize,
                 (sqlSession, entity) -> sqlSession.insert(sqlStatement, entity)
         );

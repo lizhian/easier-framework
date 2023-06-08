@@ -97,7 +97,6 @@ public abstract class BaseEntity implements Serializable, MybatisPlusEntity {
         Date now = DateTime.now().setField(DateField.MILLISECOND, 0);
         this.updateBy = account;
         this.updateTime = now;
-
     }
 
     @Override

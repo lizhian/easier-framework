@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
 import tydic.framework.core.proxy.TypedSelf;
 import tydic.framework.core.util.StrUtil;
-import tydic.framework.starter.mybatis.repo.BaseRepo;
+import tydic.framework.starter.mybatis.repo.Repo;
 import tydic.framework.starter.mybatis.repo.expand.lambda.method.ColumnMethod;
 
 import java.io.Serializable;
@@ -19,7 +19,7 @@ import java.util.List;
 /*
  * 查询单条数据
  */
-public interface MethodForDelete<T, SELF extends BaseRepo<T>> extends TypedSelf<SELF>, ColumnMethod<T> {
+public interface MethodForDelete<T> extends TypedSelf<Repo<T>>, ColumnMethod<T> {
 
     /**
      * 根据主键删除
@@ -47,12 +47,12 @@ public interface MethodForDelete<T, SELF extends BaseRepo<T>> extends TypedSelf<
         if (CollUtil.isEmpty(ids)) {
             return false;
         }
-        SELF self = this.self();
-        Class<T> entityClass = self.getEntityClass();
-        Class<?> mapperClass = self.getMapperClass();
+        Repo<T> repo = this.self();
+        Class<T> entityClass = repo.getEntityClass();
+        Class<?> mapperClass = repo.getMapperClass();
         String sqlStatement = SqlHelper.getSqlStatement(mapperClass, SqlMethod.DELETE_BY_ID);
         TableInfo tableInfo = TableInfoHelper.getTableInfo(entityClass);
-        return self.executeBatch(ids, batchSize, (sqlSession, e) -> {
+        return repo.executeBatch(ids, batchSize, (sqlSession, e) -> {
             if (tableInfo.isWithLogicDelete()) {
                 if (entityClass.isAssignableFrom(e.getClass())) {
                     sqlSession.update(sqlStatement, e);
@@ -71,11 +71,14 @@ public interface MethodForDelete<T, SELF extends BaseRepo<T>> extends TypedSelf<
      * 根据编码删除
      */
     default boolean deleteByCode(String code) {
-        SFunction<T, ?> tableColeColumn = this.getTableColeColumnFor("deleteByCode");
+        SFunction<T, ?> tableColeColumn = this.getTableColeColumn();
         if (StrUtil.isBlank(code)) {
             return false;
         }
-        return this.self().newUpdate().eq(tableColeColumn, code).delete();
+        return this.self()
+                .newUpdate()
+                .eq(tableColeColumn, code)
+                .delete();
     }
 
     /**
@@ -89,12 +92,13 @@ public interface MethodForDelete<T, SELF extends BaseRepo<T>> extends TypedSelf<
      * 根据编码批量删除
      */
     default boolean deleteByCodes(Collection<String> codes, int batchSize) {
-        SFunction<T, ?> tableColeColumn = this.getTableColeColumnFor("deleteByCodes");
+        SFunction<T, ?> tableColeColumn = this.getTableColeColumn();
         if (CollUtil.isEmpty(codes)) {
             return false;
         }
         for (List<String> temp : CollUtil.split(codes, batchSize)) {
-            this.self().newUpdate()
+            this.self()
+                    .newUpdate()
                     .in(tableColeColumn, temp)
                     .remove();
         }
@@ -129,7 +133,8 @@ public interface MethodForDelete<T, SELF extends BaseRepo<T>> extends TypedSelf<
             return false;
         }
         for (List<V> temp : CollUtil.split(values, batchSize)) {
-            this.self().newUpdate()
+            this.self()
+                    .newUpdate()
                     .in(column, temp)
                     .remove();
         }

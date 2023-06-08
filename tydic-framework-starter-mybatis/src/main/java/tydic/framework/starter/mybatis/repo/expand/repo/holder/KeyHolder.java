@@ -4,7 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import lombok.RequiredArgsConstructor;
-import tydic.framework.starter.mybatis.repo.BaseRepo;
+import tydic.framework.starter.mybatis.repo.Repo;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -14,7 +14,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class KeyHolder<T, K> {
-    private final BaseRepo<T> repo;
+    private final Repo<T> repo;
     private final SFunction<T, K> keyColumn;
 
     public long count(K key) {

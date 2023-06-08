@@ -11,7 +11,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
+/**
+ * TraceId加载
+ */
 @Slf4j
 public class TraceIdServletFilter extends OncePerRequestFilter implements Ordered {
     @Override

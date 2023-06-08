@@ -1,6 +1,7 @@
 package tydic.framework.test.eo;
 
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.tangzc.mpe.actable.annotation.Column;
 import com.tangzc.mpe.actable.annotation.Table;
 import com.tangzc.mpe.actable.annotation.constants.MySqlTypeConstant;
@@ -16,15 +17,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 import tydic.framework.core.domain.BaseEntity;
-import tydic.framework.core.domain.BaseLogicEntity;
-import tydic.framework.core.domain.TreeBuilder;
 import tydic.framework.core.plugin.enums.Dict;
 import tydic.framework.core.plugin.jackson.annotation.JsonID;
-import tydic.framework.core.plugin.mybatis.TableCode;
+import tydic.framework.core.plugin.mybatis.MybatisPlusEntity;
 import tydic.framework.test.enums.EnableStatus;
 import tydic.framework.test.enums.SysAppType;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 系统应用
@@ -35,7 +35,7 @@ import java.util.List;
 @FieldNameConstants
 @Builder(toBuilder = true)
 @Table(value = "sys_app", dsName = "test", comment = "系统应用表")
-public class SysApp extends BaseLogicEntity {
+public class SysApp implements MybatisPlusEntity {
 
 
     @ApiModelProperty("应用主键")
@@ -47,7 +47,7 @@ public class SysApp extends BaseLogicEntity {
     @ApiModelProperty("应用编码")
     @Column(comment = "应用编码", notNull = true)
     @NotBlank
-    @TableCode
+    //@TableCode
     //@CodeValid
     private String appCode;
 
@@ -113,7 +113,22 @@ public class SysApp extends BaseLogicEntity {
         SysApp sysApp = new SysApp();
     }
 
-    public String getParameter( String s) {
+    public String getParameter(String s) {
         return null;
+    }
+
+    @Override
+    public void preInsert() {
+
+    }
+
+    @Override
+    public void preUpdate() {
+
+    }
+
+    @Override
+    public void preLambdaUpdate(Map<SFunction, Object> updateSets) {
+
     }
 }

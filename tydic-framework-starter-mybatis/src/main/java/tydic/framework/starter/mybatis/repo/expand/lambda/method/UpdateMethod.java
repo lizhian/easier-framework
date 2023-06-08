@@ -13,7 +13,7 @@ import java.util.Collection;
 public interface UpdateMethod<T, SELF extends AbstractChainWrapper<T, SFunction<T, ?>, SELF, ?>>
         extends ChainUpdate<T>, ColumnMethod<T>, TypedSelf<SELF> {
     default boolean updateById(Serializable id) {
-        SFunction<T, ?> tableIdColumn = this.getTableIdColumnFor("updateById");
+        SFunction<T, ?> tableIdColumn = this.getTableIdColumn();
         if (StrUtil.isBlankIfStr(id)) {
             return false;
         }
@@ -22,7 +22,7 @@ public interface UpdateMethod<T, SELF extends AbstractChainWrapper<T, SFunction<
     }
 
     default boolean updateByIds(Collection<Serializable> ids) {
-        SFunction<T, ?> tableIdColumn = this.getTableColeColumnFor("updateByIds");
+        SFunction<T, ?> tableIdColumn = this.getTableColeColumn();
         if (CollUtil.isEmpty(ids)) {
             return false;
         }
@@ -32,7 +32,7 @@ public interface UpdateMethod<T, SELF extends AbstractChainWrapper<T, SFunction<
 
 
     default boolean updateByCode(String code) {
-        SFunction<T, ?> tableColeColumn = this.getTableColeColumnFor("updateByCode");
+        SFunction<T, ?> tableColeColumn = this.getTableColeColumn();
         if (StrUtil.isBlank(code)) {
             return false;
         }
@@ -41,7 +41,7 @@ public interface UpdateMethod<T, SELF extends AbstractChainWrapper<T, SFunction<
     }
 
     default boolean updateByCodes(Collection<String> codes) {
-        SFunction<T, ?> tableColeColumn = this.getTableColeColumnFor("updateByCodes");
+        SFunction<T, ?> tableColeColumn = this.getTableColeColumn();
         if (CollUtil.isEmpty(codes)) {
             return false;
         }
@@ -71,7 +71,7 @@ public interface UpdateMethod<T, SELF extends AbstractChainWrapper<T, SFunction<
     }
 
     default boolean deleteById(Serializable id) {
-        SFunction<T, ?> tableIdColumn = this.getTableIdColumnFor("deleteById");
+        SFunction<T, ?> tableIdColumn = this.getTableIdColumn();
         if (StrUtil.isBlankIfStr(id)) {
             return false;
         }
@@ -80,7 +80,7 @@ public interface UpdateMethod<T, SELF extends AbstractChainWrapper<T, SFunction<
     }
 
     default boolean deleteByIds(Collection<Serializable> ids) {
-        SFunction<T, ?> tableIdColumn = this.getTableIdColumnFor("deleteByIds");
+        SFunction<T, ?> tableIdColumn = this.getTableIdColumn();
         if (CollUtil.isEmpty(ids)) {
             return false;
         }
@@ -90,7 +90,7 @@ public interface UpdateMethod<T, SELF extends AbstractChainWrapper<T, SFunction<
 
 
     default boolean deleteByCode(String code) {
-        SFunction<T, ?> tableColeColumn = this.getTableColeColumnFor("deleteByCode");
+        SFunction<T, ?> tableColeColumn = this.getTableColeColumn();
         if (StrUtil.isBlank(code)) {
             return false;
         }
@@ -99,7 +99,7 @@ public interface UpdateMethod<T, SELF extends AbstractChainWrapper<T, SFunction<
     }
 
     default boolean deleteByCodes(Collection<String> codes) {
-        SFunction<T, ?> tableColeColumn = this.getTableColeColumnFor("deleteByCodes");
+        SFunction<T, ?> tableColeColumn = this.getTableColeColumn();
         if (CollUtil.isEmpty(codes)) {
             return false;
         }

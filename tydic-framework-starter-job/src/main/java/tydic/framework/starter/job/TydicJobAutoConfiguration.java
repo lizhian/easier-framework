@@ -10,14 +10,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import tydic.framework.core.plugin.job.LoopJob;
 import tydic.framework.starter.cache.EnableTydicCache;
 import tydic.framework.starter.job.corn.CornJobAutoConfiguration;
 import tydic.framework.starter.job.loop.LoopJobAutoConfiguration;
-import tydic.framework.starter.job.loop.LoopJobContext;
-
-import java.lang.reflect.Method;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Configuration(proxyBeanMethods = false)
@@ -66,20 +61,5 @@ public class TydicJobAutoConfiguration {
                     )
             );
         };
-    }
-
-
-    @LoopJob(delay = 1, timeUnit = TimeUnit.SECONDS)
-    public void test() {
-        //当前任务的上下文
-        LoopJobContext loopJobContext = LoopJobContext.get();
-        LoopJob loopJob = loopJobContext.getLoopJob();
-        Method method = loopJobContext.getMethod();
-
-        //动态修改下次任务间隔
-        LoopJobContext.setNextDelay(10);
-
-        //当前任务实例
-        int concurrent = LoopJobContext.getConcurrent();
     }
 }

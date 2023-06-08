@@ -32,6 +32,28 @@ import java.util.List;
 import java.util.Map;
 
 public class MybatisPlusUtil {
+
+    /**
+     * 新增数据前的操作
+     */
+    public static <T> void preInsert(T entity) {
+        if (entity instanceof MybatisPlusEntity mybatisPlusEntity) {
+            mybatisPlusEntity.preInsert();
+        }
+    }
+
+    /**
+     * 更新数据前的操作
+     */
+    public static <T> void preUpdate(T entity) {
+        if (entity instanceof MybatisPlusEntity mybatisPlusEntity) {
+            mybatisPlusEntity.preUpdate();
+        }
+    }
+
+    /**
+     * 更新数据前的操作,针对LambdaUpdate
+     */
     public static <T> Map<SFunction, Object> tryUpdateSets(LambdaUpdate<T> lambdaUpdate) {
         try {
             Class<T> entityClass = lambdaUpdate.getEntityClass();
@@ -72,17 +94,7 @@ public class MybatisPlusUtil {
         SpringUtil.publishEvent(event);
     }
 
-    public static <T> void preInsert(T entity) {
-        if (entity instanceof MybatisPlusEntity mybatisPlusEntity) {
-            mybatisPlusEntity.preInsert();
-        }
-    }
 
-    public static <T> void preUpdate(T entity) {
-        if (entity instanceof MybatisPlusEntity mybatisPlusEntity) {
-            mybatisPlusEntity.preUpdate();
-        }
-    }
 
 
     public static <T> void publishUpdateEvent(T data) {
