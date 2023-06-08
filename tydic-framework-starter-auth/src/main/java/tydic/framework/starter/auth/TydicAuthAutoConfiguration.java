@@ -35,8 +35,7 @@ public class TydicAuthAutoConfiguration implements WebMvcConfigurer, RewriteEnvi
 
     @Override
     public void setEnvironment(Environment environment) {
-        this.setBlankProperty("" +
-                "#token 名称\n" +
+        this.setBlankProperty("#token 名称\n" +
                 "sa-token.token-name=tydic-token\n" +
                 "\n" +
                 "#token 前缀\n" +

@@ -95,8 +95,7 @@ public class TydicWebConfiguration implements WebMvcConfigurer, RewriteEnvironme
                 .sorted(Comparator.comparingLong(NetUtil::ipv4ToLong))
                 .map(it -> "http://" + it + ":" + SpringUtil.getServerPort() + "/doc.html")
                 .collect(Collectors.joining("\n┃ 　　   "));
-        String banner = StrUtil.format(("" +
-                        "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n" +
+        String banner = StrUtil.format(("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n" +
                         "┃ 服务 : {}\n" +
                         "┃ 端口 : {}\n" +
                         "┃ 状态 : 启动成功\n" +
