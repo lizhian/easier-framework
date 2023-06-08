@@ -9,8 +9,6 @@ import com.tangzc.mpe.bind.metadata.annotation.BindEntityByMid;
 import com.tangzc.mpe.bind.metadata.annotation.JoinOrderBy;
 import com.tangzc.mpe.bind.metadata.annotation.MidCondition;
 import io.swagger.annotations.ApiModelProperty;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,6 +21,8 @@ import tydic.framework.core.plugin.mybatis.MybatisPlusEntity;
 import tydic.framework.test.enums.EnableStatus;
 import tydic.framework.test.enums.SysAppType;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
 

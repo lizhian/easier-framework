@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.toolkit.ReflectionKit;
 import com.github.yulichang.base.MPJBaseMapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.aop.support.AopUtils;
+import org.springframework.aop.framework.AopProxyUtils;
 import tydic.framework.starter.mybatis.repo.expand.repo.method.*;
+
+import java.util.Arrays;
 
 /**
  * 实体仓库
@@ -45,6 +47,9 @@ public final class Repo<T> implements
     }
 
     public Class<?> getMapperClass() {
-        return AopUtils.getTargetClass(this.getBaseMapper());
+        Class<?>[] interfaces = AopProxyUtils.proxiedUserInterfaces(this.getBaseMapper());
+        return Arrays.stream(interfaces)
+                .filter(MPJBaseMapper.class::isAssignableFrom)
+                .findAny().orElse(null);
     }
 }

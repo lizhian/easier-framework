@@ -43,7 +43,7 @@
         <!--<hibernate-validator.version>8.0.0.Final</hibernate-validator.version>-->
         <!--<jakarta-validation.version>3.0.2</jakarta-validation.version>-->
         <glassfish-el.version>5.0.0-M1</glassfish-el.version>
-        <kotlin.version>1.8.0</kotlin.version>
+        <kotlin.version>1.8.20</kotlin.version>
     </properties>
     <dependencyManagement>
         <dependencies>

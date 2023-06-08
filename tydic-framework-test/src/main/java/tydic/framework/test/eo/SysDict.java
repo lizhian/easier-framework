@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.tangzc.mpe.actable.annotation.Column;
 import com.tangzc.mpe.actable.annotation.Table;
 import io.swagger.annotations.ApiModelProperty;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +14,8 @@ import tydic.framework.core.domain.BaseLogicEntity;
 import tydic.framework.core.plugin.jackson.annotation.JsonID;
 import tydic.framework.test.enums.EnableStatus;
 import tydic.framework.test.enums.SysDictType;
+
+import javax.validation.constraints.NotBlank;
 
 
 /**
