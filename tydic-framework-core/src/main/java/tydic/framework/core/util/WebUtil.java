@@ -8,12 +8,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 public class WebUtil {
-    
+
 
     public static HttpServletRequest getRequest() {
         try {
             RequestAttributes requestAttributes = RequestContextHolder.currentRequestAttributes();
-            if (requestAttributes instanceof ServletRequestAttributes servletRequestAttributes) {
+            if (requestAttributes instanceof ServletRequestAttributes) {
+                ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) requestAttributes;
                 return servletRequestAttributes.getRequest();
             }
         } catch (Exception ignored) {

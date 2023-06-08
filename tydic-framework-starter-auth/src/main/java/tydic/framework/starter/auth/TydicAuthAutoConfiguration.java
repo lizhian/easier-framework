@@ -35,51 +35,50 @@ public class TydicAuthAutoConfiguration implements WebMvcConfigurer, RewriteEnvi
 
     @Override
     public void setEnvironment(Environment environment) {
-        this.setBlankProperty("""
-                #token 名称
-                sa-token.token-name=tydic-token
-                                
-                #token 前缀
-                sa-token.token-prefix=
-                                
-                #token 有效期 30 天
-                sa-token.timeout=2592000
-                                
-                #token 临时有效期 6 小时
-                sa-token.activity-timeout=21600
-                                
-                #是否自动续签
-                sa-token.auto-renew=true
-                                
-                #是否允许同一账号并发登录
-                sa-token.is-concurrent=true
-                                
-                #多人登录是否共用一个token
-                sa-token.is-share=false
-                                
-                #同一账号最大登录数量
-                sa-token.max-login-count=20
-                                
-                #token 来源
-                sa-token.is-read-body=true
-                sa-token.is-read-header=true
-                sa-token.is-read-cookie=true
-                                
-                #token 风格
-                sa-token.token-style=simple-uuid
-                                
-                #获取 Token-Session 时是否必须登录
-                sa-token.token-session-check-login=true
-                                
-                #是否在初始化配置时打印版本字符画
-                sa-token.is-print=true
-                                
-                #是否打印日志
-                sa-token.is-log=false
-                                
-                #是否禁止 js 操作 Cookie
-                sa-token.cookie.http-only=true
-                """);
+        this.setBlankProperty("" +
+                "#token 名称\n" +
+                "sa-token.token-name=tydic-token\n" +
+                "\n" +
+                "#token 前缀\n" +
+                "sa-token.token-prefix=\n" +
+                "\n" +
+                "#token 有效期 30 天\n" +
+                "sa-token.timeout=2592000\n" +
+                "\n" +
+                "#token 临时有效期 6 小时\n" +
+                "sa-token.activity-timeout=21600\n" +
+                "\n" +
+                "#是否自动续签\n" +
+                "sa-token.auto-renew=true\n" +
+                "\n" +
+                "#是否允许同一账号并发登录\n" +
+                "sa-token.is-concurrent=true\n" +
+                "\n" +
+                "#多人登录是否共用一个token\n" +
+                "sa-token.is-share=false\n" +
+                "\n" +
+                "#同一账号最大登录数量\n" +
+                "sa-token.max-login-count=20\n" +
+                "\n" +
+                "#token 来源\n" +
+                "sa-token.is-read-body=true\n" +
+                "sa-token.is-read-header=true\n" +
+                "sa-token.is-read-cookie=true\n" +
+                "\n" +
+                "#token 风格\n" +
+                "sa-token.token-style=simple-uuid\n" +
+                "\n" +
+                "#获取 Token-Session 时是否必须登录\n" +
+                "sa-token.token-session-check-login=true\n" +
+                "\n" +
+                "#是否在初始化配置时打印版本字符画\n" +
+                "sa-token.is-print=true\n" +
+                "\n" +
+                "#是否打印日志\n" +
+                "sa-token.is-log=false\n" +
+                "\n" +
+                "#是否禁止 js 操作 Cookie\n" +
+                "sa-token.cookie.http-only=true");
         this.registerExceptionHandler();
     }
 

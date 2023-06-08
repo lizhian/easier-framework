@@ -1,10 +1,10 @@
 package tydic.framework.core.spring;
 
-import cn.hutool.core.util.StrUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.EnvironmentAware;
 import tydic.framework.core.util.SpringUtil;
+import tydic.framework.core.util.StrUtil;
 
 public interface RewriteEnvironmentAware extends EnvironmentAware {
     default void setBlankProperty(String key, String value) {
@@ -20,14 +20,15 @@ public interface RewriteEnvironmentAware extends EnvironmentAware {
         if (StrUtil.isBlank(defaultProperty)) {
             return;
         }
-        defaultProperty.lines()
-                       .filter(str -> !str.startsWith("#"))
-                       .filter(str -> str.contains("="))
-                       .forEach(str -> {
-                           String key = StrUtil.subBefore(str, "=", false);
-                           String value = StrUtil.subAfter(str, "=", false);
-                           this.setBlankProperty(key, value);
-                       });
+        StrUtil.lines(defaultProperty)
+                .map(String::trim)
+                .filter(str -> !str.startsWith("#"))
+                .filter(str -> str.contains("="))
+                .forEach(str -> {
+                    String key = StrUtil.subBefore(str, "=", false);
+                    String value = StrUtil.subAfter(str, "=", false);
+                    this.setBlankProperty(key, value);
+                });
 
     }
 }

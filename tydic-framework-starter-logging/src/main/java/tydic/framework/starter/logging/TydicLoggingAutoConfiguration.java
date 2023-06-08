@@ -16,6 +16,7 @@ import tydic.framework.starter.logging.converter.TraceIdConverter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Configuration(proxyBeanMethods = false)
 @Import(RedissonAppender.class)
@@ -37,29 +38,27 @@ public class TydicLoggingAutoConfiguration implements EnvironmentPostProcessor, 
     }
 
     private void initProperties(ConfigurableEnvironment environment, EnableTydicLogging enableTydicLogging) {
-        List<String> lines = """
-                #日志配置文件
-                logging.config=classpath:tydic/framework/starter/logging/xml/tydic-logback.xml
-                                
-                #日志文件目录,仅在prod生效
-                logging.file.path=./log
-                                
-                #日志文件路径,仅在prod生效
-                logging.file.name=${logging.file.path}/console.log
-                                
-                #归档日志单个大小
-                logging.logback.rollingpolicy.max-file-size=100MB
-                                
-                #归档日志格式
-                logging.logback.rollingpolicy.file-name-pattern=${logging.file.path}/history/%d{yyyy-MM-dd}/console.%i.log
-                                
-                #归档日志保存时长
-                logging.logback.rollingpolicy.max-history=30
-                """.lines()
-                   .filter(StrUtil::isNotBlank)
-                   .filter(s -> !s.startsWith("#"))
-                   .filter(s -> s.contains("="))
-                   .toList();
+        List<String> lines = StrUtil.lines("#日志配置文件\n" +
+                        "logging.config=classpath:tydic/framework/starter/logging/xml/tydic-logback.xml\n" +
+                        "\n" +
+                        "#日志文件目录,仅在prod生效\n" +
+                        "logging.file.path=./log\n" +
+                        "\n" +
+                        "#日志文件路径,仅在prod生效\n" +
+                        "logging.file.name=${logging.file.path}/console.log\n" +
+                        "\n" +
+                        "#归档日志单个大小\n" +
+                        "logging.logback.rollingpolicy.max-file-size=100MB\n" +
+                        "\n" +
+                        "#归档日志格式\n" +
+                        "logging.logback.rollingpolicy.file-name-pattern=${logging.file.path}/history/%d{yyyy-MM-dd}/console.%i.log\n" +
+                        "\n" +
+                        "#归档日志保存时长\n" +
+                        "logging.logback.rollingpolicy.max-history=30")
+                .filter(StrUtil::isNotBlank)
+                .filter(s -> !s.startsWith("#"))
+                .filter(s -> s.contains("="))
+                .collect(Collectors.toList());
         Map<String, Object> source = new HashMap<>();
         for (String line : lines) {
             String key = StrUtil.subBefore(line, "=", false);

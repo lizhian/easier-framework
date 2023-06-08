@@ -90,7 +90,7 @@ public class KafkaConsumers implements DisposableBean {
     }
 
     private KafkaConsumer<String, byte[]> createConsumer(TydicMQProperties.ConsumerProperties consumerProperties) {
-        var props = consumerProperties.getProperties();
+        Map<String, Object> props = consumerProperties.getProperties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, consumerProperties.getBootstrapServers());
         if (consumerProperties.getGroupId() != null) {
             props.put(ConsumerConfig.GROUP_ID_CONFIG, consumerProperties.getGroupId());

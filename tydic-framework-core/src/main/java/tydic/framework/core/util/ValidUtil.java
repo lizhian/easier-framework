@@ -7,16 +7,18 @@ import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.extra.validation.ValidationUtil;
 import io.swagger.annotations.ApiModelProperty;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.groups.Default;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import tydic.framework.core.domain.Update;
 import tydic.framework.core.domain.ValidErrorDetail;
 import tydic.framework.core.plugin.exception.biz.BizException;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import javax.validation.groups.Default;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
@@ -30,10 +32,17 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ValidUtil {
 
-    private final static List<String> defaultMessages = List.of(
+    private static final Validator validator;
+    private final static List<String> defaultMessages = CollUtil.newArrayList(
             "不能为空"
             , "个数必须在"
     );
+
+    static {
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            validator = factory.getValidator();
+        }
+    }
 
     public static void validOnUpdate(Object object) {
         ValidUtil.valid(object, Update.class, Default.class);
@@ -45,19 +54,19 @@ public class ValidUtil {
      * @param object
      */
     public static void valid(Object object, Class<?>... groups) {
-        Set<ConstraintViolation<Object>> errors = ValidationUtil.validate(object, groups);
+        Set<ConstraintViolation<Object>> errors = validator.validate(object, groups);
         if (CollUtil.isEmpty(errors)) {
             return;
         }
         List<ValidErrorDetail> details = errors.stream()
-                                               .map(ValidUtil::formatMessage)
-                                               .collect(Collectors.toList());
+                .map(ValidUtil::formatMessage)
+                .collect(Collectors.toList());
         if (CollUtil.isEmpty(details)) {
             return;
         }
         String mergeMessage = details.stream()
-                                     .map(ValidErrorDetail::getMergeMessage)
-                                     .collect(Collectors.joining(StrPool.COMMA));
+                .map(ValidErrorDetail::getMergeMessage)
+                .collect(Collectors.joining(StrPool.COMMA));
         BizException bizException = BizException.of(mergeMessage);
         bizException.setExpandData(details);
         throw bizException;
@@ -67,9 +76,10 @@ public class ValidUtil {
         String message = error.getMessage();
         message = message.replaceAll("null", "空");
         ValidErrorDetail.ValidErrorDetailBuilder builder = ValidErrorDetail.builder()
-                                                                           .message(message)
-                                                                           .mergeMessage(message);
-        if (error.getPropertyPath() instanceof PathImpl path) {
+                .message(message)
+                .mergeMessage(message);
+        if (error.getPropertyPath() instanceof PathImpl) {
+            PathImpl path = (PathImpl) error.getPropertyPath();
             Class<?> beanClass = error.getLeafBean().getClass();
             String fieldName = path.getLeafNode().getName();
             builder.fieldName(fieldName);
@@ -79,7 +89,7 @@ public class ValidUtil {
                 String fieldLabel = apiModelProperty.value();
                 String mergeMessage = mergeMessage(fieldLabel, message);
                 builder.fieldLabel(fieldLabel)
-                       .mergeMessage(mergeMessage);
+                        .mergeMessage(mergeMessage);
             }
         }
         return builder.build();
@@ -134,10 +144,10 @@ public class ValidUtil {
         if (value == null) {
             throw BizException.of(message);
         }
-        if (value instanceof String str && StrUtil.isBlank(str)) {
+        if (value instanceof String && StrUtil.isBlank((String) value)) {
             throw BizException.of(message);
         }
-        if (value instanceof Collection<?> collection && CollUtil.isEmpty(collection)) {
+        if (value instanceof Collection<?> && CollUtil.isEmpty((Collection<?>) value)) {
             throw BizException.of(message);
         }
     }

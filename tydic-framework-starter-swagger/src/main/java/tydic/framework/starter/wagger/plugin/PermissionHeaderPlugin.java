@@ -89,12 +89,16 @@ public class PermissionHeaderPlugin implements OperationBuilderPlugin {
         if (requestMethod == null) {
             return null;
         }
-        return switch (requestMethod) {
-            case GET -> "Get";
-            case DELETE -> "Delete";
-            case PUT, POST -> "Edit";
-            default -> null;
-        };
+        if (RequestMethod.GET.equals(requestMethod)) {
+            return "Get";
+        }
+        if (RequestMethod.DELETE.equals(requestMethod)) {
+            return "Delete";
+        }
+        if (RequestMethod.PUT.equals(requestMethod) || RequestMethod.POST.equals(requestMethod)) {
+            return "Edit";
+        }
+        return null;
     }
 }
 

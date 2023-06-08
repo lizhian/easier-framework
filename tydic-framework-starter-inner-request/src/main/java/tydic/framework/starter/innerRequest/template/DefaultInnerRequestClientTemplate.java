@@ -17,6 +17,7 @@ import tydic.framework.core.util.SpringUtil;
 import tydic.framework.core.util.TraceIdUtil;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class DefaultInnerRequestClientTemplate implements InnerRequestClientTemplate {
@@ -65,13 +66,13 @@ public class DefaultInnerRequestClientTemplate implements InnerRequestClientTemp
         DiscoveryClient discoveryClient = SpringUtil.getAndCache(DiscoveryClient.class);
         //返回地址以及对应权重
         return discoveryClient.getInstances(serviceId)
-                              .stream()
-                              .map(instance -> {
-                                  String address = instance.getHost() + ":" + instance.getPort();
-                                  String weight = instance.getMetadata().getOrDefault("weight", "1");
-                                  return new WeightRandom.WeightObj<>(address, Double.parseDouble(weight));
-                              })
-                              .toList();
+                .stream()
+                .map(instance -> {
+                    String address = instance.getHost() + ":" + instance.getPort();
+                    String weight = instance.getMetadata().getOrDefault("weight", "1");
+                    return new WeightRandom.WeightObj<>(address, Double.parseDouble(weight));
+                })
+                .collect(Collectors.toList());
     }
 
 }

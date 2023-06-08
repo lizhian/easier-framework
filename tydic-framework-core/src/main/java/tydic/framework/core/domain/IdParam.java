@@ -14,6 +14,7 @@ import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 数据主键参数
@@ -44,9 +45,9 @@ public class IdParam implements Serializable {
         result.add(this.id);
         result.addAll(this.ids);
         return result.stream()
-                     .filter(StrUtil::isNotBlank)
-                     .distinct()
-                     .toList();
+                .filter(StrUtil::isNotBlank)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
 }

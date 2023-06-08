@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.ReflectionKit;
 import com.github.yulichang.base.MPJBaseMapper;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.aop.support.AopUtils;
 import tydic.framework.starter.mybatis.repo.expand.repo.method.*;
 
 /**
@@ -44,6 +45,6 @@ public final class Repo<T> implements
     }
 
     public Class<?> getMapperClass() {
-        return this.getBaseMapper().getClass();
+        return AopUtils.getTargetClass(this.getBaseMapper());
     }
 }

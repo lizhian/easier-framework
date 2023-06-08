@@ -37,7 +37,8 @@ public class MybatisPlusUtil {
      * 新增数据前的操作
      */
     public static <T> void preInsert(T entity) {
-        if (entity instanceof MybatisPlusEntity mybatisPlusEntity) {
+        if (entity instanceof MybatisPlusEntity) {
+            MybatisPlusEntity mybatisPlusEntity = (MybatisPlusEntity) entity;
             mybatisPlusEntity.preInsert();
         }
     }
@@ -46,7 +47,8 @@ public class MybatisPlusUtil {
      * 更新数据前的操作
      */
     public static <T> void preUpdate(T entity) {
-        if (entity instanceof MybatisPlusEntity mybatisPlusEntity) {
+        if (entity instanceof MybatisPlusEntity) {
+            MybatisPlusEntity mybatisPlusEntity = (MybatisPlusEntity) entity;
             mybatisPlusEntity.preUpdate();
         }
     }
@@ -58,7 +60,8 @@ public class MybatisPlusUtil {
         try {
             Class<T> entityClass = lambdaUpdate.getEntityClass();
             T t = ReflectUtil.newInstanceIfPossible(entityClass);
-            if (t instanceof MybatisPlusEntity mybatisPlusEntity) {
+            if (t instanceof MybatisPlusEntity) {
+                MybatisPlusEntity mybatisPlusEntity = (MybatisPlusEntity) t;
                 Map<SFunction, Object> updateSets = new HashMap<>();
                 mybatisPlusEntity.preLambdaUpdate(updateSets);
                 for (SFunction column : updateSets.keySet()) {
@@ -98,7 +101,8 @@ public class MybatisPlusUtil {
 
 
     public static <T> void publishUpdateEvent(T data) {
-        if (data instanceof Collection<?> list) {
+        if (data instanceof Collection<?>) {
+            Collection<?> list = (Collection<?>) data;
             list.forEach(MybatisPlusUtil::publishUpdateEvent);
             return;
         }

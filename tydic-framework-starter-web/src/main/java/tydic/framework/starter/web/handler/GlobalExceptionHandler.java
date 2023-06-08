@@ -33,12 +33,14 @@ public class GlobalExceptionHandler implements ExceptionHandler {
         int httpStatus = HttpStatus.BAD_REQUEST.value();
 
         //ResponseStatusException 重写httpStatus
-        if (throwable instanceof ResponseStatusException responseStatusException) {
+        if (throwable instanceof ResponseStatusException) {
+            ResponseStatusException responseStatusException = (ResponseStatusException) throwable;
             httpStatus = responseStatusException.getRawStatusCode();
         }
 
         //BaseException 自定义处理
-        if (throwable instanceof BaseException baseException) {
+        if (throwable instanceof BaseException) {
+            BaseException baseException = (BaseException) throwable;
             isPrintStackTrace = baseException.isPrintStackTrace();
             responseBody = baseException.getHttpResponseJsonBody();
             httpStatus = baseException.getHttpStatus().value();
@@ -55,7 +57,8 @@ public class GlobalExceptionHandler implements ExceptionHandler {
         if (isPrintStackTrace) {
             log.error("全局异常处理:{}", throwable.getMessage(), throwable);
         }
-        if (response instanceof HttpServletResponse httpServletResponse) {
+        if (response instanceof HttpServletResponse) {
+            HttpServletResponse httpServletResponse = (HttpServletResponse) response;
             httpServletResponse.setStatus(httpStatus);
             httpServletResponse.setCharacterEncoding(CharsetUtil.UTF_8);
             ServletUtil.write(
@@ -69,7 +72,8 @@ public class GlobalExceptionHandler implements ExceptionHandler {
     }
 
     private Throwable getRealThrowable(Throwable throwable) {
-        if (throwable instanceof NestedServletException nestedServletException) {
+        if (throwable instanceof NestedServletException) {
+            NestedServletException nestedServletException = (NestedServletException) throwable;
             return this.getRealThrowable(nestedServletException.getCause());
         }
         return throwable;

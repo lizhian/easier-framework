@@ -55,11 +55,11 @@ public class InitEntityTable implements ApplicationListener<ContextRefreshedEven
         if (StrUtil.isNotBlank(this.pack)) {
             return;
         }
-        Set<Class<?>> classes = SpringUtil.getBeansOfType(BaseMapper.class)
-                                          .values()
-                                          .stream()
-                                          .map(baseMapper -> (Class<?>) ReflectionUtil.getEntityClass(baseMapper))
-                                          .collect(Collectors.toSet());
+        Set<Class<?>> classes = new HashSet<>();
+        for (BaseMapper baseMapper : SpringUtil.getBeansOfType(BaseMapper.class).values()) {
+            Class entityClass = ReflectionUtil.getEntityClass(baseMapper);
+            classes.add(entityClass);
+        }
         if (this.checkRunEnd()) {
             return;
         }
@@ -93,7 +93,7 @@ public class InitEntityTable implements ApplicationListener<ContextRefreshedEven
     /**
      * 处理重名表
      */
-    private Map<String, Set<Class<?>>> filterRepeatTable(Set<Class<?>> classes) {
+    private Map<String, Set<Class<?>>> filterRepeatTable(Set<? extends Class<?>> classes) {
 
         Map<String, List<Class<?>>> classMap = classes.stream().collect(Collectors.groupingBy(ColumnUtils::getTableName));
         // <数据源，List<表>>
@@ -103,8 +103,8 @@ public class InitEntityTable implements ApplicationListener<ContextRefreshedEven
             // 挑选出重名的表，找到其中标记primary的，用作生成数据表的依据
             if (sameClasses.size() > 1) {
                 List<Class<?>> primaryClasses = sameClasses.stream()
-                                                           .filter(clazz -> AnnotatedElementUtils.findMergedAnnotation(clazz, TablePrimary.class).value())
-                                                           .collect(Collectors.toList());
+                        .filter(clazz -> AnnotatedElementUtils.findMergedAnnotation(clazz, TablePrimary.class).value())
+                        .collect(Collectors.toList());
                 if (primaryClasses.isEmpty()) {
                     throw new RuntimeException("表名[" + tableName + "]出现重复，必须指定一个为@TablePrimary！");
                 }

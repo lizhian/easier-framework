@@ -4,12 +4,13 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class StrUtil extends cn.hutool.core.util.StrUtil {
 
     public static boolean isNotBlankIfStr(Object obj) {
-        if (obj instanceof CharSequence charSequence) {
-            return isNotBlank(charSequence);
+        if (obj instanceof CharSequence) {
+            return isNotBlank((CharSequence) obj);
         }
         return obj != null;
     }
@@ -43,8 +44,16 @@ public class StrUtil extends cn.hutool.core.util.StrUtil {
                     .filter(StrUtil::isNotBlank)
                     .collect(Collectors.toList());
         }
-        return src.lines()
-                  .filter(StrUtil::isNotBlank)
-                  .collect(Collectors.toList());
+        return StrUtil.lines(src)
+                .filter(StrUtil::isNotBlank)
+                .collect(Collectors.toList());
+    }
+
+    public static Stream<String> lines(String src) {
+        if (src == null) {
+            return Stream.of();
+        }
+        return StrUtil.splitTrim(src, "\n")
+                .stream();
     }
 }

@@ -86,7 +86,7 @@ public class KafkaProducers implements DisposableBean {
     }
 
     private KafkaProducer<String, byte[]> createProducer(TydicMQProperties.ProducerProperties producerProperties) {
-        var props = producerProperties.getProperties();
+        Map<String, Object> props = producerProperties.getProperties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, producerProperties.getBootstrapServers());
         props.put(ProducerConfig.BATCH_SIZE_CONFIG, producerProperties.getBatchSize());
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);

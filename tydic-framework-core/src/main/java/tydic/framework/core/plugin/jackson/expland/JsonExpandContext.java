@@ -14,12 +14,12 @@ import java.lang.reflect.Field;
 @SuperBuilder(toBuilder = true)
 public class JsonExpandContext {
     private final JsonGenerator jsonGenerator;
-    private final Class<?>      beanClass;
-    private final Object        beanValue;
-    private final Field         field;
-    private final Class<?>      fieldType;
-    private final String        fieldName;
-    private final Object        fieldValue;
+    private final Class<?> beanClass;
+    private final Object beanValue;
+    private final Field field;
+    private final Class<?> fieldType;
+    private final String fieldName;
+    private final Object fieldValue;
 
     @SneakyThrows
     public void write(String fieldName, Object fieldValue) {
@@ -30,8 +30,8 @@ public class JsonExpandContext {
             this.jsonGenerator.writeNullField(fieldName);
             return;
         }
-        if (fieldValue instanceof String str) {
-            this.jsonGenerator.writeStringField(fieldName, str);
+        if (fieldValue instanceof String) {
+            this.jsonGenerator.writeStringField(fieldName, (String) fieldValue);
             return;
         }
         this.jsonGenerator.writeObjectField(fieldName, fieldValue);

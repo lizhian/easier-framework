@@ -3,6 +3,7 @@ package tydic.framework.starter.wagger.plugin;
 import com.github.xiaoymin.knife4j.spring.extension.ApiOrderExtension;
 import com.github.xiaoymin.knife4j.spring.plugin.AbstractOperationBuilderPlugin;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import springfox.documentation.service.VendorExtension;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.OperationContext;
@@ -19,13 +20,20 @@ public class OperationOrderBuilderPlugin extends AbstractOperationBuilderPlugin 
 
     @Override
     public void apply(OperationContext context) {
-        int order = switch (context.httpMethod()) {
-            case GET -> 1;
-            case POST -> 2;
-            case PUT -> 3;
-            case DELETE -> 4;
-            default -> 5;
-        };
+        int order = 5;
+        HttpMethod httpMethod = context.httpMethod();
+        if (HttpMethod.GET.equals(httpMethod)) {
+            order = 1;
+        }
+        if (HttpMethod.POST.equals(httpMethod)) {
+            order = 2;
+        }
+        if (HttpMethod.PUT.equals(httpMethod)) {
+            order = 3;
+        }
+        if (HttpMethod.DELETE.equals(httpMethod)) {
+            order = 4;
+        }
         List<VendorExtension> vendorExtensions = new ArrayList<>();
         vendorExtensions.add(new ApiOrderExtension(order));
         context.operationBuilder().extensions(vendorExtensions);

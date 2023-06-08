@@ -50,10 +50,11 @@ public final class LambdaUpdate<T> extends AbstractChainWrapper<T, SFunction<T, 
         Class<?> clazz = ReflectionKit.getSuperClassGenericType(baseMapper.getClass(), BaseMapper.class, 0);
         this.baseMapper = baseMapper;
         this.entityClass = (Class<T>) clazz;
-        super.wrapperChildren = new LambdaUpdateWrapper<>() {
+        super.wrapperChildren = new LambdaUpdateWrapper<T>() {
             @Override
             protected String columnToString(SFunction<T, ?> column, boolean onlyColumn) {
-                if (column instanceof ColumnSFunction columnSFunction) {
+                if (column instanceof ColumnSFunction) {
+                    ColumnSFunction columnSFunction = (ColumnSFunction) column;
                     ColumnCache cache = columnSFunction.toColumnCache();
                     return onlyColumn ? cache.getColumn() : cache.getColumnSelect();
                 }

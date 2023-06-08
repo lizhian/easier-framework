@@ -21,11 +21,7 @@ public interface InnerRequestClientTemplate {
         String serviceId = serviceDetail.serviceId();
         boolean https = serviceDetail.https();
         String path = serviceDetail.path();
-        String url = switch (type) {
-            case host -> serviceId;
-            case discovery -> this.getUrlByDiscovery(serviceId);
-            case property -> SpringUtil.getProperty(serviceId);
-        } + path;
+        String url = formatURL(type, serviceId, path);
         if (url.startsWith("http")) {
             return url;
         }
@@ -36,7 +32,22 @@ public interface InnerRequestClientTemplate {
         }
     }
 
-    private String getUrlByDiscovery(String serviceId) {
+    default String formatURL(ServiceType type, String serviceId, String path) {
+        if (ServiceType.host.equals(type)) {
+            return serviceId + path;
+        }
+        if (ServiceType.discovery.equals(type)) {
+            return this.getUrlByDiscovery(serviceId) + path;
+
+        }
+        if (ServiceType.property.equals(type)) {
+            return SpringUtil.getProperty(serviceId) + path;
+        }
+        return null;
+    }
+
+
+    default String getUrlByDiscovery(String serviceId) {
         ServiceInstance instance = DiscoveryUtil.getInstance(serviceId);
         return instance.getUri().toString();
     }

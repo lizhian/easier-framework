@@ -47,16 +47,14 @@ public class TydicWebConfiguration implements WebMvcConfigurer, RewriteEnvironme
 
     @Override
     public void setEnvironment(Environment environment) {
-        this.setBlankProperty("""
-                #接口超时时间
-                spring.mvc.async.request-timeout=30S
-                                
-                #文件上传大小限制
-                spring.servlet.multipart.max-file-size=1GB
-                                
-                #请求大小限制
-                spring.servlet.multipart.max-request-size=1GB
-                """);
+        this.setBlankProperty("#接口超时时间\n" +
+                "spring.mvc.async.request-timeout=30S\n" +
+                "\n" +
+                "#文件上传大小限制\n" +
+                "spring.servlet.multipart.max-file-size=1GB\n" +
+                "\n" +
+                "#请求大小限制\n" +
+                "spring.servlet.multipart.max-request-size=1GB");
     }
 
     @Override
@@ -93,22 +91,21 @@ public class TydicWebConfiguration implements WebMvcConfigurer, RewriteEnvironme
     @EventListener
     public void showTydicWebBanner(ApplicationReadyEvent event) {
         String doc = NetUtil.localIpv4s()
-                            .stream()
-                            .sorted(Comparator.comparingLong(NetUtil::ipv4ToLong))
-                            .map(it -> "http://" + it + ":" + SpringUtil.getServerPort() + "/doc.html")
-                            .collect(Collectors.joining("\n┃ 　　   "));
-        String banner = StrUtil.format("""
-                        ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-                        ┃ 服务 : {}
-                        ┃ 端口 : {}
-                        ┃ 状态 : 启动成功
-                        ┃ 时间 : {}
-                        ┃ 耗时 : {}
-                        ┃ 实例 : {}
-                        ┃ 接口 : {}
-                        ┃ 文档 : {}
-                        ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-                        """.trim()
+                .stream()
+                .sorted(Comparator.comparingLong(NetUtil::ipv4ToLong))
+                .map(it -> "http://" + it + ":" + SpringUtil.getServerPort() + "/doc.html")
+                .collect(Collectors.joining("\n┃ 　　   "));
+        String banner = StrUtil.format(("" +
+                        "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n" +
+                        "┃ 服务 : {}\n" +
+                        "┃ 端口 : {}\n" +
+                        "┃ 状态 : 启动成功\n" +
+                        "┃ 时间 : {}\n" +
+                        "┃ 耗时 : {}\n" +
+                        "┃ 实例 : {}\n" +
+                        "┃ 接口 : {}\n" +
+                        "┃ 文档 : {}\n" +
+                        "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛").trim()
                 , SpringUtil.getApplicationName()
                 , SpringUtil.getServerPort()
                 , DateTime.now().toMsStr()

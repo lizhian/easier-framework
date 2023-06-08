@@ -34,7 +34,8 @@ public class AuthHandlerInterceptor implements HandlerInterceptor {
     @Override
     @ParametersAreNonnullByDefault
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        if (handler instanceof HandlerMethod handlerMethod) {
+        if (handler instanceof HandlerMethod) {
+            HandlerMethod handlerMethod = (HandlerMethod) handler;
             return this.preHandlerMethod(request, response, handlerMethod);
         }
         return true;

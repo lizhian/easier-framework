@@ -139,7 +139,7 @@ public class TreeHolder<T> {
         //获取子节点的树主键集合
         List<Serializable> childrenKeys = list.stream()
                 .map(keyFunction)
-                .toList();
+                .collect(Collectors.toList());
         //拥有子节点的后代节点
         Set<Serializable> hasChildrenKeys = this.repo.newQuery()
                 .select(parentKeyFunction)

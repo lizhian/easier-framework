@@ -50,7 +50,8 @@ public abstract class BaseLogicEntity extends BaseEntity {
     @Override
     public BaseLogicEntity copyBaseField(BaseEntity other) {
         super.copyBaseField(other);
-        if (other instanceof BaseLogicEntity otherBaseLogicEntity) {
+        if (other instanceof BaseLogicEntity) {
+            BaseLogicEntity otherBaseLogicEntity = (BaseLogicEntity) other;
             this.setDeleted(otherBaseLogicEntity.getDeleted());
         }
         return this;

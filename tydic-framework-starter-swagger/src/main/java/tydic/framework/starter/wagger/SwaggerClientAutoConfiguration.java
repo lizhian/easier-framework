@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @EnableKnife4j
@@ -66,8 +67,8 @@ public class SwaggerClientAutoConfiguration implements WebMvcConfigurer {
                 if (bean instanceof WebMvcRequestHandlerProvider) {
                     List<RequestMappingInfoHandlerMapping> handlerMappings = (List<RequestMappingInfoHandlerMapping>) ReflectUtil.getFieldValue(bean, "handlerMappings");
                     List<RequestMappingInfoHandlerMapping> copy = handlerMappings.stream()
-                                                                                 .filter(mapping -> mapping.getPatternParser() == null)
-                                                                                 .toList();
+                            .filter(mapping -> mapping.getPatternParser() == null)
+                            .collect(Collectors.toList());
                     handlerMappings.clear();
                     handlerMappings.addAll(copy);
                 }

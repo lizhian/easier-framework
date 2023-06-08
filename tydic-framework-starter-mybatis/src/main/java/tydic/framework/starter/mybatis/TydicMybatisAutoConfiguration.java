@@ -27,6 +27,7 @@ import tydic.framework.starter.mybatis.types.DateTimeTypeHandler;
 import tydic.framework.starter.mybatis.types.EnumCodecTypeHandler;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @EnableConfigurationProperties(MybatisDynamicProperties.class)
@@ -38,22 +39,20 @@ public class TydicMybatisAutoConfiguration implements RewriteEnvironmentAware {
 
     @Override
     public void setEnvironment(@NotNull Environment environment) {
-        this.setBlankProperty("""
-                #索引前缀
-                actable.index.prefix=idx_
-                                
-                #唯一索引前缀
-                actable.unique.prefix=uni_
-                                
-                #是否开启Mybatis二级缓存
-                mybatis-plus.configuration.cache-enabled=false
-                                
-                #表名是否使用驼峰转下划线命名，只对表名生效
-                mybatis-plus.global-config.db-config.table-underline=true
-                                
-                #是否开启自动驼峰命名规则（camel case）映射
-                mybatis-plus.configuration.map-underscore-to-camel-case=true
-                """);
+        this.setBlankProperty("#索引前缀\n" +
+                "actable.index.prefix=idx_\n" +
+                "\n" +
+                "#唯一索引前缀\n" +
+                "actable.unique.prefix=uni_\n" +
+                "\n" +
+                "#是否开启Mybatis二级缓存\n" +
+                "mybatis-plus.configuration.cache-enabled=false\n" +
+                "\n" +
+                "#表名是否使用驼峰转下划线命名，只对表名生效\n" +
+                "mybatis-plus.global-config.db-config.table-underline=true\n" +
+                "\n" +
+                "#是否开启自动驼峰命名规则（camel case）映射\n" +
+                "mybatis-plus.configuration.map-underscore-to-camel-case=true");
     }
 
 
@@ -95,10 +94,10 @@ public class TydicMybatisAutoConfiguration implements RewriteEnvironmentAware {
             String primary = IterUtil.getFirstNoneNull(enableDB);
             properties.setPrimary(primary);
             List<String> disableDB = properties.getDatasource()
-                                               .keySet()
-                                               .stream()
-                                               .filter(key -> !enableDB.contains(key))
-                                               .toList();
+                    .keySet()
+                    .stream()
+                    .filter(key -> !enableDB.contains(key))
+                    .collect(Collectors.toList());
             for (String db : disableDB) {
                 properties.getDatasource().remove(db);
             }

@@ -48,7 +48,7 @@ public class EnumCodec<E extends Enum<E>> {
      */
     public static EnumCodec<?> of(Class<?> enumClass) {
         return InstanceUtil.in(EnumCodec.class)
-                           .getInstance(enumClass, () -> new EnumCodec(enumClass));
+                .getInstance(enumClass, () -> new EnumCodec(enumClass));
     }
 
     private void init() {
@@ -140,7 +140,8 @@ public class EnumCodec<E extends Enum<E>> {
             }
         }
         //字符串类型的判断
-        if (any instanceof String string) {
+        if (any instanceof String) {
+            String string = (String) any;
             if (this.values.contains(string)) {
                 return string;
             }
@@ -152,7 +153,8 @@ public class EnumCodec<E extends Enum<E>> {
             }
         }
         //整数类型的判断
-        if (any instanceof Integer integer) {
+        if (any instanceof Integer) {
+            Integer integer = (Integer) any;
             if (this.values.contains(integer.toString())) {
                 return integer;
             }

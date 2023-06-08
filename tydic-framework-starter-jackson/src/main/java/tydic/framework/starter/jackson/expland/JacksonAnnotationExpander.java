@@ -16,6 +16,7 @@ import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class JacksonAnnotationExpander extends JacksonAnnotationIntrospector {
@@ -23,11 +24,12 @@ public class JacksonAnnotationExpander extends JacksonAnnotationIntrospector {
 
     @Override
     public Object findSerializer(Annotated annotated) {
-        if (annotated instanceof AnnotatedMethod annotatedMethod) {
+        if (annotated instanceof AnnotatedMethod) {
+            AnnotatedMethod annotatedMethod = (AnnotatedMethod) annotated;
             List<JsonFieldExpandDetail> details = StreamUtil.of(annotatedMethod.getAllAnnotations().annotations())
                     .map(this::mapToJsonFieldExpandDetail)
                     .filter(Objects::nonNull)
-                    .toList();
+                    .collect(Collectors.toList());
             if (CollUtil.isNotEmpty(details)) {
                 return new JsonFieldExpandSerializer(annotated.getType(), details);
             }
@@ -45,7 +47,7 @@ public class JacksonAnnotationExpander extends JacksonAnnotationIntrospector {
         List<? extends JsonExpander<?>> expanders = Arrays.stream(jsonExpand.expandBy())
                 .map(ReflectUtil::newInstance)
                 .filter(Objects::nonNull)
-                .toList();
+                .collect(Collectors.toList());
         if (CollUtil.isEmpty(expanders)) {
             return null;
         }
