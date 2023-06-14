@@ -14,7 +14,7 @@ public class SaTokenDaoForRedissonClients implements SaTokenDao {
     private final SaTokenDaoRedissonJackson delegate;
 
     public SaTokenDaoForRedissonClients(RedissonClients redissonClients) {
-        RedissonClient client = redissonClients.get(RedisSources.auth);
+        RedissonClient client = redissonClients.getClient(RedisSources.auth);
         this.delegate = new SaTokenDaoRedissonJackson();
         delegate.init(client);
     }

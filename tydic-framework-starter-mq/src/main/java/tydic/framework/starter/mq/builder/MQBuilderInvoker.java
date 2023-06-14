@@ -50,7 +50,7 @@ public class MQBuilderInvoker implements MQBuilder.Invoker {
     private void sendRedisQueue(MQMethodDetail methodDetail, Object[] args) {
         String queueName = methodDetail.getQueue().name();
         RQueue<Object> queue = SpringUtil.getAndCache(RedissonClients.class)
-                                         .get(methodDetail.getQueue().source())
+                .getClient(methodDetail.getQueue().source())
                                          .getQueue(queueName);
         int max = methodDetail.getQueue().max();
         if (max > 1 && queue.size() >= max) {
@@ -62,7 +62,7 @@ public class MQBuilderInvoker implements MQBuilder.Invoker {
     private void sendRedisTopic(MQMethodDetail methodDetail, Object[] args) {
         String topicName = methodDetail.getTopic().name();
         RedissonClient redissonClient = SpringUtil.getAndCache(RedissonClients.class)
-                                                  .get(methodDetail.getTopic().source());
+                .getClient(methodDetail.getTopic().source());
         RTopic topic = redissonClient.getTopic(topicName);
         topic.publishAsync(args[0]);
     }

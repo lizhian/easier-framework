@@ -86,7 +86,7 @@ public class TydicMQAutoConfiguration implements ApplicationListener<Application
         String queueName = methodDetail.getQueue().name();
 
         RQueue<Object> queue = SpringUtil.getAndCache(RedissonClients.class)
-                                         .get(methodDetail.getQueue().source())
+                .getClient(methodDetail.getQueue().source())
                                          .getQueue(queueName);
         ThreadPoolTaskScheduler scheduler = SpringUtil.getScheduler();
         for (int concurrent = 0; concurrent < mqListener.concurrency(); concurrent++) {
@@ -106,14 +106,14 @@ public class TydicMQAutoConfiguration implements ApplicationListener<Application
     private void initRedisTopicListener(Object bean, Method method, MQListener mqListener, MQMethodDetail methodDetail) {
         String topicName = methodDetail.getTopic().name();
         RedissonClient redissonClient = SpringUtil.getAndCache(RedissonClients.class)
-                                                  .get(methodDetail.getTopic().source());
+                .getClient(methodDetail.getTopic().source());
         RedisTopicListener listener = RedisTopicListener.builder()
-                                                        .bean(bean)
-                                                        .method(method)
-                                                        .mqListener(mqListener)
-                                                        .methodDetail(methodDetail)
-                                                        .build()
-                                                        .init();
+                .bean(bean)
+                .method(method)
+                .mqListener(mqListener)
+                .methodDetail(methodDetail)
+                .build()
+                .init();
         redissonClient.getTopic(topicName).addListener(Object.class, listener);
     }
 

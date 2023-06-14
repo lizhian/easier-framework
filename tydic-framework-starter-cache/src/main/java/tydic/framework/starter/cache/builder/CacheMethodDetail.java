@@ -134,7 +134,7 @@ public class CacheMethodDetail {
 
     public RedissonClient getRedissonClient() {
         RedissonClients clients = SpringUtil.getAndCache(RedissonClients.class);
-        return clients.get(this.source);
+        return clients.getClient(this.source);
     }
 
     public long getTimeToLive(Object[] args) {

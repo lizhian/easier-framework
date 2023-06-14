@@ -57,7 +57,7 @@ public class JobController {
     public RunningJob submit(Object bean, Method method, LoopJob loopJob) {
         ThreadPoolTaskScheduler scheduler = SpringUtil.getScheduler();
         RedissonClient redissonClient = SpringUtil.getAndCache(RedissonClients.class)
-                .get(RedisSources.job);
+                .getClient(RedisSources.job);
         List<ScheduledFuture<?>> scheduledFutures = new ArrayList<>();
         for (int concurrent = 0; concurrent < loopJob.concurrency(); concurrent++) {
             if (loopJob.lock()) {
@@ -95,7 +95,7 @@ public class JobController {
     public RunningJob submit(Object bean, Method method, CornJob cornJob) {
         ThreadPoolTaskScheduler scheduler = SpringUtil.getScheduler();
         RedissonClient redissonClient = SpringUtil.getAndCache(RedissonClients.class)
-                .get(RedisSources.job);
+                .getClient(RedisSources.job);
         List<ScheduledFuture<?>> scheduledFutures = new ArrayList<>();
         for (int concurrent = 0; concurrent < cornJob.concurrency(); concurrent++) {
             //创建加锁任务

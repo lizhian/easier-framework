@@ -49,7 +49,7 @@ public class RedissonClients implements InitializingBean, DisposableBean {
     }
 
     @Nonnull
-    public RedissonClient get() {
+    public RedissonClient getClient() {
         if (StrUtil.isBlank(this.primary)) {
             throw CacheBuilderException.of("未配置主缓存源");
         }
@@ -62,9 +62,9 @@ public class RedissonClients implements InitializingBean, DisposableBean {
 
 
     @Nonnull
-    public RedissonClient get(String source) {
+    public RedissonClient getClient(String source) {
         if (StrUtil.isBlank(source)) {
-            return this.get();
+            return this.getClient();
         }
         RedissonClient redissonClient = this.clients.get(source);
         if (redissonClient == null) {
@@ -74,11 +74,11 @@ public class RedissonClients implements InitializingBean, DisposableBean {
     }
 
     public RedissonTemplate getTemplate() {
-        return new RedissonTemplate(this.get());
+        return new RedissonTemplate(this.getClient());
     }
 
     public RedissonTemplate getTemplate(String source) {
-        return new RedissonTemplate(this.get(source));
+        return new RedissonTemplate(this.getClient(source));
 
     }
 
@@ -98,7 +98,7 @@ public class RedissonClients implements InitializingBean, DisposableBean {
             log.warn("未配置【snowflake】缓存源,【IdUtil】生成的主键可能会重复");
             return;
         }
-        RedissonClient client = this.get(RedisSources.snowflake);
+        RedissonClient client = this.getClient(RedisSources.snowflake);
         for (int dataCenterId = 0; dataCenterId < 32; dataCenterId++) {
             for (int workerId = 0; workerId < 32; workerId++) {
                 String snowflakeId = "Snowflake:" + dataCenterId + ":" + workerId;

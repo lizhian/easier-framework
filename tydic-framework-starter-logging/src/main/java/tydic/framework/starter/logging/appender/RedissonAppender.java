@@ -43,7 +43,7 @@ public class RedissonAppender extends AppenderBase<ILoggingEvent> implements Ini
         if (redissonClients.notHas(RedisSources.plumeLog)) {
             return;
         }
-        RedissonAppender.client = redissonClients.get(RedisSources.plumeLog);
+        RedissonAppender.client = redissonClients.getClient(RedisSources.plumeLog);
         String activeProfile = SpringUtil.getActiveProfile();
         if (StrUtil.isNotBlank(activeProfile)) {
             RedissonAppender.env = activeProfile;
