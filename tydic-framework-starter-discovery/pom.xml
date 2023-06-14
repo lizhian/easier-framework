@@ -4,7 +4,7 @@
     <parent>
         <groupId>tydic.framework</groupId>
         <artifactId>tydic-framework-parent</artifactId>
-        <version>2023.06.08-2.7.12</version>
+        <version>2023.06.14-2.7.12</version>
     </parent>
     <artifactId>tydic-framework-starter-discovery</artifactId>
     <properties>

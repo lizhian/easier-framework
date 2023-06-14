@@ -1,9 +1,7 @@
 package tydic.framework.test;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
-import com.github.yulichang.base.MPJBaseMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
@@ -11,17 +9,16 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.mybatis.spring.annotation.MapperScan;
-import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import tydic.framework.core.util.SpringUtil;
 import tydic.framework.starter.discovery.EnableTydicDiscovery;
+import tydic.framework.starter.job.EnableTydicJob;
+import tydic.framework.starter.job.center.JobController;
 import tydic.framework.starter.mybatis.EnableTydicMybatis;
-import tydic.framework.starter.mybatis.repo.Repo;
-import tydic.framework.starter.mybatis.repo.Repos;
-import tydic.framework.test.eo.SysApp;
+import tydic.framework.test.service.JobTest;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -29,6 +26,7 @@ import java.util.stream.Collectors;
 @SpringBootApplication
 @EnableTydicDiscovery
 @EnableTydicMybatis
+@EnableTydicJob
 public class TydicFrameworkTestApplication {
 
     @SneakyThrows
@@ -51,16 +49,9 @@ public class TydicFrameworkTestApplication {
 
 
         SpringApplication.run(TydicFrameworkTestApplication.class, args);
-        Repo<SysApp> repo = Repos.of(SysApp.class);
-        repo.addBatch(CollUtil.newArrayList(new SysApp()));
-        MPJBaseMapper<SysApp> baseMapper = repo.getBaseMapper();
-        Class<?> aClass = AopProxyUtils.ultimateTargetClass(baseMapper);
-        Class<?>[] classes = AopProxyUtils.proxiedUserInterfaces(baseMapper);
-        Class<?> aClass1 = Arrays.stream(classes)
-                .filter(MPJBaseMapper.class::isAssignableFrom)
-                .findAny().orElse(null);
-
-        SysApp app = Repos.of(SysApp.class).getByCode("");
+        JobController jobController = SpringUtil.getBean(JobController.class);
+        JobTest jobTest = new JobTest();
+        jobController.submit(jobTest, JobTest::test);
     }
 
     @SneakyThrows

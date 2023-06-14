@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import tydic.framework.starter.cache.EnableTydicCache;
+import tydic.framework.starter.job.center.JobController;
 import tydic.framework.starter.job.corn.CornJobAutoConfiguration;
 import tydic.framework.starter.job.loop.LoopJobAutoConfiguration;
 
@@ -19,7 +20,8 @@ import tydic.framework.starter.job.loop.LoopJobAutoConfiguration;
 @EnableSpringUtil
 @EnableTydicCache
 @Import({
-        LoopJobAutoConfiguration.class
+        JobController.class
+        , LoopJobAutoConfiguration.class
         , CornJobAutoConfiguration.class
 })
 @EnableScheduling

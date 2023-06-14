@@ -11,18 +11,21 @@ import javax.annotation.Nonnull;
  */
 @Slf4j
 public class IdUtil {
-    private volatile static Snowflake snowflake = Singleton.get(Snowflake.class);
+
+    private volatile static long dataCenterId = cn.hutool.core.util.IdUtil.getDataCenterId(32);
+    private volatile static long workerId = cn.hutool.core.util.IdUtil.getWorkerId(dataCenterId, 32);
 
     @Nonnull
-    public synchronized static String nextIdStr() {
-        return snowflake.nextIdStr();
+    public static String nextIdStr() {
+        return Singleton.get(Snowflake.class, workerId, dataCenterId).nextIdStr();
     }
 
-    public synchronized static long nextId() {
-        return snowflake.nextId();
+    public static long nextId() {
+        return Singleton.get(Snowflake.class, workerId, dataCenterId).nextId();
     }
 
     public synchronized static void reset(long workerId, long dataCenterId) {
-        snowflake = new Snowflake(workerId, dataCenterId);
+        IdUtil.workerId = workerId;
+        IdUtil.dataCenterId = dataCenterId;
     }
 }
