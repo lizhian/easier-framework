@@ -2,16 +2,18 @@ package tydic.framework.starter.cache.redis;
 
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.redisson.api.RedissonClient;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-@RequiredArgsConstructor
 public class RedissonTemplate {
     @Getter
     private final RedissonClient redissonClient;
+
+    public RedissonTemplate(RedissonClient redissonClient) {
+        this.redissonClient = redissonClient;
+    }
 
     public <T> void setValue(final String key, final T value) {
         redissonClient.getBucket(key).set(value);
