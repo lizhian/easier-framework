@@ -74,11 +74,11 @@ public class RedissonClients implements InitializingBean, DisposableBean {
     }
 
     public RedissonTemplate getTemplate() {
-        return new RedissonTemplate(get());
+        return new RedissonTemplate(this.get());
     }
 
     public RedissonTemplate getTemplate(String source) {
-        return new RedissonTemplate(get(source));
+        return new RedissonTemplate(this.get(source));
 
     }
 

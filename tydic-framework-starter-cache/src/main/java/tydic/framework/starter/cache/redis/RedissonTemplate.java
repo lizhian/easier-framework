@@ -2,6 +2,7 @@ package tydic.framework.starter.cache.redis;
 
 
 import lombok.Getter;
+import lombok.experimental.Delegate;
 import org.redisson.api.RedissonClient;
 
 import java.time.Duration;
@@ -9,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 public class RedissonTemplate {
     @Getter
+    @Delegate
     private final RedissonClient redissonClient;
 
     public RedissonTemplate(RedissonClient redissonClient) {
@@ -54,7 +56,7 @@ public class RedissonTemplate {
         return redissonClient.getKeys().getKeysByPattern(pattern);
     }
 
-    public boolean has(final String key) {
+    public boolean hasKey(final String key) {
         return redissonClient.getKeys().countExists(key) > 0;
     }
 
