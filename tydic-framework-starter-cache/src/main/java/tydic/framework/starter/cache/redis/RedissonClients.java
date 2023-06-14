@@ -73,6 +73,15 @@ public class RedissonClients implements InitializingBean, DisposableBean {
         return redissonClient;
     }
 
+    public RedissonTemplate getTemplate() {
+        return new RedissonTemplate(get());
+    }
+
+    public RedissonTemplate getTemplate(String source) {
+        return new RedissonTemplate(get(source));
+
+    }
+
     @Override
     public void destroy() {
         this.clients.values().forEach(RedissonClient::shutdown);
@@ -131,8 +140,8 @@ public class RedissonClients implements InitializingBean, DisposableBean {
             TydicCacheProperties.Sentinel sentinel = redissonProperties.getSentinel();
             Config config = new Config();
             SentinelServersConfig sentinelServersConfig = config.useSentinelServers()
-                                                                .setMasterName(sentinel.getMasterName())
-                                                                .addSentinelAddress(this.convert(sentinel.getNodes()));
+                    .setMasterName(sentinel.getMasterName())
+                    .addSentinelAddress(this.convert(sentinel.getNodes()));
             sentinelServersConfig.setDatabase(sentinel.getDatabase());
             sentinelServersConfig.setPassword(sentinel.getPassword());
             if (sentinel.getConnectTimeout() > 0) {
@@ -146,7 +155,7 @@ public class RedissonClients implements InitializingBean, DisposableBean {
             TydicCacheProperties.Cluster cluster = redissonProperties.getCluster();
             Config config = new Config();
             ClusterServersConfig clusterServersConfig = config.useClusterServers()
-                                                              .addNodeAddress(this.convert(cluster.getNodes()));
+                    .addNodeAddress(this.convert(cluster.getNodes()));
             clusterServersConfig.setPassword(cluster.getPassword());
             if (cluster.getConnectTimeout() > 0) {
                 clusterServersConfig.setConnectTimeout(cluster.getConnectTimeout());
@@ -163,8 +172,8 @@ public class RedissonClients implements InitializingBean, DisposableBean {
         }
         SingleServerConfig singleServerConfig = config.useSingleServer();
         singleServerConfig.setAddress(prefix + single.getHost() + ":" + single.getPort())
-                          .setDatabase(single.getDatabase())
-                          .setPassword(single.getPassword());
+                .setDatabase(single.getDatabase())
+                .setPassword(single.getPassword());
         if (single.getConnectTimeout() > 0) {
             singleServerConfig.setConnectTimeout(single.getConnectTimeout());
         }
@@ -174,22 +183,22 @@ public class RedissonClients implements InitializingBean, DisposableBean {
 
     private void customize(Config config) {
         SpringUtil.getBeansOfType(RedissonConfigCustomizer.class)
-                  .values()
-                  .forEach(customizer -> customizer.customize(config));
+                .values()
+                .forEach(customizer -> customizer.customize(config));
 
     }
 
     private String[] convert(String nodes) {
         List<String> nodeList = tydic.framework.core.util.StrUtil.smartSplit(nodes)
-                                                                 .stream()
-                                                                 .filter(StrUtil::isNotBlank)
-                                                                 .map(node -> {
-                                                                     if (node.startsWith(REDIS_PROTOCOL_PREFIX) || node.startsWith(REDISS_PROTOCOL_PREFIX)) {
-                                                                         return node;
-                                                                     }
-                                                                     return REDIS_PROTOCOL_PREFIX + node;
-                                                                 })
-                                                                 .collect(Collectors.toList());
+                .stream()
+                .filter(StrUtil::isNotBlank)
+                .map(node -> {
+                    if (node.startsWith(REDIS_PROTOCOL_PREFIX) || node.startsWith(REDISS_PROTOCOL_PREFIX)) {
+                        return node;
+                    }
+                    return REDIS_PROTOCOL_PREFIX + node;
+                })
+                .collect(Collectors.toList());
         return ArrayUtil.toArray(nodeList, String.class);
     }
 }

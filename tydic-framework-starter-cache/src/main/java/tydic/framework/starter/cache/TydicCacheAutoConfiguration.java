@@ -12,6 +12,7 @@ import tydic.framework.starter.cache.builder.CacheBuilderInvoker;
 import tydic.framework.starter.cache.redis.RedissonClients;
 import tydic.framework.starter.cache.redis.RedissonConfigCustomizer;
 import tydic.framework.starter.cache.redis.RedissonJacksonCodec;
+import tydic.framework.starter.cache.redis.RedissonTemplate;
 import tydic.framework.starter.jackson.EnableTydicJackson;
 
 @Slf4j
@@ -37,5 +38,10 @@ public class TydicCacheAutoConfiguration {
         RedissonClients redissonClients = new RedissonClients();
         redissonClients.init(tydicCacheProperties);
         return redissonClients;
+    }
+
+    @Bean
+    public RedissonTemplate redissonTemplate(RedissonClients redissonClients) {
+        return redissonClients.getTemplate();
     }
 }
