@@ -3,7 +3,7 @@ package tydic.framework.core.domain;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.tangzc.mpe.actable.annotation.Column;
+import com.tangzc.mpe.autotable.annotation.Column;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

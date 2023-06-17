@@ -23,12 +23,10 @@ import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
 import com.tangzc.mpe.base.event.EntityUpdateEvent;
 import tydic.framework.core.plugin.mybatis.MybatisPlusEntity;
 import tydic.framework.core.util.SpringUtil;
-import tydic.framework.starter.mybatis.relatedDelete.EntityDeleteEvent;
 import tydic.framework.starter.mybatis.repo.lambda.update.LambdaUpdate;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MybatisPlusUtil {
@@ -89,17 +87,6 @@ public class MybatisPlusUtil {
     }
 
 
-    public static <T> void relatedDelete(List<T> list, Class<T> entityClass, List<Class<?>> relatedDeleteEntityClasses) {
-        if (CollUtil.isEmpty(list)) {
-            return;
-        }
-        EntityDeleteEvent<T> event = EntityDeleteEvent.create(list, entityClass, relatedDeleteEntityClasses);
-        SpringUtil.publishEvent(event);
-    }
-
-
-
-
     public static <T> void publishUpdateEvent(T data) {
         if (data instanceof Collection<?>) {
             Collection<?> list = (Collection<?>) data;
@@ -109,19 +96,6 @@ public class MybatisPlusUtil {
         SpringUtil.publishEvent(EntityUpdateEvent.create(data));
     }
 
-    public static <T> void publishDeleteEvent(T entity, Class<T> entityClass, List<Class<?>> relatedDeleteClasses) {
-        if (entity == null) {
-            return;
-        }
-        publishDeleteEvent(CollUtil.newArrayList(entity), entityClass, relatedDeleteClasses);
-    }
 
-    public static <T> void publishDeleteEvent(List<T> list, Class<T> entityClass, List<Class<?>> relatedDeleteClasses) {
-        if (CollUtil.isEmpty(list)) {
-            return;
-        }
-        EntityDeleteEvent<T> entityDeleteEvent = EntityDeleteEvent.create(list, entityClass, relatedDeleteClasses);
-        SpringUtil.publishEvent(entityDeleteEvent);
-    }
 }
 

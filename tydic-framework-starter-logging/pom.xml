@@ -15,20 +15,15 @@
     <dependencies>
         <dependency>
             <groupId>tydic.framework</groupId>
-            <artifactId>tydic-framework-core</artifactId>
+            <artifactId>tydic-framework-starter-job</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-logging</artifactId>
         </dependency>
         <dependency>
-            <groupId>tydic.framework</groupId>
-            <artifactId>tydic-framework-starter-cache</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.plumelog</groupId>
             <artifactId>plumelog-logback</artifactId>
-            <version>3.5.3</version>
         </dependency>
     </dependencies>
     <build>

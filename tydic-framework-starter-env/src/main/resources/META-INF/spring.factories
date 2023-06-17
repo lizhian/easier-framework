@@ -1,0 +1,4 @@
+org.springframework.boot.env.EnvironmentPostProcessor=\
+tydic.framework.starter.env.TydicEnvironmentPostProcessor
+org.springframework.context.ApplicationListener=\
+tydic.framework.starter.env.TydicEnvironmentPostProcessor

@@ -8,19 +8,15 @@ import com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.DynamicTableNameInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
-import com.tangzc.mpe.actable.EnableAutoTable;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import tydic.framework.core.spring.RewriteEnvironmentAware;
 import tydic.framework.core.util.StrUtil;
-import tydic.framework.starter.mybatis.init.InitEntityTable;
-import tydic.framework.starter.mybatis.relatedDelete.RelatedDeleteManager;
 import tydic.framework.starter.mybatis.template.DefaultTydicMybatisTemplate;
 import tydic.framework.starter.mybatis.template.TydicMybatisTemplate;
 import tydic.framework.starter.mybatis.types.DateTimeTypeHandler;
@@ -33,8 +29,6 @@ import java.util.stream.Collectors;
 @EnableConfigurationProperties(MybatisDynamicProperties.class)
 @Configuration(proxyBeanMethods = false)
 @EnableSpringUtil
-@EnableAutoTable
-@Import({RelatedDeleteManager.class, InitEntityTable.class})
 public class TydicMybatisAutoConfiguration implements RewriteEnvironmentAware {
 
     @Override

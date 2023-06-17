@@ -30,8 +30,12 @@ public class DateDeserializer extends StdScalarDeserializer<Date> {
         if (StrUtil.isBlank(value)) {
             return null;
         }
-        if (NumberUtil.isNumber(value)) {
+        int length = value.length();
+        if (NumberUtil.isLong(value) && length == 13) {
             return new Date(Long.parseLong(value));
+        }
+        if (NumberUtil.isLong(value) && length == 10) {
+            return new Date(Long.parseLong(value) * 1000);
         }
         return DateUtil.parse(value).toJdkDate();
     }

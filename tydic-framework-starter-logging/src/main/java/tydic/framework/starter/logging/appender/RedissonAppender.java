@@ -27,8 +27,6 @@ public class RedissonAppender extends AppenderBase<ILoggingEvent> implements Ini
     private static final Codec codec = new StringCodec();
     private static final int queueMaxSize = 50000;
     private static final Duration delay = Duration.ofMinutes(1);
-
-
     private volatile static boolean running = false;
     private volatile static String env = "default";
     private volatile static String applicationName;
@@ -40,7 +38,7 @@ public class RedissonAppender extends AppenderBase<ILoggingEvent> implements Ini
         if (redissonClients == null) {
             return;
         }
-        if (redissonClients.notHas(RedisSources.plumeLog)) {
+        if (!redissonClients.contains(RedisSources.plumeLog)) {
             return;
         }
         RedissonAppender.client = redissonClients.getClient(RedisSources.plumeLog);
@@ -51,7 +49,7 @@ public class RedissonAppender extends AppenderBase<ILoggingEvent> implements Ini
         RedissonAppender.applicationName = SpringUtil.getApplicationName();
         RedissonAppender.running = true;
         SpringUtil.getScheduler()
-                  .scheduleWithFixedDelay(this::checkQueueSize, delay);
+                .scheduleWithFixedDelay(this::checkQueueSize, delay);
     }
 
     private void checkQueueSize() {
@@ -71,10 +69,10 @@ public class RedissonAppender extends AppenderBase<ILoggingEvent> implements Ini
             if (logMessage instanceof RunLogMessage) {
                 final String message = LogMessageUtil.getLogMessage(logMessage, event);
                 RedissonAppender.client.getQueue(LogMessageConstant.LOG_KEY, codec)
-                                       .addAsync(message);
+                        .addAsync(message);
             } else {
                 RedissonAppender.client.getQueue(LogMessageConstant.LOG_KEY, codec)
-                                       .addAsync(GfJsonUtil.toJSONString(logMessage));
+                        .addAsync(GfJsonUtil.toJSONString(logMessage));
             }
         }
     }

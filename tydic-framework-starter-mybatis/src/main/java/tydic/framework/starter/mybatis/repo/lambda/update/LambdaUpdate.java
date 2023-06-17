@@ -122,14 +122,7 @@ public final class LambdaUpdate<T> extends AbstractChainWrapper<T, SFunction<T, 
     @Override
     public boolean remove() {
         MybatisPlusUtil.tryUpdateSets(this);
-        List<T> list = null;
-        if (this.relatedDelete) {
-            list = this.getBaseMapper().selectList(this.getWrapper());
-        }
         int delete = this.getBaseMapper().delete(this.getWrapper());
-        if (delete > 0 && this.relatedDelete) {
-            MybatisPlusUtil.relatedDelete(list, this.getEntityClass(), this.relatedDeleteEntityClasses);
-        }
         return SqlHelper.retBool(delete);
     }
 }

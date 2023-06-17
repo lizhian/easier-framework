@@ -2,8 +2,11 @@ package tydic.framework.test;
 
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.SecureUtil;
+import cn.hutool.crypto.symmetric.AES;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.jasypt.encryption.StringEncryptor;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,12 +16,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import tydic.framework.core.util.SpringUtil;
 import tydic.framework.starter.discovery.EnableTydicDiscovery;
+import tydic.framework.starter.env.JasyptUtil;
 import tydic.framework.starter.job.EnableTydicJob;
 import tydic.framework.starter.job.center.JobController;
 import tydic.framework.starter.mybatis.EnableTydicMybatis;
 import tydic.framework.test.service.JobTest;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -31,6 +36,9 @@ public class TydicFrameworkTestApplication {
 
     @SneakyThrows
     public static void main(String[] args) {
+
+        JasyptUtil.encryptConsole("123456", "123456");
+        JasyptUtil.decryptConsole("123456", "ENC(ONnJgQKgRSdvqGN3iprXxq8gC49Eq9DHARiKtNbsu3J+/Wcc6j+3cc3cYctPuiSq)");
 
 /*
         ThreadPoolExecutor executor = ExecutorBuilder.create()
@@ -46,9 +54,11 @@ public class TydicFrameworkTestApplication {
         while (executor.getActiveCount()>0){
             ThreadUtil.safeSleep(1000);
         }*/
-
+        AES aes = SecureUtil.aes("asdasd".getBytes(StandardCharsets.UTF_8));
 
         SpringApplication.run(TydicFrameworkTestApplication.class, args);
+        StringEncryptor encryptor = SpringUtil.getBean(StringEncryptor.class);
+        String encrypt = encryptor.encrypt("123456");
         JobController jobController = SpringUtil.getBean(JobController.class);
         JobTest jobTest = new JobTest();
         jobController.submit(jobTest, JobTest::test);

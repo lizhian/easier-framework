@@ -2,8 +2,8 @@ package tydic.framework.test.eo;
 
 
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.tangzc.mpe.actable.annotation.Column;
-import com.tangzc.mpe.actable.annotation.Table;
+import com.tangzc.mpe.autotable.annotation.Column;
+import com.tangzc.mpe.autotable.annotation.Table;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

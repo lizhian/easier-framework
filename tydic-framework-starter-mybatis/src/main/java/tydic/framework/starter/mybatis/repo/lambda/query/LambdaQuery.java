@@ -68,6 +68,11 @@ public class LambdaQuery<T> extends AbstractChainWrapper<T, SFunction<T, ?>, Lam
         return this.baseMapper;
     }
 
+    @Override
+    public Class<T> getEntityClass() {
+        return null;
+    }
+
     private boolean bindField;
     private List<SFunction<T, ?>> bindFields;
 

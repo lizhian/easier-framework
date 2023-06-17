@@ -9,8 +9,6 @@
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="PLUME_LOG"/>
-        <springProfile name="prod">
-            <appender-ref ref="FILE"/>
-        </springProfile>
+        <appender-ref ref="FILE"/>
     </root>
 </configuration>

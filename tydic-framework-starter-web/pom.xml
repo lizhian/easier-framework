@@ -16,12 +16,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-tomcat</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -29,15 +23,7 @@
         </dependency>
         <dependency>
             <groupId>tydic.framework</groupId>
-            <artifactId>tydic-framework-starter-cache</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>tydic.framework</groupId>
             <artifactId>tydic-framework-starter-job</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>tydic.framework</groupId>
-            <artifactId>tydic-framework-starter-jackson</artifactId>
         </dependency>
     </dependencies>
 

@@ -15,6 +15,5 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 public class JsonFieldExpandDetail {
     private Annotation annotation;
-
     private List<? extends JsonExpander<?>> expanders;
 }

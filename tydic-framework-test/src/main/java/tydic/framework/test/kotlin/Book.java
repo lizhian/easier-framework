@@ -1,6 +1,6 @@
-package tydic.framework.starter.mybatis.repo.kotlin;
+package tydic.framework.test.kotlin;
 
-import com.tangzc.mpe.actable.annotation.Column;
+import com.tangzc.mpe.autotable.annotation.Column;
 import lombok.Data;
 import lombok.experimental.FieldNameConstants;
 

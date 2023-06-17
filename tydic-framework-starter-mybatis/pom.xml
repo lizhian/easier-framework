@@ -7,6 +7,7 @@
         <groupId>tydic.framework</groupId>
         <artifactId>tydic-framework-parent</artifactId>
         <version>2023.06.14-2.7.12</version>
+        <relativePath/>
     </parent>
     <artifactId>tydic-framework-starter-mybatis</artifactId>
     <properties>
@@ -15,18 +16,18 @@
     <dependencies>
         <dependency>
             <groupId>com.github.yulichang</groupId>
-            <artifactId>mybatis-plus-join</artifactId>
-            <version>1.4.2.2</version>
+            <artifactId>mybatis-plus-join-boot-starter</artifactId>
+            <version>1.4.5</version>
         </dependency>
         <dependency>
             <groupId>com.tangzc</groupId>
             <artifactId>mybatis-plus-ext-boot-starter</artifactId>
-            <version>3.5.2-EXT201</version>
+            <version>3.5.3.1-EXT307</version>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.5.2</version>
+            <version>3.5.3.1</version>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>

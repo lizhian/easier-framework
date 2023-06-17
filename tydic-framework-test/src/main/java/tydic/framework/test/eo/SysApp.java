@@ -2,9 +2,8 @@ package tydic.framework.test.eo;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import com.tangzc.mpe.actable.annotation.Column;
-import com.tangzc.mpe.actable.annotation.Table;
-import com.tangzc.mpe.actable.annotation.constants.MySqlTypeConstant;
+import com.tangzc.mpe.autotable.annotation.Column;
+import com.tangzc.mpe.autotable.annotation.Table;
 import com.tangzc.mpe.bind.metadata.annotation.BindEntityByMid;
 import com.tangzc.mpe.bind.metadata.annotation.JoinOrderBy;
 import com.tangzc.mpe.bind.metadata.annotation.MidCondition;
@@ -62,7 +61,7 @@ public class SysApp implements MybatisPlusEntity {
     private String appAddr;
 
     @ApiModelProperty("应用图标图片")
-    @Column(comment = "应用图标图片", type = MySqlTypeConstant.LONGTEXT)
+    @Column(comment = "应用图标图片", type = "longtxt")
     @NotBlank
     private String appImage;
 

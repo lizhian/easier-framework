@@ -1,4 +1,4 @@
-package tydic.framework.starter.mybatis.repo.kotlin
+package tydic.framework.test.kotlin
 
 import cn.hutool.core.util.StrUtil
 import cn.hutool.db.sql.SqlUtil

@@ -40,12 +40,8 @@ public class RedissonClients implements InitializingBean, DisposableBean {
     private final Map<String, RedissonClient> clients = new HashMap<>();
     private String primary;
 
-    public boolean has(String source) {
+    public boolean contains(String source) {
         return this.clients.containsKey(source);
-    }
-
-    public boolean notHas(String source) {
-        return !this.has(source);
     }
 
     @Nonnull
@@ -94,7 +90,7 @@ public class RedissonClients implements InitializingBean, DisposableBean {
 
     @SneakyThrows
     private void resetWorkerID() {
-        if (this.notHas(RedisSources.snowflake)) {
+        if (!this.contains(RedisSources.snowflake)) {
             log.warn("未配置【snowflake】缓存源,【IdUtil】生成的主键可能会重复");
             return;
         }

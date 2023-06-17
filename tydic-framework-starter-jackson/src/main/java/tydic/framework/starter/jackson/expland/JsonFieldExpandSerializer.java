@@ -22,7 +22,6 @@ import java.util.List;
 
 
 @Slf4j
-
 public class JsonFieldExpandSerializer extends StdSerializer<Object> {
     private final List<JsonFieldExpandDetail> jsonFieldExpandDetails;
 
@@ -63,16 +62,5 @@ public class JsonFieldExpandSerializer extends StdSerializer<Object> {
                 expander.doExpand(annotation, context);
             }
         }
-
-        /*String targetProperty = this.targetProperty(field, fieldName, fieldValue);
-        TimeInterval timer = DateUtil.timer();
-        if (targetPropertyValue == null) {
-            jsonGenerator.writeNullField(targetProperty);
-            return;
-        }
-        //log.info("{}:{}->{},耗时:{}", this.getClass().getSimpleName(), fieldValue, targetPropertyValue, timer.intervalPretty());
-        jsonGenerator.writeObjectField(targetProperty, targetPropertyValue);*/
     }
-
-
 }

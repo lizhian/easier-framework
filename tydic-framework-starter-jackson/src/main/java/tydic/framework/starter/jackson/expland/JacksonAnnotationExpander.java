@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class JacksonAnnotationExpander extends JacksonAnnotationIntrospector {
 
-
     @Override
     public Object findSerializer(Annotated annotated) {
         if (annotated instanceof AnnotatedMethod) {
@@ -54,8 +53,7 @@ public class JacksonAnnotationExpander extends JacksonAnnotationIntrospector {
         return JsonFieldExpandDetail.builder()
                 .annotation(annotation)
                 .expanders(expanders)
-                .build()
-                ;
+                .build();
 
     }
 }

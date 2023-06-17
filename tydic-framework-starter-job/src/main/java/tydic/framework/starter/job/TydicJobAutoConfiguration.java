@@ -29,39 +29,28 @@ import tydic.framework.starter.job.loop.LoopJobAutoConfiguration;
 public class TydicJobAutoConfiguration {
 
     @Bean
-    public TaskSchedulerCustomizer taskSchedulerCustomizer() {
-        return taskScheduler -> {
-            Integer cpuNum = OshiUtil.getCpuInfo().getCpuNum();
-            int poolSize = 2 * cpuNum + 1;
-            taskScheduler.setPoolSize(poolSize);
-            taskScheduler.setWaitForTasksToCompleteOnShutdown(true);
-            taskScheduler.setRejectedExecutionHandler((r, executor) ->
-                    log.error("taskScheduler超过最大任务限制【ActiveCount:{}】【QueueSize:{}】,放弃任务 {}"
-                            , executor.getActiveCount()
-                            , executor.getQueue().size()
-                            , r.toString()
-                    )
-            );
-        };
-    }
-
-
-    @Bean
     public TaskExecutorCustomizer taskExecutorCustomizer() {
         return taskExecutor -> {
             Integer cpuNum = OshiUtil.getCpuInfo().getCpuNum();
             int poolSize = 2 * cpuNum + 1;
-            taskExecutor.setCorePoolSize(poolSize);
-            taskExecutor.setMaxPoolSize(poolSize);
-            taskExecutor.setQueueCapacity(2 * poolSize);
-            taskExecutor.setWaitForTasksToCompleteOnShutdown(true);
-            taskExecutor.setRejectedExecutionHandler((r, executor) ->
-                    log.error("taskExecutor超过最大任务限制【ActiveCount:{}】【QueueSize:{}】,放弃任务 {}"
-                            , executor.getActiveCount()
-                            , executor.getQueue().size()
-                            , r.toString()
-                    )
-            );
+            if (taskExecutor.getPoolSize() < poolSize) {
+                taskExecutor.setCorePoolSize(poolSize);
+                log.info("修改【TaskExecutor】核心线程数为:{}", poolSize);
+            }
         };
     }
+
+    @Bean
+    public TaskSchedulerCustomizer taskSchedulerCustomizer() {
+        return taskScheduler -> {
+            Integer cpuNum = OshiUtil.getCpuInfo().getCpuNum();
+            int poolSize = 2 * cpuNum + 1;
+            if (taskScheduler.getPoolSize() < poolSize) {
+                taskScheduler.setPoolSize(poolSize);
+                log.info("修改【TaskScheduler】线程数为:{}", poolSize);
+            }
+        };
+    }
+
+
 }

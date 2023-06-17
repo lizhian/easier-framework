@@ -5,7 +5,10 @@ import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import tydic.framework.core.domain.TreeBuilder;
 import tydic.framework.core.proxy.TypedSelf;
 import tydic.framework.starter.mybatis.repo.Repo;
-import tydic.framework.starter.mybatis.repo.expand.repo.holder.*;
+import tydic.framework.starter.mybatis.repo.expand.repo.holder.BindHolder;
+import tydic.framework.starter.mybatis.repo.expand.repo.holder.KeyHolder;
+import tydic.framework.starter.mybatis.repo.expand.repo.holder.PairHolder;
+import tydic.framework.starter.mybatis.repo.expand.repo.holder.TreeHolder;
 
 
 /*
@@ -19,15 +22,7 @@ public interface MethodForWith<T> extends TypedSelf<Repo<T>> {
         return new BindHolder<>(this.self(), CollUtil.newArrayList(bindFields));
     }
 
-    /**
-     * 绑定关联删除的类
-     */
-    default RelatedDeleteHolder<T> withRelateDelete(Class<?>... classes) {
-        return new RelatedDeleteHolder<>(this.self(), CollUtil.newArrayList(classes));
-    }
-
     default TreeHolder<T> withTreeNode(TreeBuilder<T> treeBuilder) {
-
         return new TreeHolder<>(this.self(), treeBuilder)
                 .withChildren(true)
                 .childrenNullToEmpty(false);

@@ -21,6 +21,11 @@
         </dependency>
         <dependency>
             <groupId>tydic.framework</groupId>
+            <artifactId>tydic-framework-starter-logging</artifactId>
+            <version>2023.06.14-2.7.12</version>
+        </dependency>
+        <dependency>
+            <groupId>tydic.framework</groupId>
             <artifactId>tydic-framework-starter-job</artifactId>
             <version>2023.06.14-2.7.12</version>
         </dependency>
@@ -51,6 +56,33 @@
         <dependency>
             <groupId>tydic.framework</groupId>
             <artifactId>tydic-framework-starter-job</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.flink/flink-clients -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-clients</artifactId>
+            <version>1.17.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-table-planner_2.12</artifactId>
+            <version>1.17.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-table-runtime</artifactId>
+            <version>1.17.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-json</artifactId>
+            <version>1.17.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-connector-kafka</artifactId>
+            <version>1.17.1</version>
         </dependency>
     </dependencies>
     <build>

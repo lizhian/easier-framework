@@ -14,67 +14,58 @@
     <packaging>pom</packaging>
     <modules>
         <module>tydic-framework-core</module>
+        <module>tydic-framework-starter-env</module>
         <module>tydic-framework-starter-jackson</module>
-        <module>tydic-framework-starter-job</module>
         <module>tydic-framework-starter-cache</module>
+        <module>tydic-framework-starter-job</module>
+        <module>tydic-framework-starter-logging</module>
         <module>tydic-framework-starter-inner-request</module>
         <module>tydic-framework-starter-gateway</module>
-        <module>tydic-framework-starter-web</module>
         <module>tydic-framework-starter-mock</module>
         <module>tydic-framework-starter-mq</module>
         <module>tydic-framework-starter-mybatis</module>
         <module>tydic-framework-starter-swagger</module>
         <module>tydic-framework-starter-auth</module>
-        <module>tydic-framework-starter-logging</module>
         <module>tydic-framework-starter-discovery</module>
+        <module>tydic-framework-starter-web</module>
         <!--<module>tydic-framework-test</module>-->
     </modules>
     <properties>
         <java.version>1.8</java.version>
+        <kotlin.version>1.8.20</kotlin.version>
         <resource.delimiter>@</resource.delimiter>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-boot.version>2.7.12</spring-boot.version>
-        <spring-boot-admin.version>2.7.4</spring-boot-admin.version>
-        <spring-cloud.version>2021.0.4</spring-cloud.version>
+        <spring-boot-admin.version>2.7.10</spring-boot-admin.version>
+        <spring-cloud.version>2021.0.7</spring-cloud.version>
         <tydic-framework.version>2023.06.14-2.7.12</tydic-framework.version>
-        <!--<hibernate-validator.version>8.0.0.Final</hibernate-validator.version>-->
-        <!--<jakarta-validation.version>3.0.2</jakarta-validation.version>-->
-        <glassfish-el.version>5.0.0-M1</glassfish-el.version>
-        <kotlin.version>1.8.20</kotlin.version>
+        <sa-token.version>1.34.0</sa-token.version>
+        <hutool.version>5.8.19</hutool.version>
+        <guava.version>32.0.1-jre</guava.version>
+        <oshi-core.version>6.4.3</oshi-core.version>
+        <plumelog.version>3.5.3</plumelog.version>
+        <hessian.version>4.0.66</hessian.version>
+        <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
+        <mybatis-plus-ext.version>${mybatis-plus.version}-EXT307</mybatis-plus-ext.version>
+        <mybatis-plus-join.version>1.4.5</mybatis-plus-join.version>
+        <redisson.version>3.22.0</redisson.version>
+        <okhttps.version>4.0.1</okhttps.version>
+        <okio.version>2.8.0</okio.version>
     </properties>
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>de.codecentric</groupId>
-                <artifactId>spring-boot-admin-dependencies</artifactId>
-                <version>${spring-boot-admin.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-web</artifactId>
-                <version>${spring-boot.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-starter-tomcat</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
+            <!--项目依赖-->
             <dependency>
                 <groupId>tydic.framework</groupId>
                 <artifactId>tydic-framework-core</artifactId>
+                <version>${tydic-framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>tydic.framework</groupId>
+                <artifactId>tydic-framework-starter-env</artifactId>
                 <version>${tydic-framework.version}</version>
             </dependency>
             <dependency>
@@ -117,11 +108,11 @@
                 <artifactId>tydic-framework-starter-mq</artifactId>
                 <version>${tydic-framework.version}</version>
             </dependency>
-            <!--<dependency>
+            <dependency>
                 <groupId>tydic.framework</groupId>
                 <artifactId>tydic-framework-starter-mybatis</artifactId>
                 <version>${tydic-framework.version}</version>
-            </dependency>-->
+            </dependency>
             <dependency>
                 <groupId>tydic.framework</groupId>
                 <artifactId>tydic-framework-starter-swagger</artifactId>
@@ -138,26 +129,147 @@
                 <version>${tydic-framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus</artifactId>
-                <version>3.5.2</version>
+                <groupId>tydic.framework</groupId>
+                <artifactId>tydic-framework-starter-discovery</artifactId>
+                <version>${tydic-framework.version}</version>
+            </dependency>
+            <!--项目依赖 end-->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-dependencies</artifactId>
+                <version>${spring-boot-admin.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-dependencies</artifactId>
+                <version>${sa-token.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <version>${spring-boot.version}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>org.jetbrains.kotlin</groupId>
-                        <artifactId>kotlin-stdlib-jdk8</artifactId>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-tomcat</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
             <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.oshi</groupId>
+                <artifactId>oshi-core</artifactId>
+                <version>${oshi-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.plumelog</groupId>
+                <artifactId>plumelog-core</artifactId>
+                <version>${plumelog.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.plumelog</groupId>
+                <artifactId>plumelog-logback</artifactId>
+                <version>${plumelog.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.caucho</groupId>
+                <artifactId>hessian</artifactId>
+                <version>${hessian.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tangzc</groupId>
+                <artifactId>mybatis-plus-ext-annotation</artifactId>
+                <version>${mybatis-plus-ext.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tangzc</groupId>
+                <artifactId>mybatis-plus-ext-autotable-annotation</artifactId>
+                <version>${mybatis-plus-ext.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tangzc</groupId>
+                <artifactId>mybatis-plus-ext-datasource</artifactId>
+                <version>${mybatis-plus-ext.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tangzc</groupId>
+                <artifactId>mybatis-plus-ext-bind</artifactId>
+                <version>${mybatis-plus-ext.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tangzc</groupId>
+                <artifactId>mybatis-plus-ext-condition</artifactId>
+                <version>${mybatis-plus-ext.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tangzc</groupId>
+                <artifactId>mybatis-plus-ext-magic</artifactId>
+                <version>${mybatis-plus-ext.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tangzc</groupId>
+                <artifactId>mybatis-plus-ext-boot-starter</artifactId>
+                <version>${mybatis-plus-ext.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.yulichang</groupId>
+                <artifactId>mybatis-plus-join-annotation</artifactId>
+                <version>${mybatis-plus-join.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.yulichang</groupId>
+                <artifactId>mybatis-plus-join-boot-starter</artifactId>
+                <version>${mybatis-plus-join.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-core</artifactId>
-                <version>3.5.2</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.jetbrains.kotlin</groupId>
-                        <artifactId>kotlin-stdlib-jdk8</artifactId>
-                    </exclusion>
-                </exclusions>
+                <artifactId>mybatis-plus</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.zhxu</groupId>
+                <artifactId>okhttps</artifactId>
+                <version>${okhttps.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.zhxu</groupId>
+                <artifactId>okhttps-jackson</artifactId>
+                <version>${okhttps.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.okio</groupId>
+                <artifactId>okio</artifactId>
+                <version>${okio.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -169,6 +281,18 @@
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-reflect</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.oshi</groupId>
+            <artifactId>oshi-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
         </dependency>
     </dependencies>
     <build>

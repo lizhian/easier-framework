@@ -1,4 +1,4 @@
-package tydic.framework.starter.mybatis.repo.kotlin;
+package tydic.framework.test.kotlin;
 
 import lombok.Data;
 
