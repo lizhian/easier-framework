@@ -10,7 +10,7 @@
     </parent>
     <groupId>tydic.framework</groupId>
     <artifactId>tydic-framework-parent</artifactId>
-    <version>2023.06.14-2.7.12</version>
+    <version>2023.06.18-2.7.12</version>
     <packaging>pom</packaging>
     <modules>
         <module>tydic-framework-core</module>
@@ -41,7 +41,7 @@
         <spring-boot.version>2.7.12</spring-boot.version>
         <spring-boot-admin.version>2.7.10</spring-boot-admin.version>
         <spring-cloud.version>2021.0.7</spring-cloud.version>
-        <tydic-framework.version>2023.06.14-2.7.12</tydic-framework.version>
+        <tydic-framework.version>2023.06.18-2.7.12</tydic-framework.version>
         <sa-token.version>1.34.0</sa-token.version>
         <hutool.version>5.8.19</hutool.version>
         <guava.version>32.0.1-jre</guava.version>
