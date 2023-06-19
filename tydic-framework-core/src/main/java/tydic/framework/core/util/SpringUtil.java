@@ -49,7 +49,7 @@ public class SpringUtil extends cn.hutool.extra.spring.SpringUtil {
     public static int getServerPort() {
         return getApplicationContext()
                 .getEnvironment()
-                .getProperty("server.port", Integer.class, -1);
+                .getProperty("server.port", Integer.class, 8080);
     }
 
     public static <T> T getBeanByClassName(Class<T> type, String className) {

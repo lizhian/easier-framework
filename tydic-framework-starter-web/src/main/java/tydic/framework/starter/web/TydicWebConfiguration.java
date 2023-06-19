@@ -12,12 +12,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.event.EventListener;
-import org.springframework.core.env.Environment;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-import tydic.framework.core.spring.RewriteEnvironmentAware;
 import tydic.framework.core.util.SpringUtil;
 import tydic.framework.core.util.StrUtil;
 import tydic.framework.starter.cache.EnableTydicCache;
@@ -43,20 +41,7 @@ import java.util.stream.Collectors;
 @EnableTydicCache
 @EnableTydicJob
 @Import(TraceIdServletFilter.class)
-public class TydicWebConfiguration implements WebMvcConfigurer, RewriteEnvironmentAware {
-
-    @Override
-    public void setEnvironment(Environment environment) {
-        this.setBlankProperty("#接口超时时间\n" +
-                "spring.mvc.async.request-timeout=30S\n" +
-                "\n" +
-                "#文件上传大小限制\n" +
-                "spring.servlet.multipart.max-file-size=1GB\n" +
-                "\n" +
-                "#请求大小限制\n" +
-                "spring.servlet.multipart.max-request-size=1GB");
-    }
-
+public class TydicWebConfiguration implements WebMvcConfigurer {
     @Override
     public void addFormatters(FormatterRegistry registry) {
         DateTimeFormatterRegistrar registrar = new DateTimeFormatterRegistrar();

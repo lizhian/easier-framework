@@ -51,6 +51,7 @@
         <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
         <mybatis-plus-ext.version>${mybatis-plus.version}-EXT307</mybatis-plus-ext.version>
         <mybatis-plus-join.version>1.4.5</mybatis-plus-join.version>
+        <dynamic-datasource.version>3.6.1</dynamic-datasource.version>
         <redisson.version>3.22.0</redisson.version>
         <okhttps.version>4.0.1</okhttps.version>
         <okio.version>2.8.0</okio.version>
@@ -250,6 +251,11 @@
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-boot-starter</artifactId>
                 <version>${mybatis-plus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+                <version>${dynamic-datasource.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.redisson</groupId>

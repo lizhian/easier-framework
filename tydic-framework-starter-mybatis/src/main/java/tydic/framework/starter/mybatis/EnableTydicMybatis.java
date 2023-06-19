@@ -1,5 +1,6 @@
 package tydic.framework.starter.mybatis;
 
+import com.tangzc.mpe.autotable.EnableAutoTable;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -9,5 +10,6 @@ import java.lang.annotation.*;
 @Documented
 @Inherited
 @Import(TydicMybatisAutoConfiguration.class)
+@EnableAutoTable(activeProfile = {"test", "dev"})
 public @interface EnableTydicMybatis {
 }

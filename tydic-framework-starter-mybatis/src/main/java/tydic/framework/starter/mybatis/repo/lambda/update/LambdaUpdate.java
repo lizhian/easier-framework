@@ -58,7 +58,7 @@ public final class LambdaUpdate<T> extends AbstractChainWrapper<T, SFunction<T, 
                     ColumnCache cache = columnSFunction.toColumnCache();
                     return onlyColumn ? cache.getColumn() : cache.getColumnSelect();
                 }
-                return this.columnToString(column, onlyColumn);
+                return super.columnToString(column, onlyColumn);
             }
         };
     }

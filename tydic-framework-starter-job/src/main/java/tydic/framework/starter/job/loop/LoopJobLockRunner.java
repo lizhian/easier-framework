@@ -10,6 +10,7 @@ import org.redisson.api.RedissonClient;
 import tydic.framework.core.plugin.job.JobException;
 import tydic.framework.core.plugin.job.LoopJob;
 import tydic.framework.core.util.ClassUtil;
+import tydic.framework.core.util.TraceIdUtil;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
@@ -65,6 +66,7 @@ public class LoopJobLockRunner implements Runnable {
                                                    .concurrent(this.concurrent)
                                                    .build();
             LoopJobContext.threadLocal.set(context);
+            TraceIdUtil.create();
             this.method.invoke(this.bean);
         } catch (Exception e) {
             if (this.loopJob.delayOnException() > 0) {

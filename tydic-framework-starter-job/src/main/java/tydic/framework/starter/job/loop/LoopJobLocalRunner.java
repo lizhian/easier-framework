@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import tydic.framework.core.plugin.job.JobException;
 import tydic.framework.core.plugin.job.LoopJob;
+import tydic.framework.core.util.TraceIdUtil;
 
 import java.lang.reflect.Method;
 
@@ -39,6 +40,7 @@ public class LoopJobLocalRunner implements Runnable {
                                                    .concurrent(this.concurrent)
                                                    .build();
             LoopJobContext.threadLocal.set(context);
+            TraceIdUtil.create();
             this.method.invoke(this.bean);
         } catch (Exception e) {
             if (this.loopJob.delayOnException() > 0) {

@@ -19,7 +19,9 @@ import tydic.framework.starter.discovery.EnableTydicDiscovery;
 import tydic.framework.starter.env.JasyptUtil;
 import tydic.framework.starter.job.EnableTydicJob;
 import tydic.framework.starter.job.center.JobController;
+import tydic.framework.starter.logging.EnableTydicLogging;
 import tydic.framework.starter.mybatis.EnableTydicMybatis;
+import tydic.framework.starter.web.EnableTydicWeb;
 import tydic.framework.test.service.JobTest;
 
 import java.io.IOException;
@@ -32,6 +34,8 @@ import java.util.stream.Collectors;
 @EnableTydicDiscovery
 @EnableTydicMybatis
 @EnableTydicJob
+@EnableTydicWeb
+@EnableTydicLogging
 public class TydicFrameworkTestApplication {
 
     @SneakyThrows

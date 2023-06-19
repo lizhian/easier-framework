@@ -8,6 +8,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.support.CronTrigger;
 import tydic.framework.core.plugin.job.CornJob;
+import tydic.framework.core.util.TraceIdUtil;
 
 import java.lang.reflect.Method;
 
@@ -44,6 +45,7 @@ public class CornJobLocalRunner implements Runnable {
                                                .concurrent(this.concurrent)
                                                .build();
         CornJobContext.threadLocal.set(context);
+        TraceIdUtil.create();
         try {
             this.method.invoke(this.bean);
         } finally {

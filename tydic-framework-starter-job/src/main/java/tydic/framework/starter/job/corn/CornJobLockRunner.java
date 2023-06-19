@@ -11,6 +11,7 @@ import org.redisson.api.RedissonClient;
 import org.springframework.scheduling.support.CronTrigger;
 import tydic.framework.core.plugin.job.CornJob;
 import tydic.framework.core.util.ClassUtil;
+import tydic.framework.core.util.TraceIdUtil;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
@@ -59,6 +60,7 @@ public class CornJobLockRunner implements Runnable {
                                                    .concurrent(this.concurrent)
                                                    .build();
             CornJobContext.threadLocal.set(context);
+            TraceIdUtil.create();
             this.method.invoke(this.bean);
         } finally {
             lock.unlockAsync();

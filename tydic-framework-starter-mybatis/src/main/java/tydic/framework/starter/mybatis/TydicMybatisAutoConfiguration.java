@@ -9,13 +9,11 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.DynamicTableNameInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import tydic.framework.core.spring.RewriteEnvironmentAware;
 import tydic.framework.core.util.StrUtil;
 import tydic.framework.starter.mybatis.template.DefaultTydicMybatisTemplate;
 import tydic.framework.starter.mybatis.template.TydicMybatisTemplate;
@@ -29,26 +27,7 @@ import java.util.stream.Collectors;
 @EnableConfigurationProperties(MybatisDynamicProperties.class)
 @Configuration(proxyBeanMethods = false)
 @EnableSpringUtil
-public class TydicMybatisAutoConfiguration implements RewriteEnvironmentAware {
-
-    @Override
-    public void setEnvironment(@NotNull Environment environment) {
-        this.setBlankProperty("#索引前缀\n" +
-                "actable.index.prefix=idx_\n" +
-                "\n" +
-                "#唯一索引前缀\n" +
-                "actable.unique.prefix=uni_\n" +
-                "\n" +
-                "#是否开启Mybatis二级缓存\n" +
-                "mybatis-plus.configuration.cache-enabled=false\n" +
-                "\n" +
-                "#表名是否使用驼峰转下划线命名，只对表名生效\n" +
-                "mybatis-plus.global-config.db-config.table-underline=true\n" +
-                "\n" +
-                "#是否开启自动驼峰命名规则（camel case）映射\n" +
-                "mybatis-plus.configuration.map-underscore-to-camel-case=true");
-    }
-
+public class TydicMybatisAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
