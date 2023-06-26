@@ -1,8 +1,8 @@
 package tydic.framework.starter.jackson.expland;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.ReflectUtil;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonStreamContext;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
@@ -12,7 +12,6 @@ import tydic.framework.core.plugin.jackson.expland.JsonExpandContext;
 import tydic.framework.core.plugin.jackson.expland.JsonExpander;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.util.List;
 
 /**
@@ -32,29 +31,24 @@ public class JsonFieldExpandSerializer extends StdSerializer<Object> {
 
     @SneakyThrows
     @Override
-    public void serialize(Object fieldValue, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) {
-        if (fieldValue == null) {
-            jsonGenerator.writeNull();
-            return;
+    public void serialize(Object value, JsonGenerator generator, SerializerProvider provider) {
+        if (value == null) {
+            generator.writeNull();
+        } else {
+            generator.writeObject(value);
         }
-        jsonGenerator.writeObject(fieldValue);
         if (CollUtil.isEmpty(this.jsonFieldExpandDetails)) {
             return;
         }
 
-        Object beanValue = jsonGenerator.getOutputContext().getCurrentValue();
-        Class<?> beanClass = beanValue.getClass();
-        String fieldName = jsonGenerator.getOutputContext().getCurrentName();
-        Field field = ReflectUtil.getField(beanClass, fieldName);
-        Class<?> fieldType = field.getType();
+        JsonStreamContext outputContext = generator.getOutputContext();
+        String currentName = generator.getOutputContext().getCurrentName();
         JsonExpandContext context = JsonExpandContext.builder()
-                .jsonGenerator(jsonGenerator)
-                .beanClass(beanClass)
-                .beanValue(beanValue)
-                .field(field)
-                .fieldType(fieldType)
-                .fieldName(fieldName)
-                .fieldValue(fieldValue)
+                .generator(generator)
+                .provider(provider)
+                .outputContext(outputContext)
+                .currentProperty(currentName)
+                .currentValue(value)
                 .build();
         for (JsonFieldExpandDetail detail : this.jsonFieldExpandDetails) {
             Annotation annotation = detail.getAnnotation();

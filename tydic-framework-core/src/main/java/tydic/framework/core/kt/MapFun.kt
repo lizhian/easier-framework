@@ -18,7 +18,7 @@ import java.util.*
  */
 fun <T> T.toR(
     code: Int = RCode.success.toEnumValueInt(),
-    message: String = RCode.success.toEnumLabel()
+    message: String = RCode.success.toEnumDesc()
 ): R<T> = R.of(code, message, this)
 
 fun <T> T.toR(code: RCode = RCode.success): R<T> = R.of(code, this)
@@ -33,11 +33,10 @@ fun String?.smartSplit(): List<String> = StrUtil.smartSplit(this);
 fun String.toUnderlineCase(): String = StrUtil.toUnderlineCase(this);
 
 
-inline fun <E, reified T : Enum<E>> T.toEnumValue(): Any = EnumCodec.of(T::class.java).any2Value(this)
+inline fun <E, reified T : Enum<E>> T.toEnumValue(): Any = EnumCodec.of(T::class.java).getEnumValue(this)
 inline fun <E, reified T : Enum<E>> T.toEnumValueString(): String = toEnumValue().toString()
 inline fun <E, reified T : Enum<E>> T.toEnumValueInt(): Int = toEnumValue() as Int
-inline fun <E, reified T : Enum<E>> T.toEnumLabel(): String =
-    EnumCodec.of(T::class.java).value2Label(this.toEnumValue())
+inline fun <E, reified T : Enum<E>> T.toEnumDesc(): String = EnumCodec.of(T::class.java).getEnumDesc(this)
 
 
 

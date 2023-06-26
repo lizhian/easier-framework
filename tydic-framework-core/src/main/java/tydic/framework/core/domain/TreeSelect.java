@@ -2,14 +2,14 @@ package tydic.framework.core.domain;
 
 import cn.hutool.core.collection.CollUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
-import tydic.framework.core.plugin.jackson.annotation.JsonID;
-import tydic.framework.core.plugin.jackson.annotation.JsonSerializeAlias;
+import tydic.framework.core.plugin.jackson.annotation.Alias;
+import tydic.framework.core.plugin.jackson.annotation.AliasId;
 
 import java.io.Serializable;
 import java.util.List;
@@ -27,12 +27,12 @@ import java.util.stream.Collectors;
 public class TreeSelect implements Serializable {
 
 
-    @ApiModelProperty("树节点主键")
-    @JsonID
+    @Schema(description = "树节点主键")
+    @AliasId
     private String key;
 
-    @ApiModelProperty("树节点名称")
-    @JsonSerializeAlias("label")
+    @Schema(description = "树节点名称")
+    @Alias("label")
     private String name;
 
     /**
@@ -46,9 +46,9 @@ public class TreeSelect implements Serializable {
         this.name = treeNode.getName();
         if (CollUtil.isNotEmpty(treeNode.getChildren())) {
             this.children = treeNode.getChildren()
-                                    .stream()
-                                    .map(TreeSelect::new)
-                                    .collect(Collectors.toList());
+                    .stream()
+                    .map(TreeSelect::new)
+                    .collect(Collectors.toList());
 
         }
     }

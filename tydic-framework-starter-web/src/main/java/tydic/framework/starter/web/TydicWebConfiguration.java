@@ -19,7 +19,6 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import tydic.framework.core.util.SpringUtil;
 import tydic.framework.core.util.StrUtil;
 import tydic.framework.starter.cache.EnableTydicCache;
-import tydic.framework.starter.jackson.EnableTydicJackson;
 import tydic.framework.starter.job.EnableTydicJob;
 import tydic.framework.starter.web.converter.StringToEnumConverterFactory;
 import tydic.framework.starter.web.converter.TimeConverters;
@@ -37,7 +36,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-@EnableTydicJackson
 @EnableTydicCache
 @EnableTydicJob
 @Import(TraceIdServletFilter.class)

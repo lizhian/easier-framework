@@ -2,7 +2,7 @@ package tydic.framework.core.domain;
 
 import cn.hutool.core.util.NumberUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,15 +24,15 @@ import java.io.Serializable;
 public class PageParam implements Serializable {
 
     @Builder.Default
-    @ApiModelProperty(value = "查询总数", hidden = true)
+    @Schema(description = "查询总数", hidden = true)
     private boolean searchCount = true;
 
     @Builder.Default
-    @ApiModelProperty("当前页")
+    @Schema(description = "当前页")
     private long current = 1;
 
     @Builder.Default
-    @ApiModelProperty("每页大小")
+    @Schema(description = "每页大小")
     private long size = 10;
 
     public <T> Page<T> toPage() {

@@ -1,6 +1,6 @@
 package tydic.framework.core.domain;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,17 +18,17 @@ import java.io.Serializable;
 @FieldNameConstants
 @Builder(toBuilder = true)
 public class Between<T> implements Serializable {
-    @ApiModelProperty("最小值")
+    @Schema(description = "最小值")
     private T min;
 
-    @ApiModelProperty("包含最小值")
+    @Schema(description = "包含最小值")
     @Builder.Default
     private boolean includeMin = true;
 
-    @ApiModelProperty("最大值")
+    @Schema(description = "最大值")
     private T max;
 
-    @ApiModelProperty("包含最大值")
+    @Schema(description = "包含最大值")
     @Builder.Default
     private boolean includeMax = true;
 

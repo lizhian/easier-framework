@@ -1,31 +1,38 @@
 package tydic.framework.test;
 
 import cn.hutool.core.util.NumberUtil;
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.crypto.SecureUtil;
-import cn.hutool.crypto.symmetric.AES;
+import com.fasterxml.jackson.databind.type.SimpleType;
+import com.tangzc.mpe.autotable.annotation.Column;
+import com.tangzc.mpe.autotable.annotation.Table;
+import io.swagger.v3.core.converter.AnnotatedType;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.Schema;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.jasypt.encryption.StringEncryptor;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springdoc.core.customizers.OperationCustomizer;
+import org.springdoc.core.customizers.PropertyCustomizer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import tydic.framework.core.util.SpringUtil;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.method.HandlerMethod;
+import tydic.framework.core.plugin.enums.EnumCodec;
+import tydic.framework.core.plugin.enums.EnumDetail;
+import tydic.framework.core.util.StrUtil;
+import tydic.framework.starter.auth.EnableTydicAuth;
 import tydic.framework.starter.discovery.EnableTydicDiscovery;
-import tydic.framework.starter.env.JasyptUtil;
 import tydic.framework.starter.job.EnableTydicJob;
-import tydic.framework.starter.job.center.JobController;
 import tydic.framework.starter.logging.EnableTydicLogging;
 import tydic.framework.starter.mybatis.EnableTydicMybatis;
 import tydic.framework.starter.web.EnableTydicWeb;
-import tydic.framework.test.service.JobTest;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.lang.annotation.Annotation;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -36,13 +43,12 @@ import java.util.stream.Collectors;
 @EnableTydicJob
 @EnableTydicWeb
 @EnableTydicLogging
+@EnableTydicAuth
 public class TydicFrameworkTestApplication {
 
     @SneakyThrows
     public static void main(String[] args) {
 
-        JasyptUtil.encryptConsole("123456", "123456");
-        JasyptUtil.decryptConsole("123456", "ENC(ONnJgQKgRSdvqGN3iprXxq8gC49Eq9DHARiKtNbsu3J+/Wcc6j+3cc3cYctPuiSq)");
 
 /*
         ThreadPoolExecutor executor = ExecutorBuilder.create()
@@ -58,14 +64,65 @@ public class TydicFrameworkTestApplication {
         while (executor.getActiveCount()>0){
             ThreadUtil.safeSleep(1000);
         }*/
-        AES aes = SecureUtil.aes("asdasd".getBytes(StandardCharsets.UTF_8));
+
 
         SpringApplication.run(TydicFrameworkTestApplication.class, args);
-        StringEncryptor encryptor = SpringUtil.getBean(StringEncryptor.class);
-        String encrypt = encryptor.encrypt("123456");
-        JobController jobController = SpringUtil.getBean(JobController.class);
-        JobTest jobTest = new JobTest();
-        jobController.submit(jobTest, JobTest::test);
+
+    }
+
+    @Bean
+    public PropertyCustomizer myPropertyCustomizer() {
+        return (Schema property, AnnotatedType annotatedType) -> {
+            forDescription(property, annotatedType);
+            if (annotatedType.getType() instanceof SimpleType) {
+                SimpleType simpleType = (SimpleType) annotatedType.getType();
+                if (simpleType.isEnumType()) {
+                    Class<?> enumClazz = simpleType.getRawClass();
+                    EnumCodec<?> enumCodec = EnumCodec.of(enumClazz);
+                    List<String> values = enumCodec.getEnumDetails()
+                            .stream()
+                            .map(EnumDetail::getValueAsStr)
+                            .collect(Collectors.toList());
+                    property.setEnum(values);
+                }
+            }
+            log.info("已处理 {} {}", annotatedType.getName(), annotatedType.getPropertyName());
+            return property;
+        };
+    }
+
+    private void forDescription(Schema property, AnnotatedType annotatedType) {
+        if (StrUtil.isNotBlank(property.getDescription())) {
+            return;
+        }
+        Annotation[] annotations = annotatedType.getCtxAnnotations();
+        if (annotations == null) {
+            return;
+        }
+        for (Annotation annotation : annotations) {
+            if (annotation instanceof Column) {
+                Column column = (Column) annotation;
+                if (StrUtil.isNotBlank(column.comment())) {
+                    property.description(column.comment());
+                    return;
+                }
+            }
+            if (annotation instanceof Table) {
+                Table table = (Table) annotation;
+                if (StrUtil.isNotBlank(table.comment())) {
+                    property.description(table.comment());
+                    return;
+                }
+            }
+        }
+    }
+
+    @Bean
+    public OperationCustomizer myOperationCustomizer() {
+        return (Operation operation, HandlerMethod handlerMethod) -> {
+
+            return operation;
+        };
     }
 
     @SneakyThrows

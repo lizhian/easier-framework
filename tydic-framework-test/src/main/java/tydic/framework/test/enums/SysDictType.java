@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.EnumValue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import tydic.framework.core.plugin.enums.Dict;
-import tydic.framework.core.plugin.enums.EnumLabel;
+import tydic.framework.core.plugin.enums.EnumDesc;
 
 /**
  * 系统字典类型
@@ -17,6 +17,6 @@ public enum SysDictType {
     biz("biz", "业务字典");
     @EnumValue
     private final String value;
-    @EnumLabel
+    @EnumDesc
     private final String label;
 }

@@ -2,39 +2,37 @@ package tydic.framework.core.plugin.jackson.expland;
 
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonStreamContext;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldNameConstants;
 import lombok.experimental.SuperBuilder;
 
-import java.lang.reflect.Field;
-
 @Data
 @FieldNameConstants
 @SuperBuilder(toBuilder = true)
 public class JsonExpandContext {
-    private final JsonGenerator jsonGenerator;
-    private final Class<?> beanClass;
-    private final Object beanValue;
-    private final Field field;
-    private final Class<?> fieldType;
-    private final String fieldName;
-    private final Object fieldValue;
+    private final JsonGenerator generator;
+    private final SerializerProvider provider;
+    private final JsonStreamContext outputContext;
+    private final String currentProperty;
+    private final Object currentValue;
 
     @SneakyThrows
-    public void write(String fieldName, Object fieldValue) {
-        if (StrUtil.isBlank(fieldName)) {
+    public void write(String key, Object value) {
+        if (StrUtil.isBlank(key)) {
             return;
         }
-        if (fieldValue == null) {
-            this.jsonGenerator.writeNullField(fieldName);
+        if (value == null) {
+            this.generator.writeNullField(key);
             return;
         }
-        if (fieldValue instanceof String) {
-            this.jsonGenerator.writeStringField(fieldName, (String) fieldValue);
+        if (value instanceof String) {
+            this.generator.writeStringField(key, (String) value);
             return;
         }
-        this.jsonGenerator.writeObjectField(fieldName, fieldValue);
+        this.generator.writeObjectField(key, value);
     }
 
 }

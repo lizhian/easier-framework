@@ -29,7 +29,7 @@ public class StringToEnumConverterFactory implements ConverterFactory<String, En
             if (StrUtil.isBlank(source)) {
                 return null;
             }
-            return (T) this.enumCodec.value2Enum(source);
+            return (T) this.enumCodec.getEnumInstance(source);
         }
 
     }

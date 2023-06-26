@@ -52,6 +52,7 @@ public class TydicAuthAutoConfiguration implements WebMvcConfigurer, Initializin
         ExceptionHandlerRegister.register(NotLoginException.class, HttpStatus.UNAUTHORIZED, exception -> {
             R<Object> failed = R.failed(exception.getMessage());
             failed.setCode(RCode.not_login.getValue());
+            exception.printStackTrace();
             return failed;
         });
         //没权限异常

@@ -20,10 +20,10 @@ public @interface Dict {
      */
     String name() default "";
 
-    String expandField1() default "";
+    String property1() default "";
 
-    String expandField2() default "";
+    String property2() default "";
 
-    String expandField3() default "";
+    String property3() default "";
 
 }

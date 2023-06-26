@@ -7,7 +7,7 @@ import com.tangzc.mpe.autotable.annotation.Table;
 import com.tangzc.mpe.bind.metadata.annotation.BindEntityByMid;
 import com.tangzc.mpe.bind.metadata.annotation.JoinOrderBy;
 import com.tangzc.mpe.bind.metadata.annotation.MidCondition;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,13 +15,13 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 import tydic.framework.core.domain.BaseEntity;
 import tydic.framework.core.plugin.enums.Dict;
-import tydic.framework.core.plugin.jackson.annotation.JsonID;
 import tydic.framework.core.plugin.mybatis.MybatisPlusEntity;
 import tydic.framework.test.enums.EnableStatus;
 import tydic.framework.test.enums.SysAppType;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -36,65 +36,50 @@ import java.util.Map;
 @Table(value = "sys_app", dsName = "test", comment = "系统应用表")
 public class SysApp implements MybatisPlusEntity {
 
-
-    @ApiModelProperty("应用主键")
-    @Column(comment = "应用主键")
-    @JsonID
     @TableId
+    @Column(comment = "应用主键")
     private String appId;
 
-    @ApiModelProperty("应用编码")
     @Column(comment = "应用编码", notNull = true)
     @NotBlank
-    //@TableCode
-    //@CodeValid
     private String appCode;
 
-    @ApiModelProperty("应用名称")
     @Column(comment = "应用名称", notNull = true)
     @NotBlank
     private String appName;
 
-    @ApiModelProperty("应用地址")
     @Column(comment = "应用地址")
     @NotBlank
     private String appAddr;
 
-    @ApiModelProperty("应用图标图片")
     @Column(comment = "应用图标图片", type = "longtxt")
     @NotBlank
     private String appImage;
 
-    @ApiModelProperty("应用排序")
     @Column(comment = "应用排序", notNull = true, defaultValue = "100")
     private Integer sort;
 
-    @ApiModelProperty("门户合集")
     @Column(comment = "门户合集")
     @Dict(type = "portal_collection_type")
     private String portalCollectionType;
 
-    @ApiModelProperty("启用状态")
     @Column(comment = "启用状态", notNull = true)
     @NotNull
     private EnableStatus enableStatus;
 
-    @ApiModelProperty("应用类型")
     @Column(comment = "应用类型", notNull = true)
     @NotNull
     private SysAppType appType;
 
-    @ApiModelProperty("应用描述")
     @Column(comment = "应用描述")
     private String appDesc;
 
 
-    @ApiModelProperty("应用描述")
     @Column(comment = "应用描述")
     private List<SysApp> children;
 
 
-    @ApiModelProperty("绑定的数据字典")
+    @Schema(description = "绑定的数据字典")
     @BindEntityByMid(
             conditions = @MidCondition(
                     midEntity = AppToDict.class
@@ -106,6 +91,9 @@ public class SysApp implements MybatisPlusEntity {
             , orderBy = @JoinOrderBy(field = BaseEntity.Fields.updateTime, isAsc = false)
     )
     private List<SysDict> dictList;
+
+
+    private Date time;
 
 
     public static void main(String[] args) {

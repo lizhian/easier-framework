@@ -2,46 +2,35 @@ package tydic.framework.core.plugin.enums;
 
 import cn.hutool.core.annotation.AnnotationUtil;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import tydic.framework.core.util.InstanceUtil;
+import tydic.framework.core.util.ListUtil;
 
+import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * 枚举编解码器
  */
 @Slf4j
 public class EnumCodec<E extends Enum<E>> {
-    private final Map<E, String> enum2Value = MapUtil.newHashMap();
-    private final Map<String, E> value2Enum = MapUtil.newHashMap();
-    private final Map<String, E> label2Enum = MapUtil.newHashMap();
-    private final Map<String, String> value2Label = MapUtil.newHashMap();
-    private final Map<E, String> enum2Label = MapUtil.newHashMap();
-    @Getter
-    private final List<String> values = CollUtil.newArrayList();
+
     @Getter
     private final Class<E> enumClass;
     @Getter
-    private boolean isInt;
+    private final boolean isIntValue;
     @Getter
-    private String dictType;
-
-    private EnumCodec(Class<E> enumClass) {
-        this.enumClass = enumClass;
-        this.init();
-    }
+    private final Dict dict;
+    @Getter
+    private final List<EnumDetail<E>> enumDetails;
 
     /**
      * 构建方法
@@ -51,127 +40,124 @@ public class EnumCodec<E extends Enum<E>> {
                 .getInstance(enumClass, () -> new EnumCodec(enumClass));
     }
 
-    private void init() {
-        Dict dict = AnnotationUtil.getAnnotation(this.enumClass, Dict.class);
-        if (dict != null) {
-            this.dictType = dict.type();
-        }
-        final ArrayList<Field> fields = CollUtil.newArrayList(this.enumClass.getDeclaredFields());
-        final Field valueField = EnumCodecProvider.filterField(fields, EnumValue.class);
-        final Field labelField = EnumCodecProvider.filterField(fields, EnumLabel.class);
-        this.isInt = EnumCodecProvider.isInt(valueField);
-        Enum<E>[] enums = this.enumClass.getEnumConstants();
-        if (ArrayUtil.isEmpty(enums)) {
+    private EnumCodec(Class<E> enumClass) {
+        this.enumClass = enumClass;
+        this.dict = AnnotationUtil.getAnnotation(this.enumClass, Dict.class);
+        ArrayList<Field> fields = CollUtil.newArrayList(this.enumClass.getDeclaredFields());
+        Field valueField = EnumCodecProvider.filterField(fields, EnumValue.class);
+        Field descField = EnumCodecProvider.filterField(fields, EnumDesc.class);
+        this.isIntValue = EnumCodecProvider.isIntValue(valueField);
+        Enum<E>[] instances = this.enumClass.getEnumConstants();
+        if (instances == null) {
+            this.enumDetails = ListUtil.unmodifiable(new ArrayList<>());
             return;
         }
-        for (Enum<E> enumInstance : enums) {
-            String enumValue = EnumCodecProvider.getFieldValue(enumInstance, valueField);
-            String enumLabel = EnumCodecProvider.getFieldValue(enumInstance, labelField);
-            this.values.add(enumValue);
-            this.value2Enum.put(enumValue, (E) enumInstance);
-            this.value2Label.put(enumValue, enumLabel);
-            this.enum2Value.put((E) enumInstance, enumValue);
-            this.enum2Label.put((E) enumInstance, enumLabel);
-            this.label2Enum.put(enumLabel, (E) enumInstance);
+        List<EnumDetail<E>> enumDetails = new ArrayList<>();
+        for (int index = 0; index < instances.length; index++) {
+            E instance = enumClass.getEnumConstants()[index];
+            Object value = EnumCodecProvider.getFieldValue(instance, valueField);
+            Object description = EnumCodecProvider.getFieldValue(instance, descField);
+            EnumDetail<E> enumDetail = EnumDetail.<E>builder()
+                    .index(index)
+                    .instance(instance)
+                    .value(value)
+                    .isIntValue(isIntValue)
+                    .description(description.toString())
+                    .dictType(dict == null ? null : dict.type())
+                    .dictName(dict == null ? null : dict.name())
+                    .dictProperty1(dict == null ? null : dict.property1())
+                    .dictProperty2(dict == null ? null : dict.property2())
+                    .dictProperty3(dict == null ? null : dict.property3())
+                    .build();
+            enumDetails.add(enumDetail);
         }
+        this.enumDetails = ListUtil.unmodifiable(enumDetails);
     }
 
     public Type getValueType() {
-        return this.isInt ? Integer.class : String.class;
+        return this.isIntValue ? Integer.class : String.class;
     }
 
-    public Object enum2Value(E e) {
-        return this.isInt ? this.enum2ValueAsInt(e) : this.enum2ValueAsString(e);
-
-    }
-
-    public String enum2ValueAsString(E e) {
-        if (e == null) {
+    /**
+     * 获取枚举详情
+     * 优先匹配枚举实例
+     * 其次匹配枚举名称
+     * 最后匹配枚举下标
+     */
+    public EnumDetail<E> getEnumDetail(Object input) {
+        if (input == null) {
             return null;
         }
-        return this.enum2Value.get(e);
+        EnumDetail<E> enumDetail = enumDetails.stream()
+                .filter(it -> it.getInstance().equals(input))
+                .findAny()
+                .orElse(null);
+        if (enumDetail != null) {
+            return enumDetail;
+        }
+        enumDetail = enumDetails.stream()
+                .filter(it -> it.getInstance().name().equals(input))
+                .findAny()
+                .orElse(null);
+        if (enumDetail != null) {
+            return enumDetail;
+        }
+        enumDetail = enumDetails.stream()
+                .filter(it -> it.getIndex().toString().equals(input.toString()))
+                .findAny()
+                .orElse(null);
+        return enumDetail;
     }
 
-    public Integer enum2ValueAsInt(E e) {
-        if (e == null) {
+    /**
+     * 获取枚举实例
+     */
+    public E getEnumInstance(Object input) {
+        EnumDetail<E> enumDetail = getEnumDetail(input);
+        if (enumDetail == null) {
             return null;
         }
-        return Integer.valueOf(this.enum2Value.get(e));
+        return enumDetail.getInstance();
     }
 
-    public String enum2Label(E e) {
-        if (e == null) {
+    /**
+     * 获取枚举值
+     */
+    public Object getEnumValue(Object input) {
+        EnumDetail<E> enumDetail = getEnumDetail(input);
+        if (enumDetail == null) {
             return null;
         }
-        return this.enum2Label.get(e);
+        return enumDetail.getValue();
     }
 
-    public E value2Enum(Object value) {
-        if (value == null) {
-            return null;
+    /**
+     * 获取枚举描述
+     */
+    @NotNull
+    public String getEnumDesc(Object input) {
+        EnumDetail<E> enumDetail = getEnumDetail(input);
+        if (enumDetail == null) {
+            return "";
         }
-        return this.value2Enum.get(value.toString());
+        return enumDetail.getDescription();
     }
 
-    public E label2Enum(Object value) {
-        if (value == null) {
-            return null;
+    public Integer getEnumValueAsInt(Object input) {
+        EnumDetail<E> enumDetail = getEnumDetail(input);
+        if (enumDetail != null) {
+            return enumDetail.getValueAsInt();
         }
-        return this.label2Enum.get(value.toString());
-    }
-
-    public String value2Label(Object value) {
-        if (value == null) {
-            return null;
-        }
-        return this.value2Label.get(value.toString());
-    }
-
-    //从枚举/int/string转换成value;
-    public Object any2Value(Object any) {
-        if (any == null) {
-            return null;
-        }
-        E[] enumConstants = this.enumClass.getEnumConstants();
-        //枚举类型的判断
-        for (E e : enumConstants) {
-            if (e.equals(any)) {
-                return this.enum2Value(e);
-            }
-        }
-        //字符串类型的判断
-        if (any instanceof String) {
-            String string = (String) any;
-            if (this.values.contains(string)) {
-                return string;
-            }
-            //等于枚举名称
-            for (E e : enumConstants) {
-                if (e.name().equals(string)) {
-                    return this.enum2Value(e);
-                }
-            }
-        }
-        //整数类型的判断
-        if (any instanceof Integer) {
-            Integer integer = (Integer) any;
-            if (this.values.contains(integer.toString())) {
-                return integer;
-            }
-        }
-        //都不对
         return null;
     }
 
-    public String getDescription() {
-        String description = this.values
-                .stream()
-                .map(value -> value + "=" + this.value2Label.get(value))
-                .collect(Collectors.joining(","));
-        if (StrUtil.isNotBlank(this.dictType)) {
-            description = description + ",字典编码:【" + this.dictType + "】";
+    public String getEnumValueAsStr(Object input) {
+        EnumDetail<E> enumDetail = getEnumDetail(input);
+
+        if (enumDetail != null) {
+            return enumDetail.getValueAsStr();
         }
-        return description;
+        return "";
     }
 
 
@@ -185,7 +171,7 @@ public class EnumCodec<E extends Enum<E>> {
                     .orElse(null);
         }
 
-        public static boolean isInt(Field valueField) {
+        public static boolean isIntValue(Field valueField) {
             if (valueField == null) {
                 return false;
             }
@@ -193,12 +179,12 @@ public class EnumCodec<E extends Enum<E>> {
             return valueFieldType.equals(int.class) || valueFieldType.equals(Integer.class);
         }
 
-        public static <E extends Enum<E>> String getFieldValue(Enum<E> enumInstance, Field field) {
+        @Nonnull
+        public static <E extends Enum<E>> Object getFieldValue(Enum<E> enumInstance, Field field) {
             if (field == null) {
                 return enumInstance.name();
             }
-            Object fieldValue = ReflectUtil.getFieldValue(enumInstance, field.getName());
-            return fieldValue.toString();
+            return ReflectUtil.getFieldValue(enumInstance, field.getName());
         }
     }
 }

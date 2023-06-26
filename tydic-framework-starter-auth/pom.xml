@@ -15,25 +15,11 @@
     <dependencies>
         <dependency>
             <groupId>tydic.framework</groupId>
-            <artifactId>tydic-framework-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>tydic.framework</groupId>
             <artifactId>tydic-framework-starter-cache</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-configuration-processor</artifactId>
         </dependency>
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-spring-boot-starter</artifactId>
-            <version>1.34.0</version>
-        </dependency>
-        <dependency>
-            <groupId>cn.dev33</groupId>
-            <artifactId>sa-token-dao-redisson-jackson</artifactId>
-            <version>1.34.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

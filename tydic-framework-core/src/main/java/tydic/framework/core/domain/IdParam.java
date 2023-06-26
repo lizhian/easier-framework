@@ -1,7 +1,7 @@
 package tydic.framework.core.domain;
 
 import cn.hutool.core.collection.CollUtil;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,10 +26,10 @@ import java.util.stream.Collectors;
 @Builder(toBuilder = true)
 public class IdParam implements Serializable {
 
-    @ApiModelProperty("数据主键")
+    @Schema(description = "数据主键")
     private String id;
 
-    @ApiModelProperty("数据主键集合")
+    @Schema(description = "数据主键集合")
     private List<String> ids;
 
     public void valid() {

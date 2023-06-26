@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 @Slf4j
 public class TydicEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered, ApplicationListener<ApplicationEnvironmentPreparedEvent> {
-    public static final String STARTER_ENV_RESOURCE_LOCATION = "starter.env";
+    public static final String STARTER_ENV_RESOURCE_LOCATION = "META-INF/starter.env";
     public static final String PROPERTY_SOURCE_NAME = "default-starter-env";
 
     private static List<DefaultEnv> loadedDefaultEnvs = new ArrayList<>();
@@ -41,6 +41,7 @@ public class TydicEnvironmentPostProcessor implements EnvironmentPostProcessor, 
                 .stream()
                 .flatMap(this::formatDefaultEnvs)
                 .filter(defaultEnv -> !environment.containsProperty(defaultEnv.getKey()))
+                .sorted(Comparator.comparing(DefaultEnv::getKey))
                 .collect(Collectors.toList());
         Map<String, Object> source = new LinkedHashMap<>();
         for (DefaultEnv defaultEnv : loadedDefaultEnvs) {
@@ -49,7 +50,6 @@ public class TydicEnvironmentPostProcessor implements EnvironmentPostProcessor, 
             source.put(key, value);
         }
         environment.getPropertySources().addLast(new MapPropertySource(PROPERTY_SOURCE_NAME, source));
-
     }
 
 
@@ -62,14 +62,12 @@ public class TydicEnvironmentPostProcessor implements EnvironmentPostProcessor, 
                         , comment
                 );
             }
-
             String key = defaultEnv.getKey();
             String value = defaultEnv.getValue();
             log.info("{}={}"
                     , key
                     , key.contains("password") ? StrUtil.hide(value, 3, value.length() - 3) : value
             );
-            log.info("");
         }
     }
 

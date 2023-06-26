@@ -3,6 +3,7 @@ package tydic.framework.starter.cache;
 import cn.hutool.extra.spring.EnableSpringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RedissonClient;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,13 +14,11 @@ import tydic.framework.starter.cache.redis.RedissonClients;
 import tydic.framework.starter.cache.redis.RedissonConfigCustomizer;
 import tydic.framework.starter.cache.redis.RedissonJacksonCodec;
 import tydic.framework.starter.cache.redis.RedissonTemplate;
-import tydic.framework.starter.jackson.EnableTydicJackson;
 
 @Slf4j
 @RequiredArgsConstructor
 @EnableConfigurationProperties(TydicCacheProperties.class)
 @Configuration(proxyBeanMethods = false)
-@EnableTydicJackson
 @EnableSpringUtil
 @Import(CacheBuilderInvoker.class)
 public class TydicCacheAutoConfiguration {
@@ -43,5 +42,10 @@ public class TydicCacheAutoConfiguration {
     @Bean
     public RedissonTemplate redissonTemplate(RedissonClients redissonClients) {
         return redissonClients.getTemplate();
+    }
+
+    @Bean
+    public RedissonClient redissonClient(RedissonClients redissonClients) {
+        return redissonClients.getClient();
     }
 }

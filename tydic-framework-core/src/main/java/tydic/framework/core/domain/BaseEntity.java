@@ -5,13 +5,12 @@ import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tangzc.mpe.autotable.annotation.Column;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
 import tydic.framework.core.plugin.auth.AuthContext;
-import tydic.framework.core.plugin.jackson.annotation.JsonNickname;
+import tydic.framework.core.plugin.jackson.annotation.ShowUserDetail;
 import tydic.framework.core.plugin.mybatis.MybatisPlusEntity;
 
 import java.io.Serializable;
@@ -30,42 +29,36 @@ public abstract class BaseEntity implements Serializable, MybatisPlusEntity {
     /**
      * 创建人
      */
-    @JsonNickname
+    @ShowUserDetail
     @Column(comment = "创建人")
-    @ApiModelProperty("创建人")
     private String createBy;
 
     /**
      * 创建时间
      */
     @Column(comment = "创建时间", notNull = true)
-    @ApiModelProperty("创建时间")
     private Date createTime;
 
     /**
      * 最后更新人
      */
-    @JsonNickname
+    @ShowUserDetail
     @Column(comment = "最后更新人")
-    @ApiModelProperty("最后更新人")
     private String updateBy;
 
     /**
      * 最后更新时间
      */
     @Column(comment = "最后更新时间", notNull = true)
-    @ApiModelProperty("最后更新时间")
     private Date updateTime;
 
 
     @JsonIgnore
-    @ApiModelProperty(hidden = true)
     public DateTime getCreateDateTime() {
         return this.createTime == null ? null : DateTime.of(this.createTime);
     }
 
     @JsonIgnore
-    @ApiModelProperty(hidden = true)
     public DateTime getUpdateDateTime() {
         return this.updateTime == null ? null : DateTime.of(this.updateTime);
     }

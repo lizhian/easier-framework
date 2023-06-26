@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.tangzc.mpe.autotable.annotation.Column;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.FieldNameConstants;
@@ -17,7 +17,7 @@ import lombok.experimental.FieldNameConstants;
 @FieldNameConstants
 public abstract class BaseLogicEntity extends BaseEntity {
 
-    @ApiModelProperty(hidden = true)
+    @Schema(hidden = true)
     @Column(comment = "逻辑删除标识", notNull = true, defaultValue = "0", length = 1)
     @TableLogic
     private Integer deleted;
@@ -42,7 +42,6 @@ public abstract class BaseLogicEntity extends BaseEntity {
     }
 
     @JsonIgnore
-    @ApiModelProperty(hidden = true)
     public boolean isLogicDeleted() {
         return this.deleted != null && this.deleted > 0;
     }

@@ -1,12 +1,12 @@
 package tydic.framework.core.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 import lombok.experimental.SuperBuilder;
-import tydic.framework.core.plugin.jackson.annotation.JsonSerializeAlias;
+import tydic.framework.core.plugin.jackson.annotation.Alias;
 import tydic.framework.core.util.StrUtil;
 import tydic.framework.core.util.TraceIdUtil;
 
@@ -21,20 +21,20 @@ import java.io.Serializable;
 @SuperBuilder(toBuilder = true)
 public class R<T> implements Serializable {
 
-    @ApiModelProperty("响应编码")
+    @Schema(description = "响应编码")
     private int code;
 
-    @ApiModelProperty("响应消息")
-    @JsonSerializeAlias("msg")
+    @Schema(description = "响应消息")
+    @Alias("msg")
     private String message;
 
-    @ApiModelProperty("响应数据")
+    @Schema(description = "响应数据")
     private T data;
 
-    @ApiModelProperty(value = "链路标识", hidden = true)
+    @Schema(description = "链路标识", hidden = true)
     private String traceId;
 
-    @ApiModelProperty(value = "拓展属性", hidden = true)
+    @Schema(description = "拓展属性", hidden = true)
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Object expandData;
 

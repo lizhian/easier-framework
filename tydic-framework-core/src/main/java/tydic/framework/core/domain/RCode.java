@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.EnumValue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import tydic.framework.core.plugin.enums.Dict;
-import tydic.framework.core.plugin.enums.EnumLabel;
+import tydic.framework.core.plugin.enums.EnumDesc;
 
 /**
  * 相应编码
@@ -21,6 +21,6 @@ public enum RCode {
     ;
     @EnumValue
     private final int value;
-    @EnumLabel
+    @EnumDesc
     private final String label;
 }

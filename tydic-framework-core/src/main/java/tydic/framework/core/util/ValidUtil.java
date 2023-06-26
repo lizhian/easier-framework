@@ -7,7 +7,7 @@ import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import tydic.framework.core.domain.Update;
@@ -84,9 +84,9 @@ public class ValidUtil {
             String fieldName = path.getLeafNode().getName();
             builder.fieldName(fieldName);
             Field field = ReflectUtil.getField(beanClass, fieldName);
-            ApiModelProperty apiModelProperty = AnnotationUtil.getAnnotation(field, ApiModelProperty.class);
-            if (apiModelProperty != null) {
-                String fieldLabel = apiModelProperty.value();
+            Schema schema = AnnotationUtil.getAnnotation(field, Schema.class);
+            if (schema != null) {
+                String fieldLabel = schema.description();
                 String mergeMessage = mergeMessage(fieldLabel, message);
                 builder.fieldLabel(fieldLabel)
                         .mergeMessage(mergeMessage);
