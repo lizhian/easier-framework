@@ -1,0 +1,4 @@
+org.springframework.boot.env.EnvironmentPostProcessor=\
+easier.framework.starter.env.EasierEnvironmentPostProcessor
+org.springframework.context.ApplicationListener=\
+easier.framework.starter.env.EasierEnvironmentPostProcessor

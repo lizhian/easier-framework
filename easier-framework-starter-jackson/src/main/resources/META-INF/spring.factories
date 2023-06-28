@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+easier.framework.starter.jackson.EasierJacksonAutoConfiguration

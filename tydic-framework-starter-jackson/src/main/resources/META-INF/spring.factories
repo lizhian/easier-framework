@@ -1,2 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-tydic.framework.starter.jackson.TydicJacksonAutoConfiguration

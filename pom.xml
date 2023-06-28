@@ -8,27 +8,28 @@
         <version>2.7.12</version>
         <relativePath/>
     </parent>
-    <groupId>tydic.framework</groupId>
-    <artifactId>tydic-framework-parent</artifactId>
+    <groupId>easier.framework</groupId>
+    <artifactId>easier-framework-parent</artifactId>
     <version>2023.06.18-2.7.12</version>
     <packaging>pom</packaging>
     <modules>
-        <module>tydic-framework-core</module>
-        <module>tydic-framework-starter-env</module>
-        <module>tydic-framework-starter-jackson</module>
-        <module>tydic-framework-starter-cache</module>
-        <module>tydic-framework-starter-job</module>
-        <module>tydic-framework-starter-logging</module>
-        <module>tydic-framework-starter-inner-request</module>
-        <module>tydic-framework-starter-gateway</module>
-        <module>tydic-framework-starter-mock</module>
-        <module>tydic-framework-starter-mq</module>
-        <module>tydic-framework-starter-mybatis</module>
-        <module>tydic-framework-starter-swagger</module>
-        <module>tydic-framework-starter-auth</module>
-        <module>tydic-framework-starter-discovery</module>
-        <module>tydic-framework-starter-web</module>
-        <!--<module>tydic-framework-test</module>-->
+        <module>easier-framework-core</module>
+        <module>easier-framework-starter-env</module>
+        <module>easier-framework-starter-jackson</module>
+        <module>easier-framework-starter-cache</module>
+        <module>easier-framework-starter-job</module>
+        <module>easier-framework-starter-logging</module>
+        <module>easier-framework-starter-inner-request</module>
+        <module>easier-framework-starter-gateway</module>
+        <module>easier-framework-starter-mock</module>
+        <module>easier-framework-starter-mq</module>
+        <module>easier-framework-starter-mybatis</module>
+        <module>easier-framework-starter-swagger</module>
+        <module>easier-framework-starter-doc</module>
+        <module>easier-framework-starter-auth</module>
+        <module>easier-framework-starter-discovery</module>
+        <module>easier-framework-starter-web</module>
+        <!--<module>easier-framework-test</module>-->
     </modules>
     <properties>
         <java.version>1.8</java.version>
@@ -41,7 +42,7 @@
         <spring-boot.version>2.7.12</spring-boot.version>
         <spring-boot-admin.version>2.7.10</spring-boot-admin.version>
         <spring-cloud.version>2021.0.7</spring-cloud.version>
-        <tydic-framework.version>2023.06.18-2.7.12</tydic-framework.version>
+        <easier-framework.version>2023.06.18-2.7.12</easier-framework.version>
         <sa-token.version>1.34.0</sa-token.version>
         <hutool.version>5.8.19</hutool.version>
         <guava.version>32.0.1-jre</guava.version>
@@ -49,7 +50,7 @@
         <plumelog.version>3.5.3</plumelog.version>
         <hessian.version>4.0.66</hessian.version>
         <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
-        <mybatis-plus-ext.version>${mybatis-plus.version}-EXT307</mybatis-plus-ext.version>
+        <mybatis-plus-ext.version>${mybatis-plus.version}-EXT410</mybatis-plus-ext.version>
         <mybatis-plus-join.version>1.4.5</mybatis-plus-join.version>
         <dynamic-datasource.version>3.6.1</dynamic-datasource.version>
         <redisson.version>3.22.0</redisson.version>
@@ -60,79 +61,84 @@
         <dependencies>
             <!--项目依赖-->
             <dependency>
-                <groupId>tydic.framework</groupId>
-                <artifactId>tydic-framework-core</artifactId>
-                <version>${tydic-framework.version}</version>
+                <groupId>easier.framework</groupId>
+                <artifactId>easier-framework-core</artifactId>
+                <version>${easier-framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>tydic.framework</groupId>
-                <artifactId>tydic-framework-starter-env</artifactId>
-                <version>${tydic-framework.version}</version>
+                <groupId>easier.framework</groupId>
+                <artifactId>easier-framework-starter-env</artifactId>
+                <version>${easier-framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>tydic.framework</groupId>
-                <artifactId>tydic-framework-starter-jackson</artifactId>
-                <version>${tydic-framework.version}</version>
+                <groupId>easier.framework</groupId>
+                <artifactId>easier-framework-starter-jackson</artifactId>
+                <version>${easier-framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>tydic.framework</groupId>
-                <artifactId>tydic-framework-starter-job</artifactId>
-                <version>${tydic-framework.version}</version>
+                <groupId>easier.framework</groupId>
+                <artifactId>easier-framework-starter-job</artifactId>
+                <version>${easier-framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>tydic.framework</groupId>
-                <artifactId>tydic-framework-starter-cache</artifactId>
-                <version>${tydic-framework.version}</version>
+                <groupId>easier.framework</groupId>
+                <artifactId>easier-framework-starter-cache</artifactId>
+                <version>${easier-framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>tydic.framework</groupId>
-                <artifactId>tydic-framework-starter-inner-request</artifactId>
-                <version>${tydic-framework.version}</version>
+                <groupId>easier.framework</groupId>
+                <artifactId>easier-framework-starter-inner-request</artifactId>
+                <version>${easier-framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>tydic.framework</groupId>
-                <artifactId>tydic-framework-starter-gateway</artifactId>
-                <version>${tydic-framework.version}</version>
+                <groupId>easier.framework</groupId>
+                <artifactId>easier-framework-starter-gateway</artifactId>
+                <version>${easier-framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>tydic.framework</groupId>
-                <artifactId>tydic-framework-starter-web</artifactId>
-                <version>${tydic-framework.version}</version>
+                <groupId>easier.framework</groupId>
+                <artifactId>easier-framework-starter-web</artifactId>
+                <version>${easier-framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>tydic.framework</groupId>
-                <artifactId>tydic-framework-starter-mock</artifactId>
-                <version>${tydic-framework.version}</version>
+                <groupId>easier.framework</groupId>
+                <artifactId>easier-framework-starter-mock</artifactId>
+                <version>${easier-framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>tydic.framework</groupId>
-                <artifactId>tydic-framework-starter-mq</artifactId>
-                <version>${tydic-framework.version}</version>
+                <groupId>easier.framework</groupId>
+                <artifactId>easier-framework-starter-mq</artifactId>
+                <version>${easier-framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>tydic.framework</groupId>
-                <artifactId>tydic-framework-starter-mybatis</artifactId>
-                <version>${tydic-framework.version}</version>
+                <groupId>easier.framework</groupId>
+                <artifactId>easier-framework-starter-mybatis</artifactId>
+                <version>${easier-framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>tydic.framework</groupId>
-                <artifactId>tydic-framework-starter-swagger</artifactId>
-                <version>${tydic-framework.version}</version>
+                <groupId>easier.framework</groupId>
+                <artifactId>easier-framework-starter-swagger</artifactId>
+                <version>${easier-framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>tydic.framework</groupId>
-                <artifactId>tydic-framework-starter-auth</artifactId>
-                <version>${tydic-framework.version}</version>
+                <groupId>easier.framework</groupId>
+                <artifactId>easier-framework-starter-doc</artifactId>
+                <version>${easier-framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>tydic.framework</groupId>
-                <artifactId>tydic-framework-starter-logging</artifactId>
-                <version>${tydic-framework.version}</version>
+                <groupId>easier.framework</groupId>
+                <artifactId>easier-framework-starter-auth</artifactId>
+                <version>${easier-framework.version}</version>
             </dependency>
             <dependency>
-                <groupId>tydic.framework</groupId>
-                <artifactId>tydic-framework-starter-discovery</artifactId>
-                <version>${tydic-framework.version}</version>
+                <groupId>easier.framework</groupId>
+                <artifactId>easier-framework-starter-logging</artifactId>
+                <version>${easier-framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>easier.framework</groupId>
+                <artifactId>easier-framework-starter-discovery</artifactId>
+                <version>${easier-framework.version}</version>
             </dependency>
             <!--项目依赖 end-->
             <dependency>
@@ -199,6 +205,11 @@
             </dependency>
             <dependency>
                 <groupId>com.tangzc</groupId>
+                <artifactId>mybatis-plus-ext-magic</artifactId>
+                <version>${mybatis-plus-ext.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.tangzc</groupId>
                 <artifactId>mybatis-plus-ext-annotation</artifactId>
                 <version>${mybatis-plus-ext.version}</version>
             </dependency>
@@ -209,22 +220,17 @@
             </dependency>
             <dependency>
                 <groupId>com.tangzc</groupId>
-                <artifactId>mybatis-plus-ext-datasource</artifactId>
+                <artifactId>mybatis-plus-ext-datasource-annotation</artifactId>
                 <version>${mybatis-plus-ext.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.tangzc</groupId>
-                <artifactId>mybatis-plus-ext-bind</artifactId>
+                <artifactId>mybatis-plus-ext-bind-annotation</artifactId>
                 <version>${mybatis-plus-ext.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.tangzc</groupId>
-                <artifactId>mybatis-plus-ext-condition</artifactId>
-                <version>${mybatis-plus-ext.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.tangzc</groupId>
-                <artifactId>mybatis-plus-ext-magic</artifactId>
+                <artifactId>mybatis-plus-ext-condition-annotation</artifactId>
                 <version>${mybatis-plus-ext.version}</version>
             </dependency>
             <dependency>
