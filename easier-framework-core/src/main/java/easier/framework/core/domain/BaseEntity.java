@@ -8,7 +8,6 @@ import com.tangzc.mpe.autotable.annotation.Column;
 import easier.framework.core.plugin.auth.AuthContext;
 import easier.framework.core.plugin.jackson.annotation.ShowUserDetail;
 import easier.framework.core.plugin.mybatis.MybatisPlusEntity;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
@@ -22,7 +21,6 @@ import java.util.Map;
  */
 @Getter
 @Setter
-@EqualsAndHashCode
 @FieldNameConstants
 public abstract class BaseEntity implements Serializable, MybatisPlusEntity {
 

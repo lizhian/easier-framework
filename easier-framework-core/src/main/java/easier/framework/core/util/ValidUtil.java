@@ -1,25 +1,20 @@
 package easier.framework.core.util;
 
-import cn.hutool.core.annotation.AnnotationUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.StrPool;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
-import easier.framework.core.domain.Update;
-import easier.framework.core.domain.ValidErrorDetail;
 import easier.framework.core.plugin.exception.biz.BizException;
-import io.swagger.v3.oas.annotations.media.Schema;
+import easier.framework.core.plugin.validation.Update;
+import easier.framework.core.plugin.validation.ValidErrorDetail;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.validator.internal.engine.path.PathImpl;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.validation.groups.Default;
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -33,10 +28,6 @@ import java.util.stream.Collectors;
 public class ValidUtil {
 
     private static final Validator validator;
-    private final static List<String> defaultMessages = CollUtil.newArrayList(
-            "不能为空"
-            , "个数必须在"
-    );
 
     static {
         try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
@@ -59,7 +50,7 @@ public class ValidUtil {
             return;
         }
         List<ValidErrorDetail> details = errors.stream()
-                .map(ValidUtil::formatMessage)
+                .map(ValidErrorDetail::from)
                 .collect(Collectors.toList());
         if (CollUtil.isEmpty(details)) {
             return;
@@ -70,42 +61,6 @@ public class ValidUtil {
         BizException bizException = BizException.of(mergeMessage);
         bizException.setExpandData(details);
         throw bizException;
-    }
-
-    private static ValidErrorDetail formatMessage(ConstraintViolation<Object> error) {
-        String message = error.getMessage();
-        message = message.replaceAll("null", "空");
-        ValidErrorDetail.ValidErrorDetailBuilder builder = ValidErrorDetail.builder()
-                .message(message)
-                .mergeMessage(message);
-        if (error.getPropertyPath() instanceof PathImpl) {
-            PathImpl path = (PathImpl) error.getPropertyPath();
-            Class<?> beanClass = error.getLeafBean().getClass();
-            String fieldName = path.getLeafNode().getName();
-            builder.fieldName(fieldName);
-            Field field = ReflectUtil.getField(beanClass, fieldName);
-            Schema schema = AnnotationUtil.getAnnotation(field, Schema.class);
-            if (schema != null) {
-                String fieldLabel = schema.description();
-                String mergeMessage = mergeMessage(fieldLabel, message);
-                builder.fieldLabel(fieldLabel)
-                        .mergeMessage(mergeMessage);
-            }
-        }
-        return builder.build();
-    }
-
-    private static String mergeMessage(String fieldLabel, String message) {
-        if (StrUtil.isBlank(fieldLabel) || StrUtil.isBlank(message)) {
-            return message;
-        }
-        if (message.contains("{}")) {
-            return StrUtil.format(message, fieldLabel);
-        }
-        if (defaultMessages.stream().anyMatch(message::startsWith)) {
-            return fieldLabel + message;
-        }
-        return message;
     }
 
 
@@ -194,46 +149,6 @@ public class ValidUtil {
 
     public static void mustFalse(Boolean bool, String message) {
         if (Boolean.FALSE.equals(bool)) {
-            return;
-        }
-        throw BizException.of(message);
-    }
-
-
-    //6-20位包含大小写字母,数字和特殊字符
-    public static void password(String password, String message) {
-        String xxStr = "abcdefghijklmnopqrstuvwxyz";
-        String dxStr = xxStr.toUpperCase();
-        String szStr = "1234567890";
-        String tsStr = "!@#$%^&*()_+-=";
-        if (StrUtil.isBlank(password)) {
-            throw BizException.of(message);
-        }
-        String[] strings = password.split("");
-        if (strings.length < 6 || strings.length > 20) {
-            throw BizException.of(message);
-        }
-        boolean xx = false, dx = false, sz = false, ts = false;
-        for (String aChar : strings) {
-            if (xxStr.contains(aChar)) {
-                xx = true;
-                continue;
-            }
-            if (dxStr.contains(aChar)) {
-                dx = true;
-                continue;
-            }
-            if (szStr.contains(aChar)) {
-                sz = true;
-                continue;
-            }
-            if (tsStr.contains(aChar)) {
-                ts = true;
-                continue;
-            }
-            throw BizException.of(message);
-        }
-        if (xx && dx && sz && ts) {
             return;
         }
         throw BizException.of(message);

@@ -9,7 +9,8 @@ import easier.framework.core.plugin.exception.ExceptionHandlerRegister;
 import easier.framework.core.util.JacksonUtil;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.servlet.api.ExceptionHandler;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,8 +22,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GlobalExceptionHandler implements ExceptionHandler {
+    public static final GlobalExceptionHandler INSTANCE = new GlobalExceptionHandler();
 
     @Override
     @SneakyThrows
@@ -47,7 +49,7 @@ public class GlobalExceptionHandler implements ExceptionHandler {
         }
 
         //注册的自定义异常处理
-        Class<? extends Throwable> throwableClass = throwable.getClass();
+        Class<? extends Throwable> throwableClass = throwable != null ? throwable.getClass() : null;
         if (ExceptionHandlerRegister.containsKey(throwableClass)) {
             responseBody = ExceptionHandlerRegister.get(throwableClass).apply(throwable);
             httpStatus = ExceptionHandlerRegister.getHttpStatus(throwableClass);
@@ -55,7 +57,7 @@ public class GlobalExceptionHandler implements ExceptionHandler {
         }
         //是否需要打印日志
         if (isPrintStackTrace) {
-            log.error("全局异常处理:{}", throwable.getMessage(), throwable);
+            log.error("全局异常处理:{}", throwable != null ? throwable.getMessage() : null, throwable);
         }
         if (response instanceof HttpServletResponse) {
             HttpServletResponse httpServletResponse = (HttpServletResponse) response;

@@ -16,15 +16,15 @@ public class ConditionHolder<T, W extends AbstractChainWrapper<T, SFunction<T, ?
     private final W wrapper;
     private final Predicate<Object> condition;
 
-    public ConditionHolder<T, W> toNotNull() {
+    public ConditionHolder<T, W> whenNotNull() {
         return new ConditionHolder<>(this.wrapper, NOT_NULL_CONDITION);
     }
 
-    public ConditionHolder<T, W> toNotBlank() {
+    public ConditionHolder<T, W> whenNotBlank() {
         return new ConditionHolder<>(this.wrapper, NOT_BLANK_CONDITION);
     }
 
-    public NotEmptyHolder<T, W> toNotEmpty() {
+    public NotEmptyHolder<T, W> whenNotEmpty() {
         return new NotEmptyHolder<>(this.wrapper);
     }
 

@@ -14,24 +14,15 @@ import java.util.List;
  */
 @Data
 public class TreeNode<T> implements Serializable {
-
-    public static final String ROOT_KEY = "-1";
-
-    /**
-     * 默认排序
-     */
-    public static final Integer DEFAULT_SORT = 100;
-    public static final String DEFAULT_SORT_STR = "100";
-
-
     @AliasId
     @Schema(description = "树节点主键")
     private Serializable key;
+
     @Schema(description = "树节点名称")
     private String name;
 
-    @Schema(description = "树节点节点数据")
-    private T nodeData;
+    @Schema(description = "树节点数据")
+    private T data;
 
     @Alias("parentId")
     @Schema(description = "树父节点主键")

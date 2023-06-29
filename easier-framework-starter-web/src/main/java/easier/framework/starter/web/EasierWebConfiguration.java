@@ -4,30 +4,41 @@ import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.net.NetUtil;
+import cn.hutool.core.text.StrPool;
+import easier.framework.core.domain.R;
+import easier.framework.core.plugin.exception.ExceptionHandlerRegister;
+import easier.framework.core.plugin.validation.ValidErrorDetail;
 import easier.framework.core.util.SpringUtil;
 import easier.framework.core.util.StrUtil;
 import easier.framework.starter.cache.EnableEasierCache;
 import easier.framework.starter.job.EnableEasierJob;
 import easier.framework.starter.web.converter.StringToEnumConverterFactory;
 import easier.framework.starter.web.converter.TimeConverters;
+import easier.framework.starter.web.error.EasierErrorController;
 import easier.framework.starter.web.filter.TraceIdServletFilter;
 import easier.framework.starter.web.handler.GlobalExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.web.servlet.error.ErrorViewResolver;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.embedded.undertow.UndertowDeploymentInfoCustomizer;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.event.EventListener;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.lang.management.ManagementFactory;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +50,7 @@ import java.util.stream.Collectors;
 @EnableEasierCache
 @EnableEasierJob
 @Import(TraceIdServletFilter.class)
-public class EasierWebConfiguration implements WebMvcConfigurer {
+public class EasierWebConfiguration implements WebMvcConfigurer, InitializingBean {
     @Override
     public void addFormatters(FormatterRegistry registry) {
         DateTimeFormatterRegistrar registrar = new DateTimeFormatterRegistrar();
@@ -63,10 +74,17 @@ public class EasierWebConfiguration implements WebMvcConfigurer {
 
 
     @Bean
+    public EasierErrorController easierErrorController(ErrorAttributes errorAttributes,
+                                                       ObjectProvider<ErrorViewResolver> errorViewResolvers) {
+        List<ErrorViewResolver> viewResolvers = errorViewResolvers.orderedStream().collect(Collectors.toList());
+        return new EasierErrorController(errorAttributes, viewResolvers);
+    }
+
+
+    @Bean
     public UndertowDeploymentInfoCustomizer undertowDeploymentInfoCustomizer() {
         return deploymentInfo -> {
-            GlobalExceptionHandler handler = new GlobalExceptionHandler();
-            deploymentInfo.setExceptionHandler(handler);
+            deploymentInfo.setExceptionHandler(GlobalExceptionHandler.INSTANCE);
         };
     }
 
@@ -118,4 +136,25 @@ public class EasierWebConfiguration implements WebMvcConfigurer {
     }
 
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        //参数校验异常
+        ExceptionHandlerRegister.register(MethodArgumentNotValidException.class, exception -> {
+            List<ValidErrorDetail> errorDetails = exception.getBindingResult()
+                    .getAllErrors()
+                    .stream()
+                    .map(ValidErrorDetail::from)
+                    .collect(Collectors.toList());
+            List<String> properties = errorDetails.stream()
+                    .map(ValidErrorDetail::getProperty)
+                    .collect(Collectors.toList());
+            String mergeMessage = errorDetails.stream()
+                    .map(ValidErrorDetail::getMergeMessage)
+                    .collect(Collectors.joining(StrPool.COMMA));
+            R<Object> failed = R.failed(mergeMessage);
+            log.error("参数校验异常,属性:{},错误信息:{}", properties, mergeMessage);
+            failed.setExpandData(errorDetails);
+            return failed;
+        });
+    }
 }

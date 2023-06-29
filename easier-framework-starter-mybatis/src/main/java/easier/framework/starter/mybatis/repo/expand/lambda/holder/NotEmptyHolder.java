@@ -12,11 +12,11 @@ import java.util.Collection;
 public class NotEmptyHolder<T, W extends AbstractChainWrapper<T, SFunction<T, ?>, W, ?>> {
     private final W wrapper;
 
-    public ConditionHolder<T, W> toNotNull() {
+    public ConditionHolder<T, W> whenNotNull() {
         return new ConditionHolder<>(this.wrapper, ConditionHolder.NOT_NULL_CONDITION);
     }
 
-    public ConditionHolder<T, W> toNotBlank() {
+    public ConditionHolder<T, W> whenNotBlank() {
         return new ConditionHolder<>(this.wrapper, ConditionHolder.NOT_BLANK_CONDITION);
     }
 

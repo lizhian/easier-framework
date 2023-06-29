@@ -44,7 +44,11 @@ public class EasierEnvironmentPostProcessor implements EnvironmentPostProcessor,
                 .sorted(Comparator.comparing(DefaultEnv::getKey))
                 .collect(Collectors.toList());
         Map<String, Object> source = new LinkedHashMap<>();
-        for (easier.framework.starter.env.DefaultEnv defaultEnv : loadedDefaultEnvs) {
+        if (!environment.containsProperty("spring.application.name")) {
+            String applicationName = application.getMainApplicationClass().getSimpleName();
+            source.put("spring.application.name", applicationName);
+        }
+        for (DefaultEnv defaultEnv : loadedDefaultEnvs) {
             String key = defaultEnv.getKey();
             String value = defaultEnv.getValue();
             source.put(key, value);

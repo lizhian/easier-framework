@@ -3,12 +3,11 @@ package easier.framework.starter.doc.customizer;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.databind.type.SimpleType;
-import com.tangzc.mpe.autotable.annotation.Column;
-import com.tangzc.mpe.autotable.annotation.Table;
 import easier.framework.core.plugin.enums.Dict;
 import easier.framework.core.plugin.enums.EnumCodec;
 import easier.framework.core.plugin.enums.EnumDetail;
 import easier.framework.core.plugin.mybatis.TableCode;
+import easier.framework.core.util.ApiDocUtil;
 import easier.framework.core.util.StrUtil;
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.oas.models.media.Schema;
@@ -83,23 +82,9 @@ public class EasierPropertyParameterCustomizer implements PropertyCustomizer, Pa
         if (annotations == null) {
             return;
         }
-        for (Annotation annotation : annotations) {
-            if (annotation instanceof Column) {
-                Column column = (Column) annotation;
-                String comment = column.comment();
-                if (StrUtil.isNotBlank(comment)) {
-                    descriptions.add(comment);
-                    return;
-                }
-            }
-            if (annotation instanceof Table) {
-                Table table = (Table) annotation;
-                String comment = table.comment();
-                if (StrUtil.isNotBlank(comment)) {
-                    descriptions.add(comment);
-                    return;
-                }
-            }
+        String description = ApiDocUtil.getDescription(annotations);
+        if (StrUtil.isNotBlank(description)) {
+            descriptions.add(description);
         }
     }
 

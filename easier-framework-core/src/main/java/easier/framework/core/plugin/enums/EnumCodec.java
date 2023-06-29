@@ -82,9 +82,7 @@ public class EnumCodec<E extends Enum<E>> {
 
     /**
      * 获取枚举详情
-     * 优先匹配枚举实例
-     * 其次匹配枚举名称
-     * 最后匹配枚举下标
+     * 枚举实例->枚举值->枚举名称->枚举下标
      */
     public EnumDetail<E> getEnumDetail(Object input) {
         if (input == null) {
@@ -92,6 +90,13 @@ public class EnumCodec<E extends Enum<E>> {
         }
         EnumDetail<E> enumDetail = enumDetails.stream()
                 .filter(it -> it.getInstance().equals(input))
+                .findAny()
+                .orElse(null);
+        if (enumDetail != null) {
+            return enumDetail;
+        }
+        enumDetail = enumDetails.stream()
+                .filter(it -> it.getValue().equals(input))
                 .findAny()
                 .orElse(null);
         if (enumDetail != null) {

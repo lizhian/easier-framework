@@ -1,5 +1,7 @@
 package easier.framework.test;
 
+import com.tangzc.mpe.autotable.EnableAutoTable;
+import easier.framework.core.util.SpringUtil;
 import easier.framework.starter.auth.EnableEasierAuth;
 import easier.framework.starter.discovery.EnableEasierDiscovery;
 import easier.framework.starter.doc.EnableEasierDoc;
@@ -23,6 +25,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @EnableEasierLogging
 @EnableEasierAuth
 @EnableEasierDoc
+@EnableAutoTable(activeProfile = SpringUtil.dev)
 public class EasierFrameworkTestApplication {
 
     @SneakyThrows

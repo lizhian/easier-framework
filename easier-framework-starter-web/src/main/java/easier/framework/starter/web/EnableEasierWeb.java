@@ -13,6 +13,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @Documented
-@Import({easier.framework.starter.web.EasierWebConfiguration.class})
+@Import(EasierWebConfiguration.class)
 public @interface EnableEasierWeb {
 }
