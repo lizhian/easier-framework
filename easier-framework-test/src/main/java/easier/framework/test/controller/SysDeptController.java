@@ -1,7 +1,7 @@
 package easier.framework.test.controller;
 
 import easier.framework.core.domain.R;
-import easier.framework.core.domain.TreeNode;
+import easier.framework.core.plugin.tree.TreeNode;
 import easier.framework.starter.mybatis.repo.Repo;
 import easier.framework.starter.mybatis.repo.Repos;
 import easier.framework.test.eo.SysDept;

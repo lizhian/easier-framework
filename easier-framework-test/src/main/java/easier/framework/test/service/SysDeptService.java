@@ -1,7 +1,7 @@
 package easier.framework.test.service;
 
-import easier.framework.core.domain.TreeNode;
 import easier.framework.core.plugin.exception.biz.BizException;
+import easier.framework.core.plugin.tree.TreeNode;
 import easier.framework.core.util.ExtensionMethodUtil;
 import easier.framework.core.util.StrUtil;
 import easier.framework.core.util.TreeUtil;
@@ -38,7 +38,7 @@ public class SysDeptService {
                 .whenNotBlank()
                 .eq(SysDept::getParentId, deptQo.getParentId())
                 .like(SysDept::getDeptName, deptQo.getDeptName())
-                .toNotNull()
+                .whenNotNull()
                 .like(SysDept::getStatus, deptQo.getStatus())
                 .end()
                 .list();

@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.tangzc.mpe.autotable.annotation.Column;
 import com.tangzc.mpe.autotable.annotation.Table;
 import easier.framework.core.domain.BaseEntity;
-import easier.framework.core.domain.TreeBuilder;
 import easier.framework.core.plugin.jackson.annotation.AliasId;
+import easier.framework.core.plugin.tree.TreeBuilder;
 import easier.framework.core.plugin.validation.Update;
 import easier.framework.core.util.TreeUtil;
 import easier.framework.test.enums.EnableStatus;
@@ -43,6 +43,7 @@ public class SysDept extends BaseEntity {
             .parentKey(SysDept::getParentId)
             .sort(SysDept::getOrderNum)
             .children(SysDept::setChildren)
+            .enable(it -> EnableStatus.enable.equals(it.getStatus()))
             .build();
 
 

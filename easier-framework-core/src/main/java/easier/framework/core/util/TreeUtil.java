@@ -9,8 +9,8 @@
 package easier.framework.core.util;
 
 import cn.hutool.core.collection.CollUtil;
-import easier.framework.core.domain.TreeBuilder;
-import easier.framework.core.domain.TreeNode;
+import easier.framework.core.plugin.tree.TreeBuilder;
+import easier.framework.core.plugin.tree.TreeNode;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -81,6 +81,8 @@ public class TreeUtil {
         Serializable key = treeBuilder.getKey().apply(data);
         String name = treeBuilder.getName().apply(data);
         Serializable parentKey = treeBuilder.getParentKey().apply(data);
+        Boolean enable = treeBuilder.getEnable().apply(data);
+        String style = treeBuilder.getStyle().apply(data);
         if (StrUtil.isBlankIfStr(key) || StrUtil.isBlankIfStr(parentKey)) {
             return null;
         }
@@ -91,16 +93,8 @@ public class TreeUtil {
         treeNode.setData(data);
         treeNode.setChildren(CollUtil.isNotEmpty(children) ? children : null);
         treeNode.setHasChildren(CollUtil.isNotEmpty(children));
-        return treeNode;
-    }
-
-    public static <T> TreeNode<T> treeNode(TreeBuilder<T> treeBuilder, T data, boolean hasChildren) {
-        TreeNode<T> treeNode = treeBuilder.treeNode(data, null);
-        if (treeNode == null) {
-            return null;
-        }
-        treeNode.setChildren(null);
-        treeNode.setHasChildren(hasChildren);
+        treeNode.setEnable(enable);
+        treeNode.setStyle(style);
         return treeNode;
     }
 

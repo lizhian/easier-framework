@@ -23,7 +23,7 @@ import com.baomidou.mybatisplus.extension.toolkit.ChainWrappers;
 import com.tangzc.mpe.base.event.EntityUpdateEvent;
 import easier.framework.core.plugin.mybatis.MybatisPlusEntity;
 import easier.framework.core.util.SpringUtil;
-import easier.framework.starter.mybatis.repo.lambda.update.LambdaUpdate;
+import easier.framework.starter.mybatis.lambda.update.LambdaUpdate;
 
 import java.util.Collection;
 import java.util.HashMap;
