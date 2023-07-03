@@ -29,7 +29,7 @@ public class TreeUtil {
     public static final Integer DEFAULT_SORT = 100;
     public static final String DEFAULT_SORT_STR = "100";
 
-    public static <T> List<TreeNode<T>> listTreeNode(TreeBuilder<T> treeBuilder, Serializable parentKey, List<T> list) {
+    public static <T> List<TreeNode<T>> build(TreeBuilder<T> treeBuilder, Serializable parentKey, List<T> list) {
         if (StrUtil.isBlankIfStr(parentKey) || CollUtil.isEmpty(list)) {
             return new ArrayList<>();
         }
@@ -45,9 +45,9 @@ public class TreeUtil {
                     //当前节点key
                     Serializable dataKey = treeBuilder.getKey().apply(data);
                     //递归获取子节点
-                    List<TreeNode<T>> children = treeBuilder.listTreeNode(dataKey, list);
+                    List<TreeNode<T>> children = treeBuilder.build(dataKey, list);
                     //构造节点数据
-                    return treeBuilder.treeNode(data, children);
+                    return treeBuilder.createTreeNode(data, children);
                 })
                 //过滤空数据
                 .filter(Objects::nonNull)
@@ -56,7 +56,7 @@ public class TreeUtil {
                 .collect(Collectors.toList());
     }
 
-    public static <T> TreeNode<T> treeNode(TreeBuilder<T> treeBuilder, Serializable key, List<T> list) {
+    public static <T> TreeNode<T> buildAsTreeNode(TreeBuilder<T> treeBuilder, Serializable key, List<T> list) {
         if (StrUtil.isBlankIfStr(key)) {
             return null;
         }
@@ -69,12 +69,12 @@ public class TreeUtil {
             return null;
         }
         //获取子节点数据
-        List<TreeNode<T>> children = treeBuilder.listTreeNode(key, list);
+        List<TreeNode<T>> children = treeBuilder.build(key, list);
         //构建树结构
-        return treeBuilder.treeNode(data, children);
+        return treeBuilder.createTreeNode(data, children);
     }
 
-    public static <T> TreeNode<T> treeNode(TreeBuilder<T> treeBuilder, T data, List<TreeNode<T>> children) {
+    public static <T> TreeNode<T> createTreeNode(TreeBuilder<T> treeBuilder, T data, List<TreeNode<T>> children) {
         if (data == null) {
             return null;
         }

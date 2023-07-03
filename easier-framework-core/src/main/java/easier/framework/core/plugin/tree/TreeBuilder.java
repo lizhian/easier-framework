@@ -83,28 +83,28 @@ public class TreeBuilder<T> {
     }
 
     @Nonnull
-    public List<TreeNode<T>> listTreeNode(List<T> list) {
-        return TreeUtil.listTreeNode(this, this.rootKey, list);
+    public List<TreeNode<T>> build(List<T> list) {
+        return TreeUtil.build(this, this.rootKey, list);
+    }
+
+    @Nonnull
+    public List<TreeNode<T>> build(Serializable parentKey, List<T> list) {
+        return TreeUtil.build(this, parentKey, list);
+    }
+
+    @Nullable
+    public TreeNode<T> buildAsTreeNode(Serializable key, List<T> list) {
+        return TreeUtil.buildAsTreeNode(this, key, list);
+    }
+
+    @Nullable
+    public TreeNode<T> createTreeNode(T data, List<TreeNode<T>> children) {
+        return TreeUtil.createTreeNode(this, data, children);
     }
 
     @Nonnull
     public List<T> asList(List<TreeNode<T>> treeNodes) {
         return TreeUtil.asList(this, treeNodes);
-    }
-
-    @Nonnull
-    public List<TreeNode<T>> listTreeNode(Serializable parentKey, List<T> list) {
-        return TreeUtil.listTreeNode(this, parentKey, list);
-    }
-
-    @Nullable
-    public TreeNode<T> treeNode(List<T> list, Serializable key) {
-        return TreeUtil.treeNode(this, key, list);
-    }
-
-    @Nullable
-    public TreeNode<T> treeNode(T data, List<TreeNode<T>> children) {
-        return TreeUtil.treeNode(this, data, children);
     }
 
 }
