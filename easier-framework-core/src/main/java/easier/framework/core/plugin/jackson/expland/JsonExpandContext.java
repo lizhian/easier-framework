@@ -3,6 +3,7 @@ package easier.framework.core.plugin.jackson.expland;
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonStreamContext;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import lombok.Data;
 import lombok.SneakyThrows;
@@ -18,6 +19,7 @@ public class JsonExpandContext {
     private final JsonStreamContext outputContext;
     private final String currentProperty;
     private final Object currentValue;
+    private final JavaType currentType;
 
     @SneakyThrows
     public void write(String key, Object value) {

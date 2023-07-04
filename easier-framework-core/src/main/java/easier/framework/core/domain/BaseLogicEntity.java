@@ -14,7 +14,7 @@ import lombok.experimental.FieldNameConstants;
  */
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @FieldNameConstants
 public abstract class BaseLogicEntity extends BaseEntity {
 

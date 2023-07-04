@@ -33,9 +33,9 @@ public class EnumDetail<E extends Enum<E>> {
     private final String description;
 
     /**
-     * 字典类型
+     * 字典编码
      */
-    private final String dictType;
+    private final String dictCode;
     /**
      * 字典名称
      */

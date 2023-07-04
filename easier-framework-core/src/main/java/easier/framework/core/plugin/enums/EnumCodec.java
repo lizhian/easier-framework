@@ -4,6 +4,7 @@ import cn.hutool.core.annotation.AnnotationUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ReflectUtil;
 import com.baomidou.mybatisplus.annotation.EnumValue;
+import easier.framework.core.plugin.dict.Dict;
 import easier.framework.core.util.InstanceUtil;
 import easier.framework.core.util.ListUtil;
 import easier.framework.core.util.StrUtil;
@@ -65,7 +66,7 @@ public class EnumCodec<E extends Enum<E>> {
                     .value(value)
                     .isIntValue(isIntValue)
                     .description(description.toString())
-                    .dictType(dict == null ? null : dict.type())
+                    .dictCode(dict == null ? null : dict.code())
                     .dictName(dict == null ? null : dict.name())
                     .dictProperty1(dict == null ? null : dict.property1())
                     .dictProperty2(dict == null ? null : dict.property2())
@@ -174,9 +175,9 @@ public class EnumCodec<E extends Enum<E>> {
         if (dict == null) {
             return StrUtil.format("枚举值说明:【{}】", str);
         }
-        return StrUtil.format("字典:【{}】【{}】,枚举值说明:【{}】"
+        return StrUtil.format("枚举字典【{}】【{}】【{}】"
                 , dict.name()
-                , dict.type()
+                , dict.code()
                 , str
         );
     }

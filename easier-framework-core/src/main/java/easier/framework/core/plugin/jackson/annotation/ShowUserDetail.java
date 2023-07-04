@@ -24,8 +24,8 @@ public @interface ShowUserDetail {
 
     String value() default "{}_UserDetail";
 
-    interface ShowUserDetailExpanderBean {
-        String getUserDetail(Object fieldValue);
+    interface ShowUserDetailBean {
+        Object getUserDetail(Object fieldValue);
     }
 
     class Expander implements JsonExpander<ShowUserDetail> {
@@ -34,7 +34,7 @@ public @interface ShowUserDetail {
         public void doExpand(ShowUserDetail annot, JsonExpandContext context) {
             String key = StrUtil.format(annot.value(), context.getCurrentProperty());
             Object userDetail = "未支持获取用户详情";
-            ShowUserDetailExpanderBean bean = SpringUtil.getAndCache(ShowUserDetailExpanderBean.class);
+            ShowUserDetailBean bean = SpringUtil.getAndCache(ShowUserDetailBean.class);
             if (bean != null) {
                 Object currentValue = context.getCurrentValue();
                 userDetail = bean.getUserDetail(currentValue);

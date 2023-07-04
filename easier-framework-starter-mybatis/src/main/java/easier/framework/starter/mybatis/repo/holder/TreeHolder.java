@@ -84,7 +84,7 @@ public class TreeHolder<T> {
     @Nonnull
     public List<TreeNode<T>> listTreeNode() {
         List<T> listAll = this.repo.listAll();
-        List<TreeNode<T>> treeNodes = this.treeBuilder.listTreeNode(listAll);
+        List<TreeNode<T>> treeNodes = this.treeBuilder.build(listAll);
         return this.after(treeNodes);
     }
 
@@ -99,7 +99,7 @@ public class TreeHolder<T> {
         //包含子节点,全表查询一次效率>嵌套查询N次效率
         List<T> list = this.repo.listAll();
         //构建树结构
-        List<TreeNode<T>> treeNodes = this.treeBuilder.listTreeNode(parentKey, list);
+        List<TreeNode<T>> treeNodes = this.treeBuilder.build(parentKey, list);
         //后置处理
         return this.after(treeNodes);
     }
@@ -115,7 +115,7 @@ public class TreeHolder<T> {
         //包含子节点,全表查询一次效率>嵌套查询N次效率
         List<T> list = this.listChildren(parentKey);
         //构建树结构
-        List<TreeNode<T>> treeNodes = this.treeBuilder.listTreeNode(parentKey, list);
+        List<TreeNode<T>> treeNodes = this.treeBuilder.build(parentKey, list);
         for (TreeNode<T> treeNode : treeNodes) {
             treeNode.setHasChildren(true);
             treeNode.setChildren(null);
@@ -134,7 +134,7 @@ public class TreeHolder<T> {
         }
         //包含子节点,全表查询一次效率>嵌套查询N次效率
         List<T> all = this.repo.listAll();
-        TreeNode<T> rootNode = this.treeBuilder.treeNode(all, key);
+        TreeNode<T> rootNode = this.treeBuilder.buildAsTreeNode(key, all);
         //后置处理
         return this.after(rootNode);
     }
@@ -142,7 +142,7 @@ public class TreeHolder<T> {
     /**
      * 查询节点数据,懒加载方式
      */
-    @Nullable
+    /*@Nullable
     public TreeNode<T> treeNodeLazy(String key) {
         if (StrUtil.isBlank(key)) {
             return null;
@@ -153,13 +153,13 @@ public class TreeHolder<T> {
         }
         List<T> listChildren = this.listChildren(key);
         //构建树结构
-        List<TreeNode<T>> children = this.treeBuilder.listTreeNode(key, listChildren);
+        List<TreeNode<T>> children = this.treeBuilder.build(key, listChildren);
         for (TreeNode<T> treeNode : children) {
             treeNode.setHasChildren(true);
             treeNode.setChildren(null);
         }
-        TreeNode<T> rootNode = this.treeBuilder.treeNode(data, children);
+        TreeNode<T> rootNode = this.treeBuilder.buildAsTreeNode(data, children);
         //后置处理
         return this.after(rootNode);
-    }
+    }*/
 }

@@ -1,4 +1,4 @@
-package easier.framework.core.plugin.enums;
+package easier.framework.core.plugin.dict;
 
 import java.lang.annotation.*;
 
@@ -11,14 +11,19 @@ import java.lang.annotation.*;
 @Inherited
 public @interface Dict {
     /**
-     * 字典类型编码
+     * 字典编码
      */
-    String type();
+    String code();
 
     /**
-     * 字典类型名称
+     * 字典名称
      */
     String name() default "";
+
+    /**
+     * 字典备注
+     */
+    String remark() default "";
 
     String property1() default "";
 

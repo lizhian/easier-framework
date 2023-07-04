@@ -6,7 +6,7 @@ import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import easier.framework.core.plugin.exception.biz.BizException;
-import easier.framework.core.plugin.validation.Update;
+import easier.framework.core.plugin.validation.UpdateGroup;
 import easier.framework.core.plugin.validation.ValidErrorDetail;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,10 +20,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * @Author: tgd
- * @Date: 2022/5/23 5:03 PM
- */
 @Slf4j
 public class ValidUtil {
 
@@ -36,7 +32,7 @@ public class ValidUtil {
     }
 
     public static void validOnUpdate(Object object) {
-        ValidUtil.valid(object, Update.class, Default.class);
+        ValidUtil.valid(object, UpdateGroup.class, Default.class);
     }
 
     /**

@@ -5,23 +5,21 @@
     <parent>
         <groupId>easier.framework</groupId>
         <artifactId>easier-framework-parent</artifactId>
-        <version>2023.06.18-2.7.12</version>
+        <version>2023.07.03-2.7.12</version>
     </parent>
     <artifactId>easier-framework-test</artifactId>
     <dependencies>
-
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-logging</artifactId>
+            <groupId>com.tangzc</groupId>
+            <artifactId>mybatis-plus-ext-magic</artifactId>
         </dependency>
         <dependency>
             <groupId>easier.framework</groupId>
-            <artifactId>easier-framework-starter-logging</artifactId>
+            <artifactId>easier-framework-starter-mybatis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>easier.framework</groupId>
+            <artifactId>easier-framework-starter-web</artifactId>
         </dependency>
         <dependency>
             <groupId>easier.framework</groupId>
@@ -29,23 +27,12 @@
         </dependency>
         <dependency>
             <groupId>easier.framework</groupId>
-            <artifactId>easier-framework-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>easier.framework</groupId>
-            <artifactId>easier-framework-starter-discovery</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>easier.framework</groupId>
             <artifactId>easier-framework-starter-auth</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
+            <groupId>easier.framework</groupId>
+            <artifactId>easier-framework-starter-job</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>
@@ -54,52 +41,19 @@
         </dependency>
         <dependency>
             <groupId>easier.framework</groupId>
-            <artifactId>easier-framework-starter-mybatis</artifactId>
+            <artifactId>easier-framework-starter-logging</artifactId>
         </dependency>
         <dependency>
             <groupId>easier.framework</groupId>
-            <artifactId>easier-framework-starter-job</artifactId>
-        </dependency>
-        <!--<dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-clients</artifactId>
-            <version>1.17.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-table-planner_2.12</artifactId>
-            <version>1.17.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-table-runtime</artifactId>
-            <version>1.17.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-json</artifactId>
-            <version>1.17.1</version>
+            <artifactId>easier-framework-core</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-kafka</artifactId>
-            <version>1.17.1</version>
-        </dependency>-->
     </dependencies>
     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
             </plugin>
         </plugins>
     </build>

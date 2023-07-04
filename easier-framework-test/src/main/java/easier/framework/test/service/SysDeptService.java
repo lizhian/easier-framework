@@ -47,7 +47,7 @@ public class SysDeptService {
 
     public List<TreeNode<SysDept>> selectDeptTree(DeptQo deptQo) {
         List<SysDept> list = this.selectDeptList(deptQo);
-        return SysDept.treeBuilder.listTreeNode(list);
+        return SysDept.treeBuilder.build(list);
     }
 
     public List<SysDept> excludeChild(String deptId) {

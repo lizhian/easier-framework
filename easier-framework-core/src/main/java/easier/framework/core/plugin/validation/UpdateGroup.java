@@ -1,4 +1,4 @@
 package easier.framework.core.plugin.validation;
 
-public interface Update {
+public interface UpdateGroup {
 }

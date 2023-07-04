@@ -29,30 +29,26 @@ public class PageParam implements Serializable {
 
     @Builder.Default
     @Schema(description = "当前页")
-    private long current = 1;
+    private long pageNo = 1;
 
     @Builder.Default
     @Schema(description = "每页大小")
-    private long size = 10;
+    private long pageSize = 10;
 
-    public <T> Page<T> toPage() {
-        return new Page<>(this.current, this.size, this.searchCount);
+    public static PageParam of(long pageNo, long pageSize) {
+        return PageParam.builder()
+                .pageNo(pageNo)
+                .pageSize(pageSize)
+                .searchCount(true)
+                .build();
     }
 
-    public static PageParam of(long current, long size) {
+    public static PageParam of(long pageNo, long pageSize, boolean searchCount) {
         return PageParam.builder()
-                        .current(current)
-                        .size(size)
-                        .searchCount(true)
-                        .build();
-    }
-
-    public static PageParam of(long current, long size, boolean searchCount) {
-        return PageParam.builder()
-                        .current(current)
-                        .size(size)
-                        .searchCount(searchCount)
-                        .build();
+                .pageNo(pageNo)
+                .pageSize(pageSize)
+                .searchCount(searchCount)
+                .build();
     }
 
     public static PageParam fromRequest() {
@@ -61,15 +57,19 @@ public class PageParam implements Serializable {
         if (request == null) {
             return result;
         }
-        String current = request.getParameter(Fields.current);
-        if (NumberUtil.isLong(current)) {
-            result.setCurrent(Long.parseLong(current));
+        String pageNo = request.getParameter(Fields.pageNo);
+        if (NumberUtil.isLong(pageNo)) {
+            result.setPageNo(Long.parseLong(pageNo));
         }
-        String size = request.getParameter(Fields.size);
-        if (NumberUtil.isLong(size)) {
-            result.setSize(Long.parseLong(size));
+        String pageSize = request.getParameter(Fields.pageSize);
+        if (NumberUtil.isLong(pageSize)) {
+            result.setPageSize(Long.parseLong(pageSize));
         }
         return result;
+    }
+
+    public <T> Page<T> toPage() {
+        return new Page<>(this.pageNo, this.pageSize, this.searchCount);
     }
 
 }

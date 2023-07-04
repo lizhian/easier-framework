@@ -4,16 +4,13 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.tangzc.mpe.autotable.annotation.Column;
 import com.tangzc.mpe.autotable.annotation.Table;
-import easier.framework.core.domain.BaseEntity;
-import easier.framework.core.plugin.jackson.annotation.AliasId;
+import easier.framework.core.domain.BaseLogicEntity;
 import easier.framework.core.plugin.tree.TreeBuilder;
-import easier.framework.core.plugin.validation.Update;
+import easier.framework.core.plugin.validation.UpdateGroup;
 import easier.framework.core.util.TreeUtil;
 import easier.framework.test.enums.EnableStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
 import lombok.experimental.FieldNameConstants;
 
 import javax.validation.constraints.Email;
@@ -29,21 +26,23 @@ import java.util.List;
  * @author ruoyi
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldNameConstants
 @Builder(toBuilder = true)
 @Table(value = "sys_dept", comment = "部门表")
-public class SysDept extends BaseEntity {
+public class SysDept extends BaseLogicEntity {
 
+    @TableField(exist = false)
     public static TreeBuilder<SysDept> treeBuilder = TreeBuilder
             .of(SysDept.class)
             .key(SysDept::getDeptId)
             .name(SysDept::getDeptName)
             .parentKey(SysDept::getParentId)
-            .sort(SysDept::getOrderNum)
-            .children(SysDept::setChildren)
+            .sort(SysDept::getSort)
             .enable(it -> EnableStatus.enable.equals(it.getStatus()))
+            .children(SysDept::setChildren)
             .build();
 
 
@@ -52,8 +51,7 @@ public class SysDept extends BaseEntity {
      */
     @Column(comment = "部门ID", notNull = true)
     @TableId
-    @AliasId
-    @NotBlank(groups = Update.class)
+    @NotBlank(groups = UpdateGroup.class)
     private String deptId;
 
 
@@ -74,9 +72,9 @@ public class SysDept extends BaseEntity {
     /**
      * 显示顺序
      */
-    @NotNull(message = "显示顺序不能为空")
-    @Column(comment = "显示顺序", notNull = true, defaultValue = TreeUtil.DEFAULT_SORT_STR)
-    private Integer orderNum;
+    @NotNull
+    @Column(comment = "顺序", notNull = true, defaultValue = TreeUtil.DEFAULT_SORT_STR)
+    private Integer sort;
 
     /**
      * 负责人
@@ -88,7 +86,7 @@ public class SysDept extends BaseEntity {
      * 联系电话
      */
     @Size(max = 11)
-    @Column(comment = "联系电话", length = 13)
+    @Column(comment = "联系电话", length = 11)
     private String phone;
 
     /**
@@ -96,19 +94,15 @@ public class SysDept extends BaseEntity {
      */
     @Email
     @Size(max = 50)
-    @Column(comment = "邮箱", length = 52)
+    @Column(comment = "邮箱", length = 50)
     private String email;
 
-    @Column(comment = "部门状态")
+    @Column(comment = "部门状态", notNull = true, defaultValue = EnableStatus.defaultValue)
     @NotNull
     private EnableStatus status;
 
 
-    /**
-     * 子部门
-     */
     @TableField(exist = false)
+    @Schema(description = "子部门")
     private List<SysDept> children = new ArrayList<>();
-
-
 }

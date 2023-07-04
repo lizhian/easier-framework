@@ -1,7 +1,7 @@
 package easier.framework.core.domain;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
-import easier.framework.core.plugin.enums.Dict;
+import easier.framework.core.plugin.dict.Dict;
 import easier.framework.core.plugin.enums.EnumDesc;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-@Dict(type = "r_code", name = "操作类型")
+@Dict(code = "r_code", name = "响应编码")
 public enum RCode {
     success(200, "操作成功"),
     failed(400, "操作失败"),

@@ -55,11 +55,12 @@ public interface MethodForUnique<T> extends TypedSelf<Repo<T>> {
         if (StrUtil.isBlankIfStr(id) || StrUtil.isBlankIfStr(value)) {
             return false;
         }
-        if (this.isUnique(field, value)) {
+        /*if (this.isUnique(field, value)) {
             return true;
         }
         T t = this.self().getById(id);
-        return t != null && value.equals(field.apply(t));
+        return t != null && value.equals(field.apply(t));*/
+        return !this.isNotUnique(field, value, id);
     }
 
     /**
@@ -69,10 +70,14 @@ public interface MethodForUnique<T> extends TypedSelf<Repo<T>> {
      * <br/>
      * 与旧数据作对比
      */
-    default <V> boolean isNotUnique(SFunction<T, V> field, V value, String id) {
-        if (StrUtil.isBlank(id) || StrUtil.isBlankIfStr(value)) {
+    default <V> boolean isNotUnique(SFunction<T, V> field, V value, Serializable id) {
+        if (StrUtil.isBlankIfStr(id) || StrUtil.isBlankIfStr(value)) {
             return false;
         }
-        return !this.isUnique(field, value, id);
+        return this.self()
+                .newQuery()
+                .eq(field, value)
+                .ne(this.self().getTableIdColumn(), id)
+                .exists();
     }
 }

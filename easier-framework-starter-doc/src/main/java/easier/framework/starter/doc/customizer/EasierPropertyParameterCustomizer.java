@@ -3,7 +3,7 @@ package easier.framework.starter.doc.customizer;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.databind.type.SimpleType;
-import easier.framework.core.plugin.enums.Dict;
+import easier.framework.core.plugin.dict.ShowDictDetail;
 import easier.framework.core.plugin.enums.EnumCodec;
 import easier.framework.core.plugin.enums.EnumDetail;
 import easier.framework.core.plugin.mybatis.TableCode;
@@ -110,12 +110,15 @@ public class EasierPropertyParameterCustomizer implements PropertyCustomizer, Pa
             return;
         }
         for (Annotation annotation : annotations) {
-            if (annotation instanceof Dict) {
-                Dict dict = (Dict) annotation;
-                String type = dict.type();
-                String description = StrUtil.format("字典编码:【{}】", type);
-                descriptions.add(description);
-                return;
+            if (annotation instanceof ShowDictDetail) {
+                ShowDictDetail showDictDetail = (ShowDictDetail) annotation;
+                String dictCode = showDictDetail.value();
+                if (StrUtil.isNotBlank(dictCode)) {
+                    String description = StrUtil.format("业务字典【{}】", dictCode);
+                    descriptions.add(description);
+                    return;
+                }
+
             }
         }
     }

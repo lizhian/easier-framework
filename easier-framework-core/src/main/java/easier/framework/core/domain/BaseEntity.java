@@ -8,6 +8,7 @@ import com.tangzc.mpe.autotable.annotation.Column;
 import easier.framework.core.plugin.auth.AuthContext;
 import easier.framework.core.plugin.jackson.annotation.ShowUserDetail;
 import easier.framework.core.plugin.mybatis.MybatisPlusEntity;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldNameConstants;
@@ -29,12 +30,14 @@ public abstract class BaseEntity implements Serializable, MybatisPlusEntity {
      */
     @ShowUserDetail
     @Column(comment = "创建人")
+    @Schema(hidden = true)
     private String createBy;
 
     /**
      * 创建时间
      */
     @Column(comment = "创建时间", notNull = true)
+    @Schema(hidden = true)
     private Date createTime;
 
     /**
@@ -42,12 +45,14 @@ public abstract class BaseEntity implements Serializable, MybatisPlusEntity {
      */
     @ShowUserDetail
     @Column(comment = "最后更新人")
+    @Schema(hidden = true)
     private String updateBy;
 
     /**
      * 最后更新时间
      */
     @Column(comment = "最后更新时间", notNull = true)
+    @Schema(hidden = true)
     private Date updateTime;
 
 
