@@ -9,10 +9,10 @@
     </parent>
     <artifactId>easier-framework-test</artifactId>
     <dependencies>
-        <dependency>
+        <!--<dependency>
             <groupId>com.tangzc</groupId>
             <artifactId>mybatis-plus-ext-magic</artifactId>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>easier.framework</groupId>
             <artifactId>easier-framework-starter-mybatis</artifactId>

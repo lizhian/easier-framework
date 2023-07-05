@@ -16,6 +16,8 @@ public interface MethodForLambda<T> extends TypedSelf<Repo<T>> {
 
     /**
      * 新建查询
+     *
+     * @return {@code LambdaQuery<T>}
      */
     default LambdaQuery<T> newQuery() {
         BaseMapper<T> baseMapper = this.self().getBaseMapper();

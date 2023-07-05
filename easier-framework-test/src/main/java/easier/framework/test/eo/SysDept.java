@@ -20,10 +20,12 @@ import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
- * 部门表 sys_dept
+ * 系统部门
  *
- * @author ruoyi
+ * @author lizhian
+ * @date 2023/07/05
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -34,6 +36,9 @@ import java.util.List;
 @Table(value = "sys_dept", comment = "部门表")
 public class SysDept extends BaseLogicEntity {
 
+    /**
+     * 树构建器
+     */
     @TableField(exist = false)
     public static TreeBuilder<SysDept> treeBuilder = TreeBuilder
             .of(SysDept.class)
@@ -47,7 +52,7 @@ public class SysDept extends BaseLogicEntity {
 
 
     /**
-     * 部门ID
+     * 部门id
      */
     @Column(comment = "部门ID", notNull = true)
     @TableId
@@ -55,25 +60,33 @@ public class SysDept extends BaseLogicEntity {
     private String deptId;
 
 
+    /**
+     * 父id
+     */
     @Column(comment = "父部门ID", notNull = true)
     private String parentId;
 
 
+    /**
+     * 祖先
+     */
     @Column(comment = "祖级列表", notNull = true)
     private String ancestors;
 
 
+    /**
+     * 部门名称
+     */
     @NotBlank
     @Size(max = 30)
     @Column(comment = "部门名称", notNull = true)
     private String deptName;
 
-
     /**
-     * 显示顺序
+     * 排序
      */
     @NotNull
-    @Column(comment = "顺序", notNull = true, defaultValue = TreeUtil.DEFAULT_SORT_STR)
+    @Column(comment = "排序", notNull = true, defaultValue = TreeUtil.DEFAULT_SORT_STR)
     private Integer sort;
 
     /**
@@ -83,25 +96,31 @@ public class SysDept extends BaseLogicEntity {
     private String leader;
 
     /**
-     * 联系电话
+     * 电话
      */
     @Size(max = 11)
-    @Column(comment = "联系电话", length = 11)
+    @Column(comment = "电话", length = 11)
     private String phone;
 
     /**
-     * 邮箱
+     * 电子邮件
      */
     @Email
     @Size(max = 50)
-    @Column(comment = "邮箱", length = 50)
+    @Column(comment = "电子邮件", length = 50)
     private String email;
 
-    @Column(comment = "部门状态", notNull = true, defaultValue = EnableStatus.defaultValue)
+    /**
+     * 状态
+     */
+    @Column(comment = "状态", notNull = true, defaultValue = EnableStatus.defaultValue)
     @NotNull
     private EnableStatus status;
 
 
+    /**
+     * 子部门
+     */
     @TableField(exist = false)
     @Schema(description = "子部门")
     private List<SysDept> children = new ArrayList<>();

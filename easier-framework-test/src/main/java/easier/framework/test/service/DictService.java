@@ -34,6 +34,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * dict服务
+ *
+ * @author lizhian
+ * @date 2023/07/05
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -126,6 +132,12 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
     }
 
 
+    /**
+     * 加载字典详情
+     *
+     * @param qo 查询对象
+     * @return {@link Map}<{@link String}, {@link DictDetail}>
+     */
     public Map<String, DictDetail> loadDictDetail(CodesQo qo) {
         ValidUtil.valid(qo);
         return _sys_dict.withBind()
@@ -135,6 +147,14 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
                 .collect(Collectors.toMap(DictDetail::getCode, it -> it));
     }
 
+
+    /**
+     * 分页字典
+     *
+     * @param pageParam 分页参数
+     * @param dictQo    字典查询对象
+     * @return {@link Page}<{@link SysDict}>
+     */
     public Page<SysDict> pageDict(PageParam pageParam, DictQo dictQo) {
         return _sys_dict.newQuery()
                 //.bind()
@@ -150,6 +170,12 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
     }
 
 
+    /**
+     * 列表字典项
+     *
+     * @param qo 查询对象
+     * @return {@link List}<{@link SysDictItem}>
+     */
     public List<SysDictItem> listDictItem(DictItemQo qo) {
         ValidUtil.valid(qo);
         return _sys_dict_item.newQuery()
@@ -165,6 +191,11 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
                 .list();
     }
 
+    /**
+     * 添加字典
+     *
+     * @param entity 实体
+     */
     public void addDict(SysDict entity) {
         ValidUtil.valid(entity);
         String dictCode = entity.getDictCode();
@@ -179,6 +210,11 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
         _sys_dict.add(entity);
     }
 
+    /**
+     * 更新字典
+     *
+     * @param entity 实体
+     */
     public void updateDict(SysDict entity) {
         ValidUtil.validOnUpdate(entity);
         String dictId = entity.getDictId();
@@ -224,6 +260,11 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
         _sys_dict_item.deleteBy(SysDictItem::getDictCode, old.getDictCode());
     }
 
+    /**
+     * 添加字典项
+     *
+     * @param entity 实体
+     */
     public void addDictItem(SysDictItem entity) {
         ValidUtil.valid(entity);
         String dictCode = entity.getDictCode();
@@ -254,6 +295,11 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
     }
 
 
+    /**
+     * 更新字典项
+     *
+     * @param entity 实体
+     */
     public void updateDictItem(SysDictItem entity) {
         ValidUtil.validOnUpdate(entity);
         String dictItemId = entity.getDictItemId();
@@ -297,6 +343,11 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
     }
 
 
+    /**
+     * 删除字典项
+     *
+     * @param qo 查询对象
+     */
     public void deleteDictItem(IdQo qo) {
         ValidUtil.valid(qo);
         String id = qo.getId();
