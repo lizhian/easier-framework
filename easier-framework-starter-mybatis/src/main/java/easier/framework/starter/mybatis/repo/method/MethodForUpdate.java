@@ -1,13 +1,9 @@
 package easier.framework.starter.mybatis.repo.method;
 
 import cn.hutool.core.collection.CollUtil;
-import com.baomidou.mybatisplus.core.enums.SqlMethod;
-import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
-import easier.framework.core.proxy.TypedSelf;
-import easier.framework.starter.mybatis.repo.Repo;
+import easier.framework.starter.mybatis.repo.IRepo;
 import easier.framework.starter.mybatis.util.MybatisPlusUtil;
-import org.apache.ibatis.binding.MapperMethod;
 
 import java.util.Collection;
 
@@ -15,7 +11,7 @@ import java.util.Collection;
 /*
  * 查询单条数据
  */
-public interface MethodForUpdate<T> extends TypedSelf<Repo<T>> {
+public interface MethodForUpdate<T> extends IRepo<T> {
 
     /**
      * 修改实体数据
@@ -25,7 +21,7 @@ public interface MethodForUpdate<T> extends TypedSelf<Repo<T>> {
             return false;
         }
         MybatisPlusUtil.preUpdate(entity);
-        int update = this.self().getBaseMapper().updateById(entity);
+        int update = this.repo().getBaseMapper().updateById(entity);
         if (update > 0) {
             MybatisPlusUtil.publishUpdateEvent(entity);
         }
@@ -36,7 +32,7 @@ public interface MethodForUpdate<T> extends TypedSelf<Repo<T>> {
      * 批量修改
      */
     default boolean updateBatch(Collection<T> entityList) {
-        return this.updateBatch(entityList, this.self().getDefaultBatchSize());
+        return this.updateBatch(entityList, this.repo().getDefaultBatchSize());
     }
 
     /**
@@ -47,7 +43,7 @@ public interface MethodForUpdate<T> extends TypedSelf<Repo<T>> {
             return false;
         }
         list.forEach(MybatisPlusUtil::preUpdate);
-        Repo<T> repo = this.self();
+        /*Repo<T> repo = this.self();
         String sqlStatement = SqlHelper.getSqlStatement(repo.getMapperClass(), SqlMethod.UPDATE_BY_ID);
         boolean result = repo.executeBatch(
                 list,
@@ -60,7 +56,8 @@ public interface MethodForUpdate<T> extends TypedSelf<Repo<T>> {
         );
         if (result) {
             MybatisPlusUtil.publishUpdateEvent(list);
-        }
-        return result;
+        }*/
+        return true;
     }
+
 }

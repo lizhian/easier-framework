@@ -1,10 +1,9 @@
-
 package easier.framework.starter.mybatis.lambda.update;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.Update;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.toolkit.ExceptionUtils;
+import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.baomidou.mybatisplus.core.toolkit.support.ColumnCache;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.conditions.AbstractChainWrapper;
@@ -14,6 +13,9 @@ import easier.framework.core.plugin.exception.biz.FrameworkException;
 import easier.framework.starter.mybatis.lambda.ColumnSFunction;
 import easier.framework.starter.mybatis.lambda.method.UpdateMethod;
 import easier.framework.starter.mybatis.lambda.method.WhenMethod;
+import easier.framework.starter.mybatis.repo.IRepo;
+import easier.framework.starter.mybatis.repo.Repo;
+import easier.framework.starter.mybatis.repo.Repos;
 import easier.framework.starter.mybatis.util.MybatisPlusUtil;
 
 import java.util.Map;
@@ -21,7 +23,8 @@ import java.util.Map;
 public final class LambdaUpdate<T> extends AbstractChainWrapper<T, SFunction<T, ?>, LambdaUpdate<T>, LambdaUpdateWrapper<T>>
         implements ChainUpdate<T>, Update<LambdaUpdate<T>, SFunction<T, ?>>
         , WhenMethod<T, LambdaUpdate<T>>
-        , UpdateMethod<T, LambdaUpdate<T>> {
+        , UpdateMethod<T, LambdaUpdate<T>>
+        , IRepo<T> {
     private final BaseMapper<T> baseMapper;
 
     public LambdaUpdate(BaseMapper<T> baseMapper, Class<T> entityClass) {
@@ -42,19 +45,19 @@ public final class LambdaUpdate<T> extends AbstractChainWrapper<T, SFunction<T, 
 
     @Override
     public LambdaUpdate<T> set(boolean condition, SFunction<T, ?> column, Object val, String mapping) {
-        wrapperChildren.set(condition, column, val, mapping);
-        return typedThis;
+        this.wrapperChildren.set(condition, column, val, mapping);
+        return this.typedThis;
     }
 
     @Override
     public LambdaUpdate<T> setSql(boolean condition, String sql) {
-        wrapperChildren.setSql(condition, sql);
-        return typedThis;
+        this.wrapperChildren.setSql(condition, sql);
+        return this.typedThis;
     }
 
     @Override
     public String getSqlSet() {
-        throw ExceptionUtils.mpe("can not use this method for \"%s\"", "getSqlSet");
+        return super.getSqlSet();
     }
 
     @Override
@@ -84,9 +87,28 @@ public final class LambdaUpdate<T> extends AbstractChainWrapper<T, SFunction<T, 
         return update;
     }
 
+
     @Override
     public boolean update(T entity) {
         throw FrameworkException.of("【LambdaUpdate】不允许使用【update(T entity)】方法");
+    }
+
+    @Override
+    public boolean remove() {
+        TableInfo tableInfo = this.repo().getTableInfo();
+        if (tableInfo.isWithLogicDelete()) {
+            MybatisPlusUtil.tryUpdateSets(this);
+            String logicDeleteSql = tableInfo.getLogicDeleteSql(false, false);
+            return this.self()
+                    .setSql(logicDeleteSql)
+                    .update();
+        }
+        return this.execute(mapper -> SqlHelper.retBool(mapper.delete(this.getWrapper())));
+    }
+
+    @Override
+    public Repo<T> repo() {
+        return Repos.of(this.getEntityClass());
     }
 }
 

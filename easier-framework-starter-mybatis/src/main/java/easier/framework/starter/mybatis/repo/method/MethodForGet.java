@@ -2,9 +2,7 @@ package easier.framework.starter.mybatis.repo.method;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import easier.framework.core.proxy.TypedSelf;
-import easier.framework.starter.mybatis.lambda.method.ColumnMethod;
-import easier.framework.starter.mybatis.repo.Repo;
+import easier.framework.starter.mybatis.repo.IRepo;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
@@ -13,7 +11,7 @@ import java.io.Serializable;
 /*
  * 查询单条数据
  */
-public interface MethodForGet<T> extends TypedSelf<Repo<T>>, ColumnMethod<T> {
+public interface MethodForGet<T> extends IRepo<T> {
     /**
      * 根据主键查询
      */
@@ -22,7 +20,7 @@ public interface MethodForGet<T> extends TypedSelf<Repo<T>>, ColumnMethod<T> {
         if (StrUtil.isBlankIfStr(id)) {
             return null;
         }
-        return this.self().getBaseMapper().selectById(id);
+        return this.repo().getBaseMapper().selectById(id);
     }
 
     /**
@@ -30,13 +28,13 @@ public interface MethodForGet<T> extends TypedSelf<Repo<T>>, ColumnMethod<T> {
      */
     @Nullable
     default T getByCode(String code) {
-        SFunction<T, ?> tableColeColumn = this.getTableColeColumn();
+        SFunction<T, ?> tableCole = this.repo().getTableCole();
         if (StrUtil.isBlank(code)) {
             return null;
         }
-        return this.self()
+        return this.repo()
                 .newQuery()
-                .eq(tableColeColumn, code)
+                .eq(tableCole, code)
                 .any();
     }
 
@@ -48,7 +46,7 @@ public interface MethodForGet<T> extends TypedSelf<Repo<T>>, ColumnMethod<T> {
         if (StrUtil.isBlankIfStr(value)) {
             return null;
         }
-        return this.self()
+        return this.repo()
                 .newQuery()
                 .eq(column, value)
                 .any();

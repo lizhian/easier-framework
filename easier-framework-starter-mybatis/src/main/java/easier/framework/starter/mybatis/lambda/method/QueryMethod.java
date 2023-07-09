@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.conditions.query.ChainQuery;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import easier.framework.core.plugin.exception.biz.BizException;
 
 import java.util.List;
 import java.util.Map;
@@ -101,5 +102,13 @@ public interface QueryMethod<T> extends ChainQuery<T> {
     default <K, V> Map<K, V> toMap(SFunction<T, K> keyColumn, SFunction<T, V> valueColumn) {
         return this.stream()
                 .collect(Collectors.toMap(keyColumn, valueColumn));
+    }
+
+
+    //
+    default void existsThenThrow(String message, Object... params) {
+        if (this.exists()) {
+            throw BizException.of(message, params);
+        }
     }
 }

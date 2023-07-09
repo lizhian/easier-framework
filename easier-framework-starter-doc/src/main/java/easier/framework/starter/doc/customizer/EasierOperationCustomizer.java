@@ -5,7 +5,7 @@ import cn.hutool.core.util.ArrayUtil;
 import com.github.xiaoymin.knife4j.core.conf.ExtensionsConstants;
 import easier.framework.core.plugin.auth.annotation.*;
 import easier.framework.core.plugin.enums.EnumCodec;
-import easier.framework.core.util.ExtensionMethodUtil;
+import easier.framework.core.util.ExtensionCore;
 import easier.framework.core.util.StrUtil;
 import io.swagger.v3.oas.models.Operation;
 import lombok.experimental.ExtensionMethod;
@@ -20,19 +20,17 @@ import org.springframework.web.method.HandlerMethod;
 import java.lang.reflect.Method;
 import java.util.List;
 
-@ExtensionMethod(ExtensionMethodUtil.class)
+@ExtensionMethod(ExtensionCore.class)
 public class EasierOperationCustomizer implements OperationCustomizer {
     @Override
     public Operation customize(Operation operation, HandlerMethod handlerMethod) {
-        List<String> descriptions = operation.getDescription()
-                .nullToEmpty()
-                .newArrayList();
-        forOrder(operation, handlerMethod);
-        forMustPermission(descriptions, handlerMethod);
-        forMustRole(descriptions, handlerMethod);
-        forMustLogin(descriptions, handlerMethod);
-        forIgnoreAuth(descriptions, handlerMethod);
-        forBaseAuth(descriptions, handlerMethod);
+        List<String> descriptions = operation.getDescription().asList();
+        this.forOrder(operation, handlerMethod);
+        this.forMustPermission(descriptions, handlerMethod);
+        this.forMustRole(descriptions, handlerMethod);
+        this.forMustLogin(descriptions, handlerMethod);
+        this.forIgnoreAuth(descriptions, handlerMethod);
+        this.forBaseAuth(descriptions, handlerMethod);
         return operation.description(StrUtil.join(descriptions));
     }
 

@@ -4,10 +4,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * 更简单mybatis属性
+ *
+ * @author lizhian
+ * @date 2023年07月05日
+ */
 @Getter
 @Setter
-@ConfigurationProperties(prefix = MybatisDynamicProperties.PREFIX)
-public class MybatisDynamicProperties {
+@ConfigurationProperties(prefix = EasierMybatisProperties.PREFIX)
+public class EasierMybatisProperties {
 
     public static final String PREFIX = "spring.datasource.dynamic";
 

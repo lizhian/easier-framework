@@ -2,9 +2,7 @@ package easier.framework.starter.mybatis.repo.method;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import easier.framework.core.proxy.TypedSelf;
-import easier.framework.starter.mybatis.lambda.method.ColumnMethod;
-import easier.framework.starter.mybatis.repo.Repo;
+import easier.framework.starter.mybatis.repo.IRepo;
 
 import java.io.Serializable;
 
@@ -12,20 +10,19 @@ import java.io.Serializable;
 /*
  * 查询单条数据
  */
-public interface MethodForExists<T> extends TypedSelf<Repo<T>>, ColumnMethod<T> {
-
+public interface MethodForExists<T> extends IRepo<T> {
 
     /**
      * 根据主键判断
      */
     default boolean existsById(Serializable id) {
-        SFunction<T, ?> tableIdColumn = this.getTableIdColumn();
+        SFunction<T, ?> tableId = this.repo().getTableId();
         if (StrUtil.isBlankIfStr(id)) {
             return false;
         }
-        return this.self()
+        return this.repo()
                 .newQuery()
-                .eq(tableIdColumn, id)
+                .eq(tableId, id)
                 .exists();
     }
 
@@ -33,13 +30,13 @@ public interface MethodForExists<T> extends TypedSelf<Repo<T>>, ColumnMethod<T> 
      * 根据编码判断
      */
     default boolean existsByCode(String code) {
-        SFunction<T, ?> tableColeColumn = this.getTableColeColumn();
+        SFunction<T, ?> tableCole = this.repo().getTableCole();
         if (StrUtil.isBlank(code)) {
             return false;
         }
-        return this.self()
+        return this.repo()
                 .newQuery()
-                .eq(tableColeColumn, code)
+                .eq(tableCole, code)
                 .exists();
     }
 
@@ -50,7 +47,7 @@ public interface MethodForExists<T> extends TypedSelf<Repo<T>>, ColumnMethod<T> 
         if (StrUtil.isBlankIfStr(value)) {
             return false;
         }
-        return this.self()
+        return this.repo()
                 .newQuery()
                 .eq(field, value)
                 .exists();

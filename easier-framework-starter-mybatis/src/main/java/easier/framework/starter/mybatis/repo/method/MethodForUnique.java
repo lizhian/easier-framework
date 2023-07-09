@@ -2,8 +2,7 @@ package easier.framework.starter.mybatis.repo.method;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import easier.framework.core.proxy.TypedSelf;
-import easier.framework.starter.mybatis.repo.Repo;
+import easier.framework.starter.mybatis.repo.IRepo;
 
 import java.io.Serializable;
 
@@ -11,7 +10,7 @@ import java.io.Serializable;
 /*
  * 查询单条数据
  */
-public interface MethodForUnique<T> extends TypedSelf<Repo<T>> {
+public interface MethodForUnique<T> extends IRepo<T> {
 
 
     /**
@@ -23,7 +22,7 @@ public interface MethodForUnique<T> extends TypedSelf<Repo<T>> {
         if (StrUtil.isBlankIfStr(value)) {
             return false;
         }
-        return this.self()
+        return this.repo()
                 .newQuery()
                 .eq(field, value)
                 .count() < 1;
@@ -38,7 +37,7 @@ public interface MethodForUnique<T> extends TypedSelf<Repo<T>> {
         if (StrUtil.isBlankIfStr(value)) {
             return false;
         }
-        return this.self()
+        return this.repo()
                 .newQuery()
                 .eq(field, value)
                 .count() > 0;
@@ -74,10 +73,11 @@ public interface MethodForUnique<T> extends TypedSelf<Repo<T>> {
         if (StrUtil.isBlankIfStr(id) || StrUtil.isBlankIfStr(value)) {
             return false;
         }
-        return this.self()
+        SFunction<T, Serializable> tableId = this.repo().getTableId();
+        return this.repo()
                 .newQuery()
                 .eq(field, value)
-                .ne(this.self().getTableIdColumn(), id)
+                .ne(tableId, id)
                 .exists();
     }
 }

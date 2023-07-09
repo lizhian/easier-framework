@@ -1,15 +1,11 @@
 package easier.framework.starter.mybatis.repo.method;
 
 import cn.hutool.core.collection.CollUtil;
-import com.baomidou.mybatisplus.core.enums.SqlMethod;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
-import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
-import easier.framework.core.proxy.TypedSelf;
 import easier.framework.core.util.StrUtil;
-import easier.framework.starter.mybatis.lambda.method.ColumnMethod;
-import easier.framework.starter.mybatis.repo.Repo;
+import easier.framework.starter.mybatis.repo.IRepo;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -19,24 +15,36 @@ import java.util.List;
 /*
  * 查询单条数据
  */
-public interface MethodForDelete<T> extends TypedSelf<Repo<T>>, ColumnMethod<T> {
+public interface MethodForDelete<T> extends IRepo<T> {
 
     /**
      * 根据主键删除
      */
     default boolean deleteById(Serializable id) {
+        SFunction<T, Serializable> tableId = this.repo().getTableId();
         if (StrUtil.isBlankIfStr(id)) {
             return false;
         }
-        int result = this.self().getBaseMapper().deleteById(id);
-        return SqlHelper.retBool(result);
+
+        TableInfo tableInfo = this.repo().getTableInfo();
+        if (tableInfo.isWithLogicDelete()) {
+            String logicDeleteSql = tableInfo.getLogicDeleteSql(false, false);
+            return this.repo()
+                    .newUpdate()
+                    .setSql(logicDeleteSql)
+                    .eq(tableId, id)
+                    .update();
+        }
+        return SqlHelper.retBool(
+                this.repo().getBaseMapper().deleteById(id)
+        );
     }
 
     /**
      * 根据主键批量删除
      */
     default boolean deleteByIds(Collection<Serializable> ids) {
-        int defaultBatchSize = this.self().getDefaultBatchSize();
+        int defaultBatchSize = this.repo().getDefaultBatchSize();
         return this.deleteByIds(ids, defaultBatchSize);
     }
 
@@ -44,63 +52,80 @@ public interface MethodForDelete<T> extends TypedSelf<Repo<T>>, ColumnMethod<T> 
      * 根据主键批量删除
      */
     default boolean deleteByIds(Collection<Serializable> ids, int batchSize) {
+        SFunction<T, Serializable> tableId = this.repo().getTableId();
         if (CollUtil.isEmpty(ids)) {
             return false;
         }
-        Repo<T> repo = this.self();
-        Class<T> entityClass = repo.getEntityClass();
-        Class<?> mapperClass = repo.getMapperClass();
-        String sqlStatement = SqlHelper.getSqlStatement(mapperClass, SqlMethod.DELETE_BY_ID);
-        TableInfo tableInfo = TableInfoHelper.getTableInfo(entityClass);
-        return repo.executeBatch(ids, batchSize, (sqlSession, e) -> {
+        TableInfo tableInfo = this.repo().getTableInfo();
+        for (List<Serializable> splitIds : CollUtil.split(ids, batchSize)) {
             if (tableInfo.isWithLogicDelete()) {
-                if (entityClass.isAssignableFrom(e.getClass())) {
-                    sqlSession.update(sqlStatement, e);
-                } else {
-                    T instance = tableInfo.newInstance();
-                    tableInfo.setPropertyValue(instance, tableInfo.getKeyProperty(), e);
-                    sqlSession.update(sqlStatement, instance);
-                }
+                String logicDeleteSql = tableInfo.getLogicDeleteSql(false, false);
+                this.repo()
+                        .newUpdate()
+                        .setSql(logicDeleteSql)
+                        .in(tableId, splitIds)
+                        .update();
             } else {
-                sqlSession.update(sqlStatement, e);
+                this.repo().getBaseMapper().deleteBatchIds(ids);
             }
-        });
+        }
+        return true;
     }
 
     /**
      * 根据编码删除
      */
     default boolean deleteByCode(String code) {
-        SFunction<T, ?> tableColeColumn = this.getTableColeColumn();
+        SFunction<T, String> tableCole = this.repo().getTableCole();
         if (StrUtil.isBlank(code)) {
             return false;
         }
-        return this.self()
+        TableInfo tableInfo = this.repo().getTableInfo();
+        if (tableInfo.isWithLogicDelete()) {
+            String logicDeleteSql = tableInfo.getLogicDeleteSql(false, false);
+            return this.repo()
+                    .newUpdate()
+                    .setSql(logicDeleteSql)
+                    .eq(tableCole, code)
+                    .update();
+        }
+        return this.repo()
                 .newUpdate()
-                .eq(tableColeColumn, code)
-                .delete();
+                .eq(tableCole, code)
+                .update();
     }
 
     /**
      * 根据编码批量删除
      */
     default boolean deleteByCodes(Collection<String> codes) {
-        return this.deleteByCodes(codes, this.self().getDefaultBatchSize());
+        int defaultBatchSize = this.repo().getDefaultBatchSize();
+        return this.deleteByCodes(codes, defaultBatchSize);
     }
 
     /**
      * 根据编码批量删除
      */
     default boolean deleteByCodes(Collection<String> codes, int batchSize) {
-        SFunction<T, ?> tableColeColumn = this.getTableColeColumn();
+        SFunction<T, ?> tableCole = this.repo().getTableCole();
         if (CollUtil.isEmpty(codes)) {
             return false;
         }
-        for (List<String> temp : CollUtil.split(codes, batchSize)) {
-            this.self()
-                    .newUpdate()
-                    .in(tableColeColumn, temp)
-                    .remove();
+        TableInfo tableInfo = this.repo().getTableInfo();
+        for (List<String> splitCodes : CollUtil.split(codes, batchSize)) {
+            if (tableInfo.isWithLogicDelete()) {
+                String logicDeleteSql = tableInfo.getLogicDeleteSql(false, false);
+                this.repo()
+                        .newUpdate()
+                        .setSql(logicDeleteSql)
+                        .in(tableCole, splitCodes)
+                        .update();
+            } else {
+                this.repo()
+                        .newUpdate()
+                        .in(tableCole, splitCodes)
+                        .delete();
+            }
         }
         return true;
     }
@@ -112,17 +137,18 @@ public interface MethodForDelete<T> extends TypedSelf<Repo<T>>, ColumnMethod<T> 
         if (StrUtil.isBlankIfStr(value)) {
             return false;
         }
-        return this.self()
+        return this.repo()
                 .newUpdate()
                 .eq(column, value)
-                .remove();
+                .delete();
     }
 
     /**
      * 根据字段批量删除
      */
     default <V> boolean deleteBy(SFunction<T, V> column, Collection<V> values) {
-        return this.deleteBy(column, values, this.self().getDefaultBatchSize());
+        int defaultBatchSize = this.repo().getDefaultBatchSize();
+        return this.deleteBy(column, values, defaultBatchSize);
     }
 
     /**
@@ -133,7 +159,7 @@ public interface MethodForDelete<T> extends TypedSelf<Repo<T>>, ColumnMethod<T> 
             return false;
         }
         for (List<V> temp : CollUtil.split(values, batchSize)) {
-            this.self()
+            this.repo()
                     .newUpdate()
                     .in(column, temp)
                     .remove();

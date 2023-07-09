@@ -1,5 +1,6 @@
 package easier.framework.core.plugin.tree;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import easier.framework.core.util.StrUtil;
 import easier.framework.core.util.TreeUtil;
@@ -10,8 +11,12 @@ import lombok.RequiredArgsConstructor;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -79,7 +84,7 @@ public class TreeBuilder<T> {
         if (node == null || this.sort == null) {
             return TreeUtil.DEFAULT_SORT;
         }
-        return getSortValue(node.getData());
+        return this.getSortValue(node.getData());
     }
 
     @Nonnull
@@ -107,4 +112,72 @@ public class TreeBuilder<T> {
         return TreeUtil.asList(this, treeNodes);
     }
 
+
+    /**
+     * 匹配过滤
+     * 一旦命中,当前节点和子节点都保留
+     *
+     * @param tree  树
+     * @param match 匹配
+     * @return {@link List}<{@link TreeNode}<{@link T}>>
+     */
+    @Nonnull
+    public List<TreeNode<T>> match(List<TreeNode<T>> tree, Predicate<T> match) {
+        if (tree == null) {
+            return new ArrayList<>();
+        }
+        return tree.stream()
+                .map(it -> {
+                    T data = it.getData();
+                    if (data == null) {
+                        return null;
+                    }
+                    //当前节点匹配,返回整条数据
+                    boolean isMatched = match.test(data);
+                    if (isMatched) {
+                        return it;
+                    }
+                    List<TreeNode<T>> matchedChildren = this.match(it.getChildren(), match);
+                    if (CollUtil.isEmpty(matchedChildren)) {
+                        return null;
+                    }
+                    it.setChildren(matchedChildren);
+                    return it;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+
+    /**
+     * 排除过滤
+     * 一旦符合,当前节点和子节点都不要
+     *
+     * @param tree    树
+     * @param exclude 匹配
+     * @return {@link List}<{@link TreeNode}<{@link T}>>
+     */
+    @Nonnull
+    public List<TreeNode<T>> exclude(List<TreeNode<T>> tree, Predicate<T> exclude) {
+        if (tree == null) {
+            return new ArrayList<>();
+        }
+        return tree.stream()
+                .map(it -> {
+                    T data = it.getData();
+                    if (data == null) {
+                        return null;
+                    }
+                    //当前节点匹配,返回整条数据
+                    boolean isExclude = exclude.test(data);
+                    if (isExclude) {
+                        return null;
+                    }
+                    List<TreeNode<T>> excludedChildren = this.exclude(it.getChildren(), exclude);
+                    it.setChildren(excludedChildren);
+                    return it;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
 }

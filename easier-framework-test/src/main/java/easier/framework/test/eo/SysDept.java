@@ -7,9 +7,9 @@ import com.tangzc.mpe.autotable.annotation.Table;
 import easier.framework.core.domain.BaseLogicEntity;
 import easier.framework.core.plugin.tree.TreeBuilder;
 import easier.framework.core.plugin.validation.UpdateGroup;
+import easier.framework.core.util.StrUtil;
 import easier.framework.core.util.TreeUtil;
 import easier.framework.test.enums.EnableStatus;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.FieldNameConstants;
 
@@ -17,7 +17,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -47,7 +46,6 @@ public class SysDept extends BaseLogicEntity {
             .parentKey(SysDept::getParentId)
             .sort(SysDept::getSort)
             .enable(it -> EnableStatus.enable.equals(it.getStatus()))
-            .children(SysDept::setChildren)
             .build();
 
 
@@ -58,6 +56,14 @@ public class SysDept extends BaseLogicEntity {
     @TableId
     @NotBlank(groups = UpdateGroup.class)
     private String deptId;
+
+    /**
+     * 部门名称
+     */
+    @NotBlank
+    @Size(max = 30)
+    @Column(comment = "部门名称", notNull = true)
+    private String deptName;
 
 
     /**
@@ -70,17 +76,8 @@ public class SysDept extends BaseLogicEntity {
     /**
      * 祖先
      */
-    @Column(comment = "祖级列表", notNull = true)
+    @Column(comment = "祖先列表", notNull = true, length = 1024)
     private String ancestors;
-
-
-    /**
-     * 部门名称
-     */
-    @NotBlank
-    @Size(max = 30)
-    @Column(comment = "部门名称", notNull = true)
-    private String deptName;
 
     /**
      * 排序
@@ -119,9 +116,11 @@ public class SysDept extends BaseLogicEntity {
 
 
     /**
-     * 子部门
+     * 祖先列表
+     *
+     * @return {@link List}<{@link String}>
      */
-    @TableField(exist = false)
-    @Schema(description = "子部门")
-    private List<SysDept> children = new ArrayList<>();
+    public List<String> ancestorsAsList() {
+        return StrUtil.smartSplit(this.ancestors);
+    }
 }

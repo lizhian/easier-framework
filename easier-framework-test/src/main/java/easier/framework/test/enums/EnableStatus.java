@@ -17,14 +17,18 @@ import lombok.experimental.FieldNameConstants;
 public enum EnableStatus {
     enable("enable", "启用"),
     disable("disable", "停用");
+    public static final String defaultValue = "enable";
     @EnumValue
     private final String value;
     @EnumDesc
     private final String desc;
-    public static final String defaultValue = "enable";
 
     public static boolean isEnable(EnableStatus status) {
         return EnableStatus.enable.equals(status);
+    }
+
+    public static boolean isDisable(EnableStatus status) {
+        return !EnableStatus.enable.equals(status);
     }
 
 }

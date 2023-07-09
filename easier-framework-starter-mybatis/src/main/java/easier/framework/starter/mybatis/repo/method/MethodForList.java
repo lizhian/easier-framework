@@ -3,9 +3,7 @@ package easier.framework.starter.mybatis.repo.method;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import easier.framework.core.proxy.TypedSelf;
-import easier.framework.starter.mybatis.lambda.method.ColumnMethod;
-import easier.framework.starter.mybatis.repo.Repo;
+import easier.framework.starter.mybatis.repo.IRepo;
 
 import javax.annotation.Nonnull;
 import java.io.Serializable;
@@ -17,14 +15,14 @@ import java.util.List;
 /*
  * 查询单条数据
  */
-public interface MethodForList<T> extends TypedSelf<Repo<T>>, ColumnMethod<T> {
+public interface MethodForList<T> extends IRepo<T> {
 
     /**
      * 查询全表
      */
     @Nonnull
     default List<T> listAll() {
-        return this.self().newQuery().list();
+        return this.repo().newQuery().list();
     }
 
     /**
@@ -35,7 +33,7 @@ public interface MethodForList<T> extends TypedSelf<Repo<T>>, ColumnMethod<T> {
         if (CollUtil.isEmpty(ids)) {
             return new ArrayList<>();
         }
-        List<T> list = this.self().getBaseMapper().selectBatchIds(ids);
+        List<T> list = this.repo().getBaseMapper().selectBatchIds(ids);
         return list == null ? new ArrayList<>() : list;
     }
 
@@ -44,13 +42,13 @@ public interface MethodForList<T> extends TypedSelf<Repo<T>>, ColumnMethod<T> {
      */
     @Nonnull
     default List<T> listByCodes(Collection<String> codes) {
-        SFunction<T, ?> tableColeColumn = this.getTableColeColumn();
+        SFunction<T, ?> tableCole = this.repo().getTableCole();
         if (CollUtil.isEmpty(codes)) {
             return new ArrayList<>();
         }
-        return this.self()
+        return this.repo()
                 .newQuery()
-                .in(tableColeColumn, codes)
+                .in(tableCole, codes)
                 .list();
     }
 
@@ -62,7 +60,7 @@ public interface MethodForList<T> extends TypedSelf<Repo<T>>, ColumnMethod<T> {
         if (StrUtil.isBlankIfStr(value)) {
             return new ArrayList<>();
         }
-        return this.self()
+        return this.repo()
                 .newQuery()
                 .eq(column, value)
                 .list();
@@ -76,7 +74,7 @@ public interface MethodForList<T> extends TypedSelf<Repo<T>>, ColumnMethod<T> {
         if (CollUtil.isEmpty(values)) {
             return new ArrayList<>();
         }
-        return this.self()
+        return this.repo()
                 .newQuery()
                 .in(column, values)
                 .list();

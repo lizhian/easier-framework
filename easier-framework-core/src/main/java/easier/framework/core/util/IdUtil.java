@@ -12,8 +12,8 @@ import javax.annotation.Nonnull;
 @Slf4j
 public class IdUtil {
 
-    private volatile static long dataCenterId = cn.hutool.core.util.IdUtil.getDataCenterId(32);
-    private volatile static long workerId = cn.hutool.core.util.IdUtil.getWorkerId(dataCenterId, 32);
+    private volatile static long dataCenterId = cn.hutool.core.util.IdUtil.getDataCenterId(31);
+    private volatile static long workerId = cn.hutool.core.util.IdUtil.getWorkerId(dataCenterId, 31);
 
     @Nonnull
     public static String nextIdStr() {

@@ -6,7 +6,7 @@ import com.tangzc.mpe.autotable.annotation.Table;
 import com.tangzc.mpe.bind.metadata.annotation.BindEntity;
 import com.tangzc.mpe.bind.metadata.annotation.JoinCondition;
 import com.tangzc.mpe.bind.metadata.annotation.JoinOrderBy;
-import easier.framework.core.domain.BaseEntity;
+import easier.framework.core.domain.BaseLogicEntity;
 import easier.framework.core.plugin.dict.DictDetail;
 import easier.framework.core.plugin.dict.DictItemDetail;
 import easier.framework.core.plugin.dict.ShowDictDetail;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 @FieldNameConstants
 @Builder(toBuilder = true)
 @Table(value = "sys_dict", comment = "字典表")
-public class SysDict extends BaseEntity {
+public class SysDict extends BaseLogicEntity {
 
     @Column(comment = "字典主键")
     @TableId
@@ -84,8 +84,8 @@ public class SysDict extends BaseEntity {
 
     public DictDetail toDictDetail() {
         List<DictItemDetail> itemDetails = null;
-        if (items != null) {
-            itemDetails = items.stream()
+        if (this.items != null) {
+            itemDetails = this.items.stream()
                     .map(SysDictItem::toDictItemDetail)
                     .collect(Collectors.toList());
         }

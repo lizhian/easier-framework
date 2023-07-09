@@ -17,6 +17,13 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 
+/**
+ * 字典项
+ * sys_dict_item
+ *
+ * @author lizhian
+ * @date 2023年07月05日
+ */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
@@ -26,42 +33,71 @@ import javax.validation.constraints.Size;
 @Table(value = "sys_dict_item", comment = "字典项表")
 public class SysDictItem extends BaseEntity {
 
+    /**
+     * 字典项主键
+     */
     @Column(comment = "字典项主键")
     @TableId
     @NotBlank(groups = UpdateGroup.class)
     private String dictItemId;
 
+    /**
+     * 所属字典编码
+     */
     @Column(comment = "所属字典编码", notNull = true)
     @NotBlank
     private String dictCode;
 
+    /**
+     * 值
+     */
     @Column(comment = "字典项键值", notNull = true)
     @NotBlank
     @Size(max = 100)
     private String value;
 
+    /**
+     * 标签
+     */
     @Column(comment = "字典项标签", notNull = true)
     @NotBlank
     @Size(max = 100)
     private String label;
 
+    /**
+     * 排序
+     */
     @Column(comment = "排序", notNull = true, defaultValue = TreeUtil.DEFAULT_SORT_STR)
     @NotNull
     private Integer sort;
 
-    @Column(comment = "字典项样式")
+    /**
+     * 样式
+     */
+    @Column(comment = "样式")
     @Size(max = 100)
     @ShowDictDetail("dict_item_style")
     private String style;
 
+    /**
+     * 状态
+     */
     @Column(comment = "字典项状态", notNull = true, defaultValue = EnableStatus.defaultValue)
     @NotNull
     @ShowDictDetail
     private EnableStatus status;
 
+    /**
+     * 备注
+     */
     @Column(comment = "备注")
     private String remark;
 
+    /**
+     * 到字典项目详情
+     *
+     * @return {@link DictItemDetail}
+     */
     public DictItemDetail toDictItemDetail() {
         return DictItemDetail.builder()
                 .value(this.value)

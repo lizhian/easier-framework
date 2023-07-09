@@ -1,13 +1,12 @@
 package easier.framework.test.controller;
 
 import easier.framework.core.domain.CodesQo;
+import easier.framework.core.domain.IdQo;
 import easier.framework.core.domain.R;
 import easier.framework.core.plugin.dict.DictDetail;
 import easier.framework.core.plugin.tree.TreeNode;
-import easier.framework.starter.mybatis.repo.Repo;
-import easier.framework.starter.mybatis.repo.Repos;
 import easier.framework.test.eo.SysDept;
-import easier.framework.test.qo.DeptQo;
+import easier.framework.test.qo.DeptTreeQo;
 import easier.framework.test.service.DeptService;
 import easier.framework.test.service.DictService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,7 +28,6 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 public class DeptController {
-    private final Repo<SysDept> _sys_dept = Repos.of(SysDept.class);
     private final DeptService deptService;
     private final DictService dictService;
 
@@ -42,74 +40,56 @@ public class DeptController {
     @Operation(summary = "加载字典")
     @GetMapping("/dept/dict")
     public R<Map<String, DictDetail>> dict(CodesQo qo) {
-        Map<String, DictDetail> map = dictService.loadDictDetail(qo);
+        Map<String, DictDetail> map = this.dictService.loadDictDetail(qo);
         return R.success(map);
     }
 
 
     /**
-     * 列表
+     * 获取部门树
      *
-     * @param deptQo 部门请求对象
-     * @return {@code R<List<SysDept>>}
+     * @param qo 请求对象
+     * @return {@link R}<{@link List}<{@link TreeNode}<{@link SysDept}>>>
      */
-    @Operation(summary = "获取部门列表")
-    //@MustPermission("system:dept:list")
-    @GetMapping("/dept/list")
-    public R<List<SysDept>> list(DeptQo deptQo) {
-        return R.success(deptService.selectDeptList(deptQo));
+    @Operation(summary = "获取部门树")
+    @GetMapping("/dept/tree")
+    public R<List<TreeNode<SysDept>>> getDeptTree(DeptTreeQo qo) {
+        List<TreeNode<SysDept>> list = this.deptService.getDeptTree(qo);
+        return R.success(list);
     }
 
-    @Operation(summary = "获取部门列表,树结构")
-    //@MustPermission("system:dept:list")
-    @GetMapping("/dept/listTree")
-    public R<List<TreeNode<SysDept>>> selectDeptTree(DeptQo deptQo) {
-        return R.success(deptService.selectDeptTree(deptQo));
-    }
-
-    @Operation(summary = "查询部门列表（排除节点）")
-    //@MustPermission("system:dept:list")
-    @GetMapping("/dept/list/exclude/{deptId}")
-    public R<List<SysDept>> excludeChild(@PathVariable(value = "deptId", required = false) String deptId) {
-        return R.success(deptService.excludeChild(deptId));
-    }
-
-    @Operation(summary = "根据部门编号获取详细信息")
-    //@MustPermission("system:dept:query")
-    @GetMapping(value = "/dept/{deptId}")
-    public R<SysDept> getInfo(@PathVariable String deptId) {
-        SysDept dept = _sys_dept.withBind().getById(deptId);
-        return R.success(dept);
-    }
 
     /**
-     * 添加
+     * 添加部门
      *
-     * @param dept 部门
-     * @return {@link R}<{@link Boolean}>
+     * @param entity 实体
+     * @return {@link R}<{@link String}>
      */
-    @Operation(summary = "新增部门")
-    //@MustPermission("system:dept:add")
-    @PostMapping("/dept")
-    public R<Boolean> add(@Validated @RequestBody SysDept dept) {
-        deptService.add(dept);
+    @Operation(summary = "添加部门")
+    @PostMapping("/dept/add")
+    public R<String> addDept(@Validated @RequestBody SysDept entity) {
+        this.deptService.addDept(entity);
         return R.success();
     }
 
-    @Operation(summary = "修改部门")
-    //@MustPermission("system:dept:edit")
-    @PutMapping("/dept")
-    public R<Boolean> edit(@RequestBody SysDept dept) {
-        deptService.update(dept);
+    /**
+     * 更新部门
+     *
+     * @param entity 实体
+     * @return {@link R}<{@link String}>
+     */
+    @Operation(summary = "更新部门")
+    @PutMapping("/dept/update")
+    public R<String> updateDept(@RequestBody SysDept entity) {
+        this.deptService.updateDept(entity);
         return R.success();
     }
 
 
     @Operation(summary = "删除部门")
-    //@MustPermission("system:dept:remove")
-    @DeleteMapping("/dept/{deptId}")
-    public R<Boolean> remove(@PathVariable String deptId) {
-        deptService.deleteDeptById(deptId);
+    @DeleteMapping("/dept/delete")
+    public R<String> deleteDept(@Validated IdQo qo) {
+        this.deptService.deleteDept(qo.getId());
         return R.success();
     }
 }

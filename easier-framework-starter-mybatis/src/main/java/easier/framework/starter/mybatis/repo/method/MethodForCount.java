@@ -2,9 +2,7 @@ package easier.framework.starter.mybatis.repo.method;
 
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import easier.framework.core.proxy.TypedSelf;
-import easier.framework.starter.mybatis.lambda.method.ColumnMethod;
-import easier.framework.starter.mybatis.repo.Repo;
+import easier.framework.starter.mybatis.repo.IRepo;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -13,25 +11,27 @@ import java.util.Collection;
 /*
  * 查询单条数据
  */
-public interface MethodForCount<T> extends ColumnMethod<T>, TypedSelf<Repo<T>> {
+public interface MethodForCount<T> extends IRepo<T> {
     /**
      * 查询总数
      */
     default long count() {
-        return this.self().newQuery().count();
+        return this.repo()
+                .newQuery()
+                .count();
     }
 
     /**
      * 查询数量
      */
     default long countByIds(Collection<Serializable> ids) {
-        SFunction<T, ?> tableIdColumn = this.getTableIdColumn();
+        SFunction<T, ?> tableId = this.repo().getTableId();
         if (CollUtil.isEmpty(ids)) {
             return 0;
         }
-        return this.self()
+        return this.repo()
                 .newQuery()
-                .in(tableIdColumn, ids)
+                .in(tableId, ids)
                 .count();
     }
 
@@ -39,13 +39,13 @@ public interface MethodForCount<T> extends ColumnMethod<T>, TypedSelf<Repo<T>> {
      * 查询数量
      */
     default long countByCodes(Collection<String> codes) {
-        SFunction<T, ?> tableColeColumn = this.getTableColeColumn();
+        SFunction<T, ?> tableCole = this.repo().getTableCole();
         if (CollUtil.isEmpty(codes)) {
             return 0;
         }
-        return this.self()
+        return this.repo()
                 .newQuery()
-                .in(tableColeColumn, codes)
+                .in(tableCole, codes)
                 .count();
     }
 
@@ -56,7 +56,7 @@ public interface MethodForCount<T> extends ColumnMethod<T>, TypedSelf<Repo<T>> {
         if (value == null) {
             return 0;
         }
-        return this.self()
+        return this.repo()
                 .newQuery()
                 .eq(column, value)
                 .count();
@@ -69,7 +69,7 @@ public interface MethodForCount<T> extends ColumnMethod<T>, TypedSelf<Repo<T>> {
         if (CollUtil.isEmpty(values)) {
             return 0;
         }
-        return this.self()
+        return this.repo()
                 .newQuery()
                 .in(column, values)
                 .count();

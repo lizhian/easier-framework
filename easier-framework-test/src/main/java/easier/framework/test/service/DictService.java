@@ -25,7 +25,7 @@ import easier.framework.test.qo.DictQo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,20 +34,26 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
 /**
- * dict服务
+ * 字典服务
  *
  * @author lizhian
- * @date 2023/07/05
+ * @date 2023年07月05日
  */
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class DictService implements ApplicationListener<ApplicationReadyEvent> {
+public class DictService {
     private final Repo<SysDict> _sys_dict = Repos.of(SysDict.class);
     private final Repo<SysDictItem> _sys_dict_item = Repos.of(SysDictItem.class);
 
-    @Override
+    /**
+     * 更新枚举字典
+     *
+     * @param event 事件
+     */
+    @EventListener
     public void onApplicationEvent(ApplicationReadyEvent event) {
         String packageName = EasierFrameworkTestApplication.class.getPackage().getName();
         Set<Class<?>> classes = ClassUtil.scanPackageByAnnotation(packageName, Dict.class);
@@ -67,7 +73,7 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
             String dictName = dict.name();
             String remark = dict.remark();
             //有则更新,无则新增
-            SysDict oldDict = _sys_dict.getByCode(dictCode);
+            SysDict oldDict = this._sys_dict.getByCode(dictCode);
             if (oldDict == null) {
                 SysDict newDict = SysDict.builder()
                         .dictCode(dictCode)
@@ -76,7 +82,7 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
                         .status(EnableStatus.enable)
                         .remark(remark)
                         .build();
-                _sys_dict.add(newDict);
+                this._sys_dict.add(newDict);
             } else {
                 SysDict newDict = oldDict.toBuilder()
                         .dictCode(dictCode)
@@ -85,12 +91,12 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
                         .status(EnableStatus.enable)
                         .remark(remark)
                         .build();
-                _sys_dict.update(newDict);
+                this._sys_dict.update(newDict);
             }
             for (int index = 0; index < codec.getEnumDetails().size(); index++) {
                 EnumDetail<?> enumDetail = codec.getEnumDetails().get(index);
                 String value = enumDetail.getValueAsStr();
-                SysDictItem oldItem = _sys_dict_item.newQuery()
+                SysDictItem oldItem = this._sys_dict_item.newQuery()
                         .eq(SysDictItem::getDictCode, dictCode)
                         .eq(SysDictItem::getValue, value)
                         .any();
@@ -103,7 +109,7 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
                             .style(enumDetail.getDictProperty1())
                             .status(EnableStatus.enable)
                             .build();
-                    _sys_dict_item.add(item);
+                    this._sys_dict_item.add(item);
                 } else {
                     SysDictItem item = oldItem.toBuilder()
                             .dictCode(dictCode)
@@ -113,7 +119,7 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
                             .style(enumDetail.getDictProperty1())
                             .status(EnableStatus.enable)
                             .build();
-                    _sys_dict_item.update(item);
+                    this._sys_dict_item.update(item);
                 }
             }
             List<String> values = codec.getEnumDetails()
@@ -122,7 +128,7 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
                     .filter(StrUtil::isNotBlank)
                     .collect(Collectors.toList());
             if (CollUtil.isNotEmpty(values)) {
-                _sys_dict_item.newUpdate()
+                this._sys_dict_item.newUpdate()
                         .eq(SysDictItem::getDictCode, dictCode)
                         .notIn(SysDictItem::getValue, values)
                         .remove();
@@ -140,7 +146,7 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
      */
     public Map<String, DictDetail> loadDictDetail(CodesQo qo) {
         ValidUtil.valid(qo);
-        return _sys_dict.withBind()
+        return this._sys_dict.withBind()
                 .listByCodes(qo.getCodes())
                 .stream()
                 .map(SysDict::toDictDetail)
@@ -156,7 +162,7 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
      * @return {@link Page}<{@link SysDict}>
      */
     public Page<SysDict> pageDict(PageParam pageParam, DictQo dictQo) {
-        return _sys_dict.newQuery()
+        return this._sys_dict.newQuery()
                 //.bind()
                 .whenNotBlank()
                 .like(SysDict::getDictName, dictQo.getDictName())
@@ -178,7 +184,7 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
      */
     public List<SysDictItem> listDictItem(DictItemQo qo) {
         ValidUtil.valid(qo);
-        return _sys_dict_item.newQuery()
+        return this._sys_dict_item.newQuery()
                 //.bind()
                 .eq(SysDictItem::getDictCode, qo.getDictCode())
                 .whenNotBlank()
@@ -199,15 +205,15 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
     public void addDict(SysDict entity) {
         ValidUtil.valid(entity);
         String dictCode = entity.getDictCode();
-        if (_sys_dict.existsByCode(dictCode)) {
+        if (this._sys_dict.existsByCode(dictCode)) {
             throw BizException.of("重复的字典编码:{}", dictCode);
         }
         String dictName = entity.getDictName();
-        if (_sys_dict.isNotUnique(SysDict::getDictName, dictName)) {
+        if (this._sys_dict.isNotUnique(SysDict::getDictName, dictName)) {
             throw BizException.of("重复的字典名称:{}", dictCode);
         }
         entity.setDictType(DictType.bizDict);
-        _sys_dict.add(entity);
+        this._sys_dict.add(entity);
     }
 
     /**
@@ -218,7 +224,7 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
     public void updateDict(SysDict entity) {
         ValidUtil.validOnUpdate(entity);
         String dictId = entity.getDictId();
-        SysDict old = _sys_dict.getById(dictId);
+        SysDict old = this._sys_dict.getById(dictId);
         if (old == null) {
             throw BizException.of("无效的字典主键:{}", dictId);
         }
@@ -226,11 +232,11 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
         //字典样式
         if (DictType.enumDict.equals(entity.getDictType())) {
             old.setStyle(entity.getStyle());
-            _sys_dict.update(old);
+            this._sys_dict.update(old);
             return;
         }
         String dictName = entity.getDictName();
-        if (_sys_dict.isNotUnique(SysDict::getDictName, dictName, dictId)) {
+        if (this._sys_dict.isNotUnique(SysDict::getDictName, dictName, dictId)) {
             throw BizException.of("重复的字典名称:{}", dictName);
         }
         //业务字典只能更新
@@ -242,22 +248,27 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
         old.setStatus(entity.getStatus());
         old.setStyle(entity.getStyle());
         old.setRemark(entity.getRemark());
-        _sys_dict.update(old);
+        this._sys_dict.update(old);
     }
 
+    /**
+     * 删除字典
+     *
+     * @param qo 请求对象
+     */
     @Transactional
     public void deleteDict(IdQo qo) {
         ValidUtil.valid(qo);
         String id = qo.getId();
-        SysDict old = _sys_dict.getById(id);
+        SysDict old = this._sys_dict.getById(id);
         if (old == null) {
             throw BizException.of("无效的字典主键:{}", id);
         }
         if (DictType.enumDict.equals(old.getDictType())) {
             throw BizException.of("枚举字典不允许删除");
         }
-        _sys_dict.deleteById(id);
-        _sys_dict_item.deleteBy(SysDictItem::getDictCode, old.getDictCode());
+        this._sys_dict.deleteById(id);
+        this._sys_dict_item.deleteBy(SysDictItem::getDictCode, old.getDictCode());
     }
 
     /**
@@ -270,28 +281,28 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
         String dictCode = entity.getDictCode();
         String label = entity.getLabel();
         String value = entity.getValue();
-        SysDict dict = _sys_dict.getByCode(dictCode);
+        SysDict dict = this._sys_dict.getByCode(dictCode);
         if (dict == null) {
             throw BizException.of("无效的字典编码:{}", dictCode);
         }
         if (!DictType.bizDict.equals(dict.getDictType())) {
             throw BizException.of("{}不是业务字典,不允许新增字典项", dictCode);
         }
-        boolean sameLabel = _sys_dict_item.newQuery()
+        boolean sameLabel = this._sys_dict_item.newQuery()
                 .eq(SysDictItem::getDictCode, dictCode)
                 .eq(SysDictItem::getLabel, label)
                 .exists();
         if (sameLabel) {
             throw BizException.of("重复的字典项标签:{}", dictCode);
         }
-        boolean sameValue = _sys_dict_item.newQuery()
+        boolean sameValue = this._sys_dict_item.newQuery()
                 .eq(SysDictItem::getDictCode, dictCode)
                 .eq(SysDictItem::getValue, value)
                 .exists();
         if (sameValue) {
             throw BizException.of("重复的字典项键值:{}", dictCode);
         }
-        _sys_dict_item.add(entity);
+        this._sys_dict_item.add(entity);
     }
 
 
@@ -303,12 +314,12 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
     public void updateDictItem(SysDictItem entity) {
         ValidUtil.validOnUpdate(entity);
         String dictItemId = entity.getDictItemId();
-        SysDictItem old = _sys_dict_item.getById(dictItemId);
+        SysDictItem old = this._sys_dict_item.getById(dictItemId);
         if (old == null) {
             throw BizException.of("无效的字典项主键:{}", dictItemId);
         }
         String dictCode = old.getDictCode();
-        SysDict dict = _sys_dict.getByCode(dictCode);
+        SysDict dict = this._sys_dict.getByCode(dictCode);
         if (dict == null) {
             throw BizException.of("无效的字典编码:{}", dictCode);
         }
@@ -316,11 +327,11 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
         if (DictType.enumDict.equals(dict.getDictType())) {
             old.setStyle(entity.getStyle());
             old.setRemark(entity.getRemark());
-            _sys_dict_item.update(old);
+            this._sys_dict_item.update(old);
             return;
         }
         String label = entity.getLabel();
-        boolean sameLabel = _sys_dict_item.newQuery()
+        boolean sameLabel = this._sys_dict_item.newQuery()
                 .eq(SysDictItem::getDictCode, dictCode)
                 .eq(SysDictItem::getLabel, label)
                 .ne(SysDictItem::getDictItemId, dictItemId)
@@ -339,7 +350,7 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
         old.setSort(entity.getSort());
         old.setStyle(entity.getStyle());
         old.setRemark(entity.getRemark());
-        _sys_dict_item.update(old);
+        this._sys_dict_item.update(old);
     }
 
 
@@ -351,17 +362,17 @@ public class DictService implements ApplicationListener<ApplicationReadyEvent> {
     public void deleteDictItem(IdQo qo) {
         ValidUtil.valid(qo);
         String id = qo.getId();
-        SysDictItem old = _sys_dict_item.getById(id);
+        SysDictItem old = this._sys_dict_item.getById(id);
         if (old == null) {
             throw BizException.of("无效的字典项主键:{}", id);
         }
         String dictCode = old.getDictCode();
         if (StrUtil.isNotBlank(dictCode)) {
-            SysDict dict = _sys_dict.getByCode(dictCode);
+            SysDict dict = this._sys_dict.getByCode(dictCode);
             if (dict != null && DictType.enumDict.equals(dict.getDictType())) {
                 throw BizException.of("枚举字典的字典项不允许删除");
             }
         }
-        _sys_dict_item.deleteById(id);
+        this._sys_dict_item.deleteById(id);
     }
 }

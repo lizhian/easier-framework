@@ -18,13 +18,13 @@ public class DateTimeTypeHandler extends BaseTypeHandler<DateTime> {
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, DateTime parameter, JdbcType jdbcType)
             throws SQLException {
-        ps.setDate(i, parameter.toSqlDate());
+        ps.setTimestamp(i, parameter.toTimestamp());
     }
 
     @Override
     public DateTime getNullableResult(ResultSet rs, String columnName)
             throws SQLException {
-        Date value = rs.getDate(columnName);
+        Timestamp value = rs.getTimestamp(columnName);
         if (value == null) {
             return null;
         }
@@ -34,7 +34,7 @@ public class DateTimeTypeHandler extends BaseTypeHandler<DateTime> {
     @Override
     public DateTime getNullableResult(ResultSet rs, int columnIndex)
             throws SQLException {
-        Date value = rs.getDate(columnIndex);
+        Timestamp value = rs.getTimestamp(columnIndex);
         if (value == null) {
             return null;
         }
@@ -44,7 +44,7 @@ public class DateTimeTypeHandler extends BaseTypeHandler<DateTime> {
     @Override
     public DateTime getNullableResult(CallableStatement cs, int columnIndex)
             throws SQLException {
-        Date value = cs.getDate(columnIndex);
+        Timestamp value = cs.getTimestamp(columnIndex);
         if (value == null) {
             return null;
         }
