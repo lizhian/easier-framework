@@ -9,7 +9,8 @@ import easier.framework.core.util.ValidUtil;
 import easier.framework.starter.mybatis.repo.Repo;
 import easier.framework.starter.mybatis.repo.Repos;
 import easier.framework.test.enums.EnableStatus;
-import easier.framework.test.eo.SysDept;
+import easier.framework.test.eo.Dept;
+import easier.framework.test.eo.User;
 import easier.framework.test.qo.DeptTreeQo;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.ExtensionMethod;
@@ -29,31 +30,32 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @ExtensionMethod(ExtensionCore.class)
 public class DeptService {
-    private final Repo<SysDept> _sys_dept = Repos.of(SysDept.class);
+    private final Repo<Dept> _dept = Repos.of(Dept.class);
+    private final Repo<User> _user = Repos.of(User.class);
 
 
     /**
      * 获取部门树
      *
      * @param qo 请求对象
-     * @return {@link List}<{@link TreeNode}<{@link SysDept}>>
+     * @return {@link List}<{@link TreeNode}<{@link Dept}>>
      */
-    public List<TreeNode<SysDept>> getDeptTree(DeptTreeQo qo) {
-        List<SysDept> list = this._sys_dept.newQuery()
+    public List<TreeNode<Dept>> getDeptTree(DeptTreeQo qo) {
+        List<Dept> list = this._dept.newQuery()
                 .whenNotNull()
-                .eq(SysDept::getStatus, qo.getStatus())
+                .eq(Dept::getStatus, qo.getStatus())
                 .end()
                 .list();
-        List<TreeNode<SysDept>> tree = SysDept.treeBuilder.build(list);
+        List<TreeNode<Dept>> tree = Dept.treeBuilder.build(list);
         String excludeDeptId = qo.getExcludeDeptId();
         String deptName = qo.getDeptName();
-        tree = SysDept.treeBuilder.match(tree, dept -> {
+        tree = Dept.treeBuilder.include(tree, dept -> {
             if (StrUtil.isNotBlank(deptName)) {
                 return dept.getDeptName().orEmpty().contains(deptName);
             }
             return true;
         });
-        tree = SysDept.treeBuilder.exclude(tree, dept -> {
+        tree = Dept.treeBuilder.exclude(tree, dept -> {
             if (StrUtil.isNotBlank(excludeDeptId)) {
                 return excludeDeptId.equals(dept.getDeptId());
             }
@@ -67,19 +69,19 @@ public class DeptService {
      *
      * @param entity 实体
      */
-    public void addDept(SysDept entity) {
+    public void addDept(Dept entity) {
         ValidUtil.valid(entity);
         if (entity.getParentId().isBlank()) {
             entity.setParentId(TreeUtil.ROOT_KEY);
         }
-        boolean existsSameName = this._sys_dept.newQuery()
-                .eq(SysDept::getParentId, entity.getParentId())
-                .eq(SysDept::getDeptName, entity.getDeptName())
+        boolean existsSameName = this._dept.newQuery()
+                .eq(Dept::getParentId, entity.getParentId())
+                .eq(Dept::getDeptName, entity.getDeptName())
                 .exists();
         if (existsSameName) {
             throw BizException.of("新增部门'{}'失败，部门名称已存在", entity.getDeptName());
         }
-        SysDept parent = this._sys_dept.getById(entity.getParentId());
+        Dept parent = this._dept.getById(entity.getParentId());
         // 如果父节点不为正常状态,则不允许新增子节点
         if (parent != null && EnableStatus.isDisable(parent.getStatus())) {
             throw BizException.of("部门停用，不允许新增");
@@ -91,7 +93,7 @@ public class DeptService {
             ancestors = parent.getAncestors() + "," + entity.getParentId();
         }
         entity.setAncestors(ancestors);
-        this._sys_dept.add(entity);
+        this._dept.add(entity);
     }
 
     /**
@@ -100,10 +102,10 @@ public class DeptService {
      *
      * @param entity 实体
      */
-    public void updateDept(SysDept entity) {
+    public void updateDept(Dept entity) {
         ValidUtil.validOnUpdate(entity);
         String deptId = entity.getDeptId();
-        SysDept old = this._sys_dept.getById(deptId);
+        Dept old = this._dept.getById(deptId);
         if (old == null) {
             throw BizException.of("无效的部门id:{}", deptId);
         }
@@ -116,10 +118,10 @@ public class DeptService {
 
         //判断名称是否重复
         if (updateDeptName || updateParentId) {
-            this._sys_dept.newQuery()
-                    .ne(SysDept::getDeptId, deptId)
-                    .eq(SysDept::getParentId, entity.getParentId())
-                    .eq(SysDept::getDeptName, entity.getDeptName())
+            this._dept.newQuery()
+                    .ne(Dept::getDeptId, deptId)
+                    .eq(Dept::getParentId, entity.getParentId())
+                    .eq(Dept::getDeptName, entity.getDeptName())
                     .existsThenThrow("修改部门'{}'失败，部门名称已存在", entity.getDeptName());
         }
 
@@ -128,7 +130,7 @@ public class DeptService {
             if (deptId.equals(entity.getParentId())) {
                 throw BizException.of("修改部门'{}'失败，上级部门不能是自己", entity.getDeptName());
             }
-            SysDept newParent = this._sys_dept.getById(entity.getParentId());
+            Dept newParent = this._dept.getById(entity.getParentId());
             if (newParent == null) {
                 throw BizException.of("无效的上级部门:{}", entity.getParentId());
             }
@@ -136,13 +138,13 @@ public class DeptService {
                 throw BizException.of("新的上级部门'{}'不能是自己的子部门", newParent.getDeptName());
             }
             String newAncestors = newParent.getAncestors() + "," + entity.getParentId();
+            //todo 更新后代节点的祖先字段
             this.updateDescendants(deptId, oldAncestors, newAncestors);
-
-            SysDept oldParent = this._sys_dept.getById(old.getParentId());
+            Dept oldParent = this._dept.getById(old.getParentId());
         }
 
         if (updateStatus) {
-            //状态改为启用,所有父节点都改成启用
+            //todo 状态改为启用,所有父节点都改成启用
             if (EnableStatus.isEnable(entity.getStatus())) {
                 /*this._sys_dept.newUpdate()
                         .set()*/
@@ -153,15 +155,15 @@ public class DeptService {
             throw BizException.of("修改部门'{}'失败，上级部门不能是自己", entity.getDeptName());
         }
         if (entity.getStatus().equals(EnableStatus.disable)) {
-            boolean existsEnableChildren = this._sys_dept.newQuery()
-                    .eq(SysDept::getStatus, EnableStatus.enable)
-                    .likeLeft(SysDept::getAncestors, deptId)
+            boolean existsEnableChildren = this._dept.newQuery()
+                    .eq(Dept::getStatus, EnableStatus.enable)
+                    .likeLeft(Dept::getAncestors, deptId)
                     .exists();
             if (existsEnableChildren) {
                 throw BizException.of("无法停用该部门,因为该部门包含未停用的子部门！");
             }
         }
-        this._sys_dept.update(entity);
+        this._dept.update(entity);
     }
 
 
@@ -169,11 +171,13 @@ public class DeptService {
         if (deptId.isBlank()) {
             throw BizException.of("部门ID不能为空");
         }
-        if (this._sys_dept.existsBy(SysDept::getParentId, deptId)) {
-            throw BizException.of("存在下级部门,不允许删除");
-        }
-        //todo 部门存在用户,不允许删除
-        this._sys_dept.deleteById(deptId);
+        this._dept.newQuery()
+                .eq(Dept::getParentId, deptId)
+                .existsThenThrow("存在下级部门,不允许删除");
+        this._user.newQuery()
+                .eq(User::getDeptId, deptId)
+                .existsThenThrow("部门存在用户,不允许删除");
+        this._dept.deleteById(deptId);
     }
 
     /**

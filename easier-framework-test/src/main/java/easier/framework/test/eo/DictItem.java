@@ -19,7 +19,7 @@ import javax.validation.constraints.Size;
 
 /**
  * 字典项
- * sys_dict_item
+ * t_dict_item
  *
  * @author lizhian
  * @date 2023年07月05日
@@ -30,8 +30,8 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @FieldNameConstants
 @Builder(toBuilder = true)
-@Table(value = "sys_dict_item", comment = "字典项表")
-public class SysDictItem extends BaseEntity {
+@Table(value = "t_dict_item", comment = "字典项表")
+public class DictItem extends BaseEntity {
 
     /**
      * 字典项主键

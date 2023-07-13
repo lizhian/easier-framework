@@ -1,5 +1,6 @@
 package easier.framework.test.eo;
 
+import cn.hutool.core.lang.RegexPool;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.tangzc.mpe.autotable.annotation.Column;
@@ -13,15 +14,13 @@ import easier.framework.test.enums.EnableStatus;
 import lombok.*;
 import lombok.experimental.FieldNameConstants;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.List;
 
 
 /**
- * 系统部门
+ * 部门表
+ * t_dept
  *
  * @author lizhian
  * @date 2023/07/05
@@ -32,94 +31,56 @@ import java.util.List;
 @AllArgsConstructor
 @FieldNameConstants
 @Builder(toBuilder = true)
-@Table(value = "sys_dept", comment = "部门表")
-public class SysDept extends BaseLogicEntity {
+@Table(value = "t_dept", comment = "部门表")
+public class Dept extends BaseLogicEntity {
 
-    /**
-     * 树构建器
-     */
     @TableField(exist = false)
-    public static TreeBuilder<SysDept> treeBuilder = TreeBuilder
-            .of(SysDept.class)
-            .key(SysDept::getDeptId)
-            .name(SysDept::getDeptName)
-            .parentKey(SysDept::getParentId)
-            .sort(SysDept::getSort)
+    public static TreeBuilder<Dept> treeBuilder = TreeBuilder
+            .of(Dept.class)
+            .key(Dept::getDeptId)
+            .name(Dept::getDeptName)
+            .parentKey(Dept::getParentId)
+            .sort(Dept::getSort)
             .enable(it -> EnableStatus.enable.equals(it.getStatus()))
             .build();
 
-
-    /**
-     * 部门id
-     */
-    @Column(comment = "部门ID", notNull = true)
+    @Column(comment = "部门主键", notNull = true)
     @TableId
     @NotBlank(groups = UpdateGroup.class)
     private String deptId;
 
-    /**
-     * 部门名称
-     */
+    @Column(comment = "部门名称", notNull = true)
     @NotBlank
     @Size(max = 30)
-    @Column(comment = "部门名称", notNull = true)
+    @Pattern(regexp = RegexPool.CHINESES, message = "必须由中文组成")
     private String deptName;
 
-
-    /**
-     * 父id
-     */
-    @Column(comment = "父部门ID", notNull = true)
+    @Column(comment = "父部门主键", notNull = true)
     private String parentId;
 
-
-    /**
-     * 祖先
-     */
     @Column(comment = "祖先列表", notNull = true, length = 1024)
     private String ancestors;
 
-    /**
-     * 排序
-     */
     @NotNull
     @Column(comment = "排序", notNull = true, defaultValue = TreeUtil.DEFAULT_SORT_STR)
     private Integer sort;
 
-    /**
-     * 负责人
-     */
     @Column(comment = "负责人")
     private String leader;
 
-    /**
-     * 电话
-     */
+    @Column(comment = "电话")
     @Size(max = 11)
-    @Column(comment = "电话", length = 11)
     private String phone;
 
-    /**
-     * 电子邮件
-     */
+    @Column(comment = "电子邮件")
     @Email
     @Size(max = 50)
-    @Column(comment = "电子邮件", length = 50)
     private String email;
 
-    /**
-     * 状态
-     */
     @Column(comment = "状态", notNull = true, defaultValue = EnableStatus.defaultValue)
     @NotNull
     private EnableStatus status;
 
-
-    /**
-     * 祖先列表
-     *
-     * @return {@link List}<{@link String}>
-     */
     public List<String> ancestorsAsList() {
         return StrUtil.smartSplit(this.ancestors);
     }

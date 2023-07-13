@@ -24,8 +24,28 @@ public interface MethodForWith<T> extends IRepo<T> {
     /**
      * 绑定注入字段
      */
-    @SuppressWarnings("unchecked")
-    default BindHolder<T> withBind(SFunction<T, Object>... fields) {
-        return new BindHolder<>(this.repo(), CollUtil.newArrayList(fields));
+
+    default BindHolder<T> withBind() {
+        return new BindHolder<>(this.repo(), CollUtil.newArrayList());
+    }
+
+    default BindHolder<T> withBind(SFunction<T, Object> field1) {
+        return new BindHolder<>(this.repo(), CollUtil.newArrayList(field1));
+    }
+
+    default BindHolder<T> withBind(SFunction<T, Object> field1, SFunction<T, Object> field2) {
+        return new BindHolder<>(this.repo(), CollUtil.newArrayList(field1, field2));
+    }
+
+    default BindHolder<T> withBind(SFunction<T, Object> field1, SFunction<T, Object> field2, SFunction<T, Object> field3) {
+        return new BindHolder<>(this.repo(), CollUtil.newArrayList(field1, field2, field3));
+    }
+
+    default BindHolder<T> withBind(SFunction<T, Object> field1, SFunction<T, Object> field2, SFunction<T, Object> field3, SFunction<T, Object> field4) {
+        return new BindHolder<>(this.repo(), CollUtil.newArrayList(field1, field2, field3, field4));
+    }
+
+    default BindHolder<T> withBind(SFunction<T, Object> field1, SFunction<T, Object> field2, SFunction<T, Object> field3, SFunction<T, Object> field4, SFunction<T, Object> field5) {
+        return new BindHolder<>(this.repo(), CollUtil.newArrayList(field1, field2, field3, field4, field5));
     }
 }

@@ -3,6 +3,7 @@ package easier.framework.starter.web;
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.net.NetUtil;
 import cn.hutool.core.text.StrPool;
 import easier.framework.core.domain.R;
@@ -39,6 +40,7 @@ import java.lang.management.ManagementFactory;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -147,13 +149,19 @@ public class EasierWebConfiguration implements WebMvcConfigurer, InitializingBea
                     .collect(Collectors.toList());
             List<String> properties = errorDetails.stream()
                     .map(ValidErrorDetail::getProperty)
+                    .distinct()
                     .collect(Collectors.toList());
-            String mergeMessage = errorDetails.stream()
+            List<String> batchMessage = errorDetails.stream()
                     .map(ValidErrorDetail::getMergeMessage)
-                    .collect(Collectors.joining(StrPool.COMMA));
-            R<Object> failed = R.failed(mergeMessage);
-            log.error("参数校验异常,属性:{},错误信息:{}", properties, mergeMessage);
-            failed.setExpandData(errorDetails);
+                    .collect(Collectors.toList());
+            String message = StrUtil.join(StrPool.COMMA, batchMessage);
+            R<Object> failed = R.failed(message);
+            log.error("参数校验异常,属性:{},错误信息:{}", properties, message);
+            Map<String, Object> expandData = MapUtil
+                    .<String, Object>builder("batchMessage", batchMessage)
+                    .put("errorDetails", errorDetails)
+                    .build();
+            failed.setExpandData(expandData);
             return failed;
         });
     }

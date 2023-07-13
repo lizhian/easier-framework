@@ -8,7 +8,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 
 /**
- * 通用启用状态
+ * 启用状态
+ *
+ * @author lizhian
+ * @date 2023年07月12日
  */
 @Getter
 @FieldNameConstants

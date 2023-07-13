@@ -16,6 +16,7 @@ public class ApiDocUtil {
     private final static List<String> defaultMessages = CollUtil.newArrayList(
             "不能为空"
             , "个数必须在"
+            , "必须"
     );
 
     public String getDescription(Field field) {

@@ -15,13 +15,10 @@ import easier.framework.starter.doc.EnableEasierDoc;
 import easier.framework.starter.job.EnableEasierJob;
 import easier.framework.starter.logging.EnableEasierLogging;
 import easier.framework.starter.mybatis.EnableEasierMybatis;
-import easier.framework.starter.mybatis.repo.Repo;
-import easier.framework.starter.mybatis.repo.Repos;
 import easier.framework.starter.web.EnableEasierWeb;
 import easier.framework.test.cache.DictCache;
 import easier.framework.test.enums.SexType;
-import easier.framework.test.eo.SysDict;
-import easier.framework.test.eo.SysUser;
+import easier.framework.test.eo.User;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
@@ -45,10 +42,6 @@ public class EasierFrameworkTestApplication implements
     @SneakyThrows
     public static void main(String[] args) {
         SpringApplication.run(EasierFrameworkTestApplication.class, args);
-        Repo<SysDict> repo = Repos.of(SysDict.class);
-        for (SysDict dict : repo.listAll()) {
-            repo.deleteBy(SysDict::getDictCode, dict.getDictCode());
-        }
     }
 
     @Override
@@ -93,7 +86,7 @@ public class EasierFrameworkTestApplication implements
 
     @Override
     public Object getUserDetail(Object fieldValue) {
-        SysUser sysUser = new SysUser();
+        User sysUser = new User();
         sysUser.setUsername(fieldValue.toString());
         sysUser.setSexType(SexType.man);
         return null;

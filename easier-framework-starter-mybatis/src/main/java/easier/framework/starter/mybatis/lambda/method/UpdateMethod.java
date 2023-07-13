@@ -2,52 +2,53 @@ package easier.framework.starter.mybatis.lambda.method;
 
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import com.baomidou.mybatisplus.extension.conditions.AbstractChainWrapper;
-import com.baomidou.mybatisplus.extension.conditions.update.ChainUpdate;
 import easier.framework.core.proxy.TypedSelf;
 import easier.framework.core.util.StrUtil;
-import easier.framework.starter.mybatis.repo.IRepo;
+import easier.framework.starter.mybatis.lambda.update.LambdaUpdate;
 
 import java.io.Serializable;
 import java.util.Collection;
 
-public interface UpdateMethod<T, SELF extends AbstractChainWrapper<T, SFunction<T, ?>, SELF, ?>>
-        extends ChainUpdate<T>, IRepo<T>, TypedSelf<SELF> {
+public interface UpdateMethod<T> extends TypedSelf<LambdaUpdate<T>> {
     default boolean updateById(Serializable id) {
-        SFunction<T, ?> tableIdColumn = this.repo().getTableCole();
+        SFunction<T, ?> tableId = this.self().repo().getTableId();
         if (StrUtil.isBlankIfStr(id)) {
             return false;
         }
-        this.self().eq(tableIdColumn, id);
-        return this.update();
+        return this.self()
+                .eq(tableId, id)
+                .update();
     }
 
     default boolean updateByIds(Collection<Serializable> ids) {
-        SFunction<T, ?> tableIdColumn = this.repo().getTableCole();
+        SFunction<T, ?> tableId = this.self().repo().getTableId();
         if (CollUtil.isEmpty(ids)) {
             return false;
         }
-        this.self().in(tableIdColumn, ids);
-        return this.update();
+        return this.self()
+                .in(tableId, ids)
+                .update();
     }
 
 
     default boolean updateByCode(String code) {
-        SFunction<T, ?> tableCole = this.repo().getTableCole();
+        SFunction<T, String> tableCole = this.self().repo().getTableCole();
         if (StrUtil.isBlank(code)) {
             return false;
         }
-        this.self().eq(tableCole, code);
-        return this.update();
+        return this.self()
+                .eq(tableCole, code)
+                .update();
     }
 
     default boolean updateByCodes(Collection<String> codes) {
-        SFunction<T, ?> tableCole = this.repo().getTableCole();
+        SFunction<T, String> tableCole = this.self().repo().getTableCole();
         if (CollUtil.isEmpty(codes)) {
             return false;
         }
-        this.self().in(tableCole, codes);
-        return this.update();
+        return this.self()
+                .in(tableCole, codes)
+                .update();
     }
 
 
@@ -55,57 +56,63 @@ public interface UpdateMethod<T, SELF extends AbstractChainWrapper<T, SFunction<
         if (StrUtil.isBlankIfStr(value)) {
             return false;
         }
-        this.self().eq(column, value);
-        return this.update();
+        return this.self()
+                .eq(column, value)
+                .update();
     }
 
     default <V> boolean updateBy(SFunction<T, V> column, Collection<V> values) {
         if (CollUtil.isEmpty(values)) {
             return false;
         }
-        this.self().in(column, values);
-        return this.update();
+        return this.self()
+                .in(column, values)
+                .update();
     }
 
     default boolean delete() {
-        return this.remove();
+        return this.self().remove();
     }
 
     default boolean deleteById(Serializable id) {
-        SFunction<T, ?> tableIdColumn = this.repo().getTableId();
+        SFunction<T, ?> tableId = this.self().repo().getTableId();
         if (StrUtil.isBlankIfStr(id)) {
             return false;
         }
-        this.self().eq(tableIdColumn, id);
-        return this.delete();
+        return this.self()
+                .eq(tableId, id)
+                .delete();
     }
 
     default boolean deleteByIds(Collection<Serializable> ids) {
-        SFunction<T, ?> tableIdColumn = this.repo().getTableId();
+        SFunction<T, ?> tableId = this.self().repo().getTableId();
         if (CollUtil.isEmpty(ids)) {
             return false;
         }
-        this.self().in(tableIdColumn, ids);
-        return this.delete();
+        return this.self()
+                .in(tableId, ids)
+                .delete();
     }
 
 
     default boolean deleteByCode(String code) {
-        SFunction<T, ?> tableCole = this.repo().getTableCole();
+        SFunction<T, ?> tableCole = this.self().repo().getTableCole();
         if (StrUtil.isBlank(code)) {
             return false;
         }
-        this.self().eq(tableCole, code);
-        return this.delete();
+        return this.self()
+                .eq(tableCole, code)
+                .delete();
     }
 
     default boolean deleteByCodes(Collection<String> codes) {
-        SFunction<T, ?> tableCole = this.repo().getTableCole();
+        SFunction<T, ?> tableCole = this.self().repo().getTableCole();
         if (CollUtil.isEmpty(codes)) {
             return false;
         }
-        this.self().in(tableCole, codes);
-        return this.delete();
+        return this.self()
+                .in(tableCole, codes)
+                .delete();
     }
 
 
@@ -113,15 +120,17 @@ public interface UpdateMethod<T, SELF extends AbstractChainWrapper<T, SFunction<
         if (StrUtil.isBlankIfStr(value)) {
             return false;
         }
-        this.self().eq(column, value);
-        return this.delete();
+        return this.self()
+                .eq(column, value)
+                .delete();
     }
 
     default <V> boolean deleteBy(SFunction<T, V> column, Collection<V> values) {
         if (CollUtil.isEmpty(values)) {
             return false;
         }
-        this.self().in(column, values);
-        return this.delete();
+        return this.self()
+                .in(column, values)
+                .delete();
     }
 }

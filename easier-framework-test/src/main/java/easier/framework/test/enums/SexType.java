@@ -6,6 +6,12 @@ import easier.framework.core.plugin.enums.EnumDesc;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 性别类型
+ *
+ * @author lizhian
+ * @date 2023年07月12日
+ */
 @Getter
 @RequiredArgsConstructor
 @Dict(code = "sex_type", name = "性别")

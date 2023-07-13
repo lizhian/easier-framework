@@ -5,7 +5,7 @@ import easier.framework.core.domain.IdQo;
 import easier.framework.core.domain.R;
 import easier.framework.core.plugin.dict.DictDetail;
 import easier.framework.core.plugin.tree.TreeNode;
-import easier.framework.test.eo.SysDept;
+import easier.framework.test.eo.Dept;
 import easier.framework.test.qo.DeptTreeQo;
 import easier.framework.test.service.DeptService;
 import easier.framework.test.service.DictService;
@@ -31,12 +31,6 @@ public class DeptController {
     private final DeptService deptService;
     private final DictService dictService;
 
-    /**
-     * dict
-     *
-     * @param qo 问:
-     * @return {@link R}<{@link Map}<{@link String}, {@link DictDetail}>>
-     */
     @Operation(summary = "加载字典")
     @GetMapping("/dept/dict")
     public R<Map<String, DictDetail>> dict(CodesQo qo) {
@@ -45,16 +39,10 @@ public class DeptController {
     }
 
 
-    /**
-     * 获取部门树
-     *
-     * @param qo 请求对象
-     * @return {@link R}<{@link List}<{@link TreeNode}<{@link SysDept}>>>
-     */
     @Operation(summary = "获取部门树")
     @GetMapping("/dept/tree")
-    public R<List<TreeNode<SysDept>>> getDeptTree(DeptTreeQo qo) {
-        List<TreeNode<SysDept>> list = this.deptService.getDeptTree(qo);
+    public R<List<TreeNode<Dept>>> getDeptTree(DeptTreeQo qo) {
+        List<TreeNode<Dept>> list = this.deptService.getDeptTree(qo);
         return R.success(list);
     }
 
@@ -67,7 +55,7 @@ public class DeptController {
      */
     @Operation(summary = "添加部门")
     @PostMapping("/dept/add")
-    public R<String> addDept(@Validated @RequestBody SysDept entity) {
+    public R<String> addDept(@Validated @RequestBody Dept entity) {
         this.deptService.addDept(entity);
         return R.success();
     }
@@ -80,7 +68,7 @@ public class DeptController {
      */
     @Operation(summary = "更新部门")
     @PutMapping("/dept/update")
-    public R<String> updateDept(@RequestBody SysDept entity) {
+    public R<String> updateDept(@RequestBody Dept entity) {
         this.deptService.updateDept(entity);
         return R.success();
     }

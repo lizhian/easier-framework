@@ -3,9 +3,7 @@ package easier.framework.test.service;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import easier.framework.core.domain.CodesQo;
-import easier.framework.core.domain.IdQo;
 import easier.framework.core.domain.PageParam;
-import easier.framework.core.plugin.dict.Dict;
 import easier.framework.core.plugin.dict.DictDetail;
 import easier.framework.core.plugin.enums.EnumCodec;
 import easier.framework.core.plugin.enums.EnumDetail;
@@ -18,8 +16,8 @@ import easier.framework.starter.mybatis.repo.Repos;
 import easier.framework.test.EasierFrameworkTestApplication;
 import easier.framework.test.enums.DictType;
 import easier.framework.test.enums.EnableStatus;
-import easier.framework.test.eo.SysDict;
-import easier.framework.test.eo.SysDictItem;
+import easier.framework.test.eo.Dict;
+import easier.framework.test.eo.DictItem;
 import easier.framework.test.qo.DictItemQo;
 import easier.framework.test.qo.DictQo;
 import lombok.RequiredArgsConstructor;
@@ -45,8 +43,8 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class DictService {
-    private final Repo<SysDict> _sys_dict = Repos.of(SysDict.class);
-    private final Repo<SysDictItem> _sys_dict_item = Repos.of(SysDictItem.class);
+    private final Repo<Dict> _dict = Repos.of(Dict.class);
+    private final Repo<DictItem> _dict_item = Repos.of(DictItem.class);
 
     /**
      * 更新枚举字典
@@ -56,13 +54,13 @@ public class DictService {
     @EventListener
     public void onApplicationEvent(ApplicationReadyEvent event) {
         String packageName = EasierFrameworkTestApplication.class.getPackage().getName();
-        Set<Class<?>> classes = ClassUtil.scanPackageByAnnotation(packageName, Dict.class);
+        Set<Class<?>> classes = ClassUtil.scanPackageByAnnotation(packageName, easier.framework.core.plugin.dict.Dict.class);
         for (Class<?> clazz : classes) {
             if (!clazz.isEnum()) {
                 continue;
             }
             EnumCodec<?> codec = EnumCodec.of(clazz);
-            Dict dict = codec.getDict();
+            easier.framework.core.plugin.dict.Dict dict = codec.getDict();
             if (dict == null) {
                 continue;
             }
@@ -73,35 +71,35 @@ public class DictService {
             String dictName = dict.name();
             String remark = dict.remark();
             //有则更新,无则新增
-            SysDict oldDict = this._sys_dict.getByCode(dictCode);
+            Dict oldDict = this._dict.getByCode(dictCode);
             if (oldDict == null) {
-                SysDict newDict = SysDict.builder()
+                Dict newDict = Dict.builder()
                         .dictCode(dictCode)
                         .dictName(dictName)
                         .dictType(DictType.enumDict)
                         .status(EnableStatus.enable)
                         .remark(remark)
                         .build();
-                this._sys_dict.add(newDict);
+                this._dict.add(newDict);
             } else {
-                SysDict newDict = oldDict.toBuilder()
+                Dict newDict = oldDict.toBuilder()
                         .dictCode(dictCode)
                         .dictName(dictName)
                         .dictType(DictType.enumDict)
                         .status(EnableStatus.enable)
                         .remark(remark)
                         .build();
-                this._sys_dict.update(newDict);
+                this._dict.update(newDict);
             }
             for (int index = 0; index < codec.getEnumDetails().size(); index++) {
                 EnumDetail<?> enumDetail = codec.getEnumDetails().get(index);
                 String value = enumDetail.getValueAsStr();
-                SysDictItem oldItem = this._sys_dict_item.newQuery()
-                        .eq(SysDictItem::getDictCode, dictCode)
-                        .eq(SysDictItem::getValue, value)
+                DictItem oldItem = this._dict_item.newQuery()
+                        .eq(DictItem::getDictCode, dictCode)
+                        .eq(DictItem::getValue, value)
                         .any();
                 if (oldItem == null) {
-                    SysDictItem item = SysDictItem.builder()
+                    DictItem item = DictItem.builder()
                             .dictCode(dictCode)
                             .value(value)
                             .label(enumDetail.getDescription())
@@ -109,9 +107,9 @@ public class DictService {
                             .style(enumDetail.getDictProperty1())
                             .status(EnableStatus.enable)
                             .build();
-                    this._sys_dict_item.add(item);
+                    this._dict_item.add(item);
                 } else {
-                    SysDictItem item = oldItem.toBuilder()
+                    DictItem item = oldItem.toBuilder()
                             .dictCode(dictCode)
                             .value(value)
                             .label(enumDetail.getDescription())
@@ -119,7 +117,7 @@ public class DictService {
                             .style(enumDetail.getDictProperty1())
                             .status(EnableStatus.enable)
                             .build();
-                    this._sys_dict_item.update(item);
+                    this._dict_item.update(item);
                 }
             }
             List<String> values = codec.getEnumDetails()
@@ -128,9 +126,9 @@ public class DictService {
                     .filter(StrUtil::isNotBlank)
                     .collect(Collectors.toList());
             if (CollUtil.isNotEmpty(values)) {
-                this._sys_dict_item.newUpdate()
-                        .eq(SysDictItem::getDictCode, dictCode)
-                        .notIn(SysDictItem::getValue, values)
+                this._dict_item.newUpdate()
+                        .eq(DictItem::getDictCode, dictCode)
+                        .notIn(DictItem::getValue, values)
                         .remove();
             }
             log.info("已更新枚举字典:{},{}", dictCode, clazz.getName());
@@ -146,11 +144,19 @@ public class DictService {
      */
     public Map<String, DictDetail> loadDictDetail(CodesQo qo) {
         ValidUtil.valid(qo);
-        return this._sys_dict.withBind()
-                .listByCodes(qo.getCodes())
+        List<String> codes = qo.getCodes();
+        Map<String, DictDetail> result = this._dict.withBind()
+                .listByCodes(codes)
                 .stream()
-                .map(SysDict::toDictDetail)
+                .map(Dict::toDictDetail)
                 .collect(Collectors.toMap(DictDetail::getCode, it -> it));
+        for (String code : codes) {
+            if (result.containsKey(code)) {
+                continue;
+            }
+            result.put(code, new DictDetail());
+        }
+        return result;
     }
 
 
@@ -159,19 +165,18 @@ public class DictService {
      *
      * @param pageParam 分页参数
      * @param dictQo    字典查询对象
-     * @return {@link Page}<{@link SysDict}>
+     * @return {@link Page}<{@link Dict}>
      */
-    public Page<SysDict> pageDict(PageParam pageParam, DictQo dictQo) {
-        return this._sys_dict.newQuery()
-                //.bind()
+    public Page<Dict> pageDict(PageParam pageParam, DictQo dictQo) {
+        return this._dict.newQuery()
                 .whenNotBlank()
-                .like(SysDict::getDictName, dictQo.getDictName())
-                .like(SysDict::getDictCode, dictQo.getDictCode())
+                .like(Dict::getDictName, dictQo.getDictName())
+                .like(Dict::getDictCode, dictQo.getDictCode())
                 .whenNotNull()
-                .eq(SysDict::getDictType, dictQo.getDictType())
-                .eq(SysDict::getStatus, dictQo.getStatus())
+                .eq(Dict::getDictType, dictQo.getDictType())
+                .eq(Dict::getStatus, dictQo.getStatus())
                 .end()
-                .orderByDesc(SysDict::getUpdateTime)
+                .orderByDesc(Dict::getUpdateTime)
                 .page(pageParam.toPage());
     }
 
@@ -180,20 +185,19 @@ public class DictService {
      * 列表字典项
      *
      * @param qo 查询对象
-     * @return {@link List}<{@link SysDictItem}>
+     * @return {@link List}<{@link DictItem}>
      */
-    public List<SysDictItem> listDictItem(DictItemQo qo) {
+    public List<DictItem> listDictItem(DictItemQo qo) {
         ValidUtil.valid(qo);
-        return this._sys_dict_item.newQuery()
-                //.bind()
-                .eq(SysDictItem::getDictCode, qo.getDictCode())
+        return this._dict_item.newQuery()
+                .eq(DictItem::getDictCode, qo.getDictCode())
                 .whenNotBlank()
-                .like(SysDictItem::getLabel, qo.getLabel())
-                .like(SysDictItem::getValue, qo.getValue())
+                .like(DictItem::getLabel, qo.getLabel())
+                .like(DictItem::getValue, qo.getValue())
                 .whenNotNull()
-                .eq(SysDictItem::getStatus, qo.getStatus())
+                .eq(DictItem::getStatus, qo.getStatus())
                 .end()
-                .orderByAsc(SysDictItem::getSort)
+                .orderByAsc(DictItem::getSort)
                 .list();
     }
 
@@ -202,18 +206,18 @@ public class DictService {
      *
      * @param entity 实体
      */
-    public void addDict(SysDict entity) {
+    public void addDict(Dict entity) {
         ValidUtil.valid(entity);
         String dictCode = entity.getDictCode();
-        if (this._sys_dict.existsByCode(dictCode)) {
+        if (this._dict.existsByCode(dictCode)) {
             throw BizException.of("重复的字典编码:{}", dictCode);
         }
         String dictName = entity.getDictName();
-        if (this._sys_dict.isNotUnique(SysDict::getDictName, dictName)) {
-            throw BizException.of("重复的字典名称:{}", dictCode);
+        if (this._dict.existsBy(Dict::getDictName, dictName)) {
+            throw BizException.of("重复的字典名称:{}", dictName);
         }
         entity.setDictType(DictType.bizDict);
-        this._sys_dict.add(entity);
+        this._dict.add(entity);
     }
 
     /**
@@ -221,54 +225,56 @@ public class DictService {
      *
      * @param entity 实体
      */
-    public void updateDict(SysDict entity) {
+    public void updateDict(Dict entity) {
         ValidUtil.validOnUpdate(entity);
         String dictId = entity.getDictId();
-        SysDict old = this._sys_dict.getById(dictId);
+        Dict old = this._dict.getById(dictId);
         if (old == null) {
             throw BizException.of("无效的字典主键:{}", dictId);
         }
         //枚举字典只能更新
-        //字典样式
-        if (DictType.enumDict.equals(entity.getDictType())) {
-            old.setStyle(entity.getStyle());
-            this._sys_dict.update(old);
+        //字典样式/备注
+        if (DictType.isEnumDict(entity.getDictType())) {
+            if (EnableStatus.isDisable(entity.getStatus())) {
+                throw BizException.of("不允许禁用枚举字典");
+            }
+            this._dict.newUpdate()
+                    .set(Dict::getStyle, entity.getStyle())
+                    .set(Dict::getRemark, entity.getRemark())
+                    .updateById(dictId);
             return;
         }
         String dictName = entity.getDictName();
-        if (this._sys_dict.isNotUnique(SysDict::getDictName, dictName, dictId)) {
+        if (this._dict.isNotUnique(Dict::getDictName, dictName, dictId)) {
             throw BizException.of("重复的字典名称:{}", dictName);
         }
         //业务字典只能更新
-        //字典名称
-        //状态
-        //字典样式
-        //备注
-        old.setDictName(entity.getDictCode());
-        old.setStatus(entity.getStatus());
-        old.setStyle(entity.getStyle());
-        old.setRemark(entity.getRemark());
-        this._sys_dict.update(old);
+        //字典名称/状态/字典样式/备注
+        this._dict.newUpdate()
+                .set(Dict::getDictName, entity.getDictName())
+                .set(Dict::getStatus, entity.getStatus())
+                .set(Dict::getStyle, entity.getStyle())
+                .set(Dict::getRemark, entity.getRemark())
+                .updateById(dictId);
     }
+
 
     /**
      * 删除字典
      *
-     * @param qo 请求对象
+     * @param dictCode 字典代码
      */
     @Transactional
-    public void deleteDict(IdQo qo) {
-        ValidUtil.valid(qo);
-        String id = qo.getId();
-        SysDict old = this._sys_dict.getById(id);
+    public void deleteDict(String dictCode) {
+        Dict old = this._dict.getByCode(dictCode);
         if (old == null) {
-            throw BizException.of("无效的字典主键:{}", id);
+            throw BizException.of("无效的字典编码:{}", dictCode);
         }
-        if (DictType.enumDict.equals(old.getDictType())) {
+        if (DictType.isEnumDict(old.getDictType())) {
             throw BizException.of("枚举字典不允许删除");
         }
-        this._sys_dict.deleteById(id);
-        this._sys_dict_item.deleteBy(SysDictItem::getDictCode, old.getDictCode());
+        this._dict.deleteByCode(dictCode);
+        this._dict_item.deleteBy(DictItem::getDictCode, dictCode);
     }
 
     /**
@@ -276,33 +282,33 @@ public class DictService {
      *
      * @param entity 实体
      */
-    public void addDictItem(SysDictItem entity) {
+    public void addDictItem(DictItem entity) {
         ValidUtil.valid(entity);
         String dictCode = entity.getDictCode();
         String label = entity.getLabel();
         String value = entity.getValue();
-        SysDict dict = this._sys_dict.getByCode(dictCode);
+        Dict dict = this._dict.getByCode(dictCode);
         if (dict == null) {
             throw BizException.of("无效的字典编码:{}", dictCode);
         }
-        if (!DictType.bizDict.equals(dict.getDictType())) {
+        if (!DictType.isBizDict(dict.getDictType())) {
             throw BizException.of("{}不是业务字典,不允许新增字典项", dictCode);
         }
-        boolean sameLabel = this._sys_dict_item.newQuery()
-                .eq(SysDictItem::getDictCode, dictCode)
-                .eq(SysDictItem::getLabel, label)
+        boolean sameLabel = this._dict_item.newQuery()
+                .eq(DictItem::getDictCode, dictCode)
+                .eq(DictItem::getLabel, label)
                 .exists();
         if (sameLabel) {
             throw BizException.of("重复的字典项标签:{}", dictCode);
         }
-        boolean sameValue = this._sys_dict_item.newQuery()
-                .eq(SysDictItem::getDictCode, dictCode)
-                .eq(SysDictItem::getValue, value)
+        boolean sameValue = this._dict_item.newQuery()
+                .eq(DictItem::getDictCode, dictCode)
+                .eq(DictItem::getValue, value)
                 .exists();
         if (sameValue) {
-            throw BizException.of("重复的字典项键值:{}", dictCode);
+            throw BizException.of("重复的字典项键值:{}", value);
         }
-        this._sys_dict_item.add(entity);
+        this._dict_item.add(entity);
     }
 
 
@@ -311,30 +317,35 @@ public class DictService {
      *
      * @param entity 实体
      */
-    public void updateDictItem(SysDictItem entity) {
+    public void updateDictItem(DictItem entity) {
         ValidUtil.validOnUpdate(entity);
         String dictItemId = entity.getDictItemId();
-        SysDictItem old = this._sys_dict_item.getById(dictItemId);
+        DictItem old = this._dict_item.getById(dictItemId);
         if (old == null) {
             throw BizException.of("无效的字典项主键:{}", dictItemId);
         }
+
         String dictCode = old.getDictCode();
-        SysDict dict = this._sys_dict.getByCode(dictCode);
+        Dict dict = this._dict.getByCode(dictCode);
         if (dict == null) {
             throw BizException.of("无效的字典编码:{}", dictCode);
         }
         //枚举字典的字典项只能更新字典项样式和备注
-        if (DictType.enumDict.equals(dict.getDictType())) {
-            old.setStyle(entity.getStyle());
-            old.setRemark(entity.getRemark());
-            this._sys_dict_item.update(old);
+        if (DictType.isEnumDict(dict.getDictType())) {
+            if (EnableStatus.isDisable(entity.getStatus())) {
+                throw BizException.of("不允许禁用枚举字典的字典项");
+            }
+            this._dict_item.newUpdate()
+                    .set(DictItem::getStyle, entity.getStyle())
+                    .set(DictItem::getRemark, entity.getRemark())
+                    .updateById(dictItemId);
             return;
         }
         String label = entity.getLabel();
-        boolean sameLabel = this._sys_dict_item.newQuery()
-                .eq(SysDictItem::getDictCode, dictCode)
-                .eq(SysDictItem::getLabel, label)
-                .ne(SysDictItem::getDictItemId, dictItemId)
+        boolean sameLabel = this._dict_item.newQuery()
+                .eq(DictItem::getDictCode, dictCode)
+                .eq(DictItem::getLabel, label)
+                .ne(DictItem::getDictItemId, dictItemId)
                 .exists();
         if (sameLabel) {
             throw BizException.of("重复的字典项标签:{}", label);
@@ -345,12 +356,13 @@ public class DictService {
         //排序
         //字典项样式
         //备注
-        old.setLabel(entity.getLabel());
-        old.setStatus(entity.getStatus());
-        old.setSort(entity.getSort());
-        old.setStyle(entity.getStyle());
-        old.setRemark(entity.getRemark());
-        this._sys_dict_item.update(old);
+        this._dict_item.newUpdate()
+                .set(DictItem::getLabel, entity.getLabel())
+                .set(DictItem::getStatus, entity.getStatus())
+                .set(DictItem::getSort, entity.getSort())
+                .set(DictItem::getStyle, entity.getStyle())
+                .set(DictItem::getRemark, entity.getRemark())
+                .updateById(dictItemId);
     }
 
 
@@ -359,20 +371,18 @@ public class DictService {
      *
      * @param qo 查询对象
      */
-    public void deleteDictItem(IdQo qo) {
-        ValidUtil.valid(qo);
-        String id = qo.getId();
-        SysDictItem old = this._sys_dict_item.getById(id);
+    public void deleteDictItem(String dictItemId) {
+        DictItem old = this._dict_item.getById(dictItemId);
         if (old == null) {
-            throw BizException.of("无效的字典项主键:{}", id);
+            throw BizException.of("无效的字典项主键:{}", dictItemId);
         }
         String dictCode = old.getDictCode();
         if (StrUtil.isNotBlank(dictCode)) {
-            SysDict dict = this._sys_dict.getByCode(dictCode);
-            if (dict != null && DictType.enumDict.equals(dict.getDictType())) {
+            Dict dict = this._dict.getByCode(dictCode);
+            if (dict != null && DictType.isEnumDict(dict.getDictType())) {
                 throw BizException.of("枚举字典的字典项不允许删除");
             }
         }
-        this._sys_dict_item.deleteById(id);
+        this._dict_item.deleteById(dictItemId);
     }
 }

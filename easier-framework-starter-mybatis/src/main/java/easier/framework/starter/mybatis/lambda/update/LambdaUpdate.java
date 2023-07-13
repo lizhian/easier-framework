@@ -23,7 +23,7 @@ import java.util.Map;
 public final class LambdaUpdate<T> extends AbstractChainWrapper<T, SFunction<T, ?>, LambdaUpdate<T>, LambdaUpdateWrapper<T>>
         implements ChainUpdate<T>, Update<LambdaUpdate<T>, SFunction<T, ?>>
         , WhenMethod<T, LambdaUpdate<T>>
-        , UpdateMethod<T, LambdaUpdate<T>>
+        , UpdateMethod<T>
         , IRepo<T> {
     private final BaseMapper<T> baseMapper;
 

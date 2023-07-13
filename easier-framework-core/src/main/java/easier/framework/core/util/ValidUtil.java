@@ -1,6 +1,7 @@
 package easier.framework.core.util;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.text.StrPool;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -17,6 +18,7 @@ import javax.validation.ValidatorFactory;
 import javax.validation.groups.Default;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,17 +47,28 @@ public class ValidUtil {
         if (CollUtil.isEmpty(errors)) {
             return;
         }
-        List<ValidErrorDetail> details = errors.stream()
+        List<ValidErrorDetail> errorDetails = errors.stream()
                 .map(ValidErrorDetail::from)
                 .collect(Collectors.toList());
-        if (CollUtil.isEmpty(details)) {
+        if (CollUtil.isEmpty(errorDetails)) {
             return;
         }
-        String mergeMessage = details.stream()
+
+        List<String> batchMessage = errorDetails.stream()
                 .map(ValidErrorDetail::getMergeMessage)
-                .collect(Collectors.joining(StrPool.COMMA));
-        BizException bizException = BizException.of(mergeMessage);
-        bizException.setExpandData(details);
+                .collect(Collectors.toList());
+        List<String> properties = errorDetails.stream()
+                .map(ValidErrorDetail::getProperty)
+                .distinct()
+                .collect(Collectors.toList());
+        String message = StrUtil.join(StrPool.COMMA, batchMessage);
+        log.error("参数校验异常,属性:{},错误信息:{}", properties, message);
+        Map<String, Object> expandData = MapUtil
+                .<String, Object>builder("batchMessage", batchMessage)
+                .put("errorDetails", errorDetails)
+                .build();
+        BizException bizException = BizException.of(message);
+        bizException.setExpandData(expandData);
         throw bizException;
     }
 

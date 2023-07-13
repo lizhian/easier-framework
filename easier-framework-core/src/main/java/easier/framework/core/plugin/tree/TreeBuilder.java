@@ -122,7 +122,7 @@ public class TreeBuilder<T> {
      * @return {@link List}<{@link TreeNode}<{@link T}>>
      */
     @Nonnull
-    public List<TreeNode<T>> match(List<TreeNode<T>> tree, Predicate<T> match) {
+    public List<TreeNode<T>> include(List<TreeNode<T>> tree, Predicate<T> match) {
         if (tree == null) {
             return new ArrayList<>();
         }
@@ -137,7 +137,7 @@ public class TreeBuilder<T> {
                     if (isMatched) {
                         return it;
                     }
-                    List<TreeNode<T>> matchedChildren = this.match(it.getChildren(), match);
+                    List<TreeNode<T>> matchedChildren = this.include(it.getChildren(), match);
                     if (CollUtil.isEmpty(matchedChildren)) {
                         return null;
                     }

@@ -1,5 +1,6 @@
 package easier.framework.test.eo;
 
+import cn.hutool.core.lang.RegexPool;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.tangzc.mpe.autotable.annotation.Column;
 import com.tangzc.mpe.autotable.annotation.Table;
@@ -26,9 +27,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 字典类型表 sys_dict_type
+ * 字典表
+ * t_dict
  *
- * @author ruoyi
+ * @author lizhian
+ * @date 2023年07月12日
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -36,8 +39,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @FieldNameConstants
 @Builder(toBuilder = true)
-@Table(value = "sys_dict", comment = "字典表")
-public class SysDict extends BaseLogicEntity {
+@Table(value = "t_dict", comment = "字典表")
+public class Dict extends BaseLogicEntity {
 
     @Column(comment = "字典主键")
     @TableId
@@ -48,19 +51,20 @@ public class SysDict extends BaseLogicEntity {
     @TableCode
     @NotBlank
     @Size(max = 100)
-    @Pattern(regexp = "^[a-z][a-z0-9_:]*$", message = "必须以字母开头,且只能由小写字母/数字/下滑线/冒号组成")
+    @Pattern(regexp = "^[a-z][a-z0-9_]*$", message = "必须以字母开头,且只能由小写字母、数字和下滑线组成")
     private String dictCode;
 
     @Column(comment = "字典名称", notNull = true)
     @NotBlank
     @Size(max = 100)
+    @Pattern(regexp = RegexPool.CHINESES, message = "必须由中文组成")
     private String dictName;
 
     @Column(comment = "字典类型", notNull = true)
     @ShowDictDetail
     private DictType dictType;
 
-    @Column(comment = "字典状态", notNull = true, defaultValue = EnableStatus.defaultValue)
+    @Column(comment = "状态", notNull = true, defaultValue = EnableStatus.defaultValue)
     @NotNull
     @ShowDictDetail
     private EnableStatus status;
@@ -75,18 +79,18 @@ public class SysDict extends BaseLogicEntity {
     @Schema(description = "字典项列表", hidden = true)
     @BindEntity(
             conditions = @JoinCondition(
-                    selfField = SysDict.Fields.dictCode
-                    , joinField = SysDictItem.Fields.dictCode
+                    selfField = Dict.Fields.dictCode
+                    , joinField = DictItem.Fields.dictCode
             )
-            , orderBy = @JoinOrderBy(field = SysDictItem.Fields.sort)
+            , orderBy = @JoinOrderBy(field = DictItem.Fields.sort)
     )
-    private List<SysDictItem> items;
+    private List<DictItem> items;
 
     public DictDetail toDictDetail() {
         List<DictItemDetail> itemDetails = null;
         if (this.items != null) {
             itemDetails = this.items.stream()
-                    .map(SysDictItem::toDictItemDetail)
+                    .map(DictItem::toDictItemDetail)
                     .collect(Collectors.toList());
         }
         return DictDetail.builder()

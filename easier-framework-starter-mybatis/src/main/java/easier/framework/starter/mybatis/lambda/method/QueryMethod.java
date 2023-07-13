@@ -105,7 +105,7 @@ public interface QueryMethod<T> extends ChainQuery<T> {
     }
 
 
-    //
+    //存在则抛出异常
     default void existsThenThrow(String message, Object... params) {
         if (this.exists()) {
             throw BizException.of(message, params);
