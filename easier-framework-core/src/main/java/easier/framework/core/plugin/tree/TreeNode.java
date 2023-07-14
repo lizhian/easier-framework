@@ -1,5 +1,6 @@
 package easier.framework.core.plugin.tree;
 
+import easier.framework.core.plugin.jackson.annotation.Alias;
 import easier.framework.core.plugin.jackson.annotation.BoolReverse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -17,7 +18,7 @@ public class TreeNode<T> implements Serializable {
     private Serializable key;
 
     @Schema(description = "树节点名称")
-    //@Alias({"label", "title", "description"})
+    @Alias({"label", "title"})
     private String name;
 
     @Schema(description = "树节点数据")

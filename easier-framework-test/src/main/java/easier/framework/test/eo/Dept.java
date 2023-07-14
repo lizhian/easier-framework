@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.tangzc.mpe.autotable.annotation.Column;
 import com.tangzc.mpe.autotable.annotation.Table;
 import easier.framework.core.domain.BaseLogicEntity;
+import easier.framework.core.plugin.dict.ShowDictDetail;
 import easier.framework.core.plugin.tree.TreeBuilder;
 import easier.framework.core.plugin.validation.UpdateGroup;
 import easier.framework.core.util.StrUtil;
@@ -79,6 +80,7 @@ public class Dept extends BaseLogicEntity {
 
     @Column(comment = "状态", notNull = true, defaultValue = EnableStatus.defaultValue)
     @NotNull
+    @ShowDictDetail
     private EnableStatus status;
 
     public List<String> ancestorsAsList() {
