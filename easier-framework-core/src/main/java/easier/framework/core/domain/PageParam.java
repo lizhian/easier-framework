@@ -29,23 +29,23 @@ public class PageParam implements Serializable {
 
     @Builder.Default
     @Schema(description = "当前页")
-    private long pageNo = 1;
+    private long pageNum = 1;
 
     @Builder.Default
     @Schema(description = "每页大小")
     private long pageSize = 10;
 
-    public static PageParam of(long pageNo, long pageSize) {
+    public static PageParam of(long pageNum, long pageSize) {
         return PageParam.builder()
-                .pageNo(pageNo)
+                .pageNum(pageNum)
                 .pageSize(pageSize)
                 .searchCount(true)
                 .build();
     }
 
-    public static PageParam of(long pageNo, long pageSize, boolean searchCount) {
+    public static PageParam of(long pageNum, long pageSize, boolean searchCount) {
         return PageParam.builder()
-                .pageNo(pageNo)
+                .pageNum(pageNum)
                 .pageSize(pageSize)
                 .searchCount(searchCount)
                 .build();
@@ -57,9 +57,9 @@ public class PageParam implements Serializable {
         if (request == null) {
             return result;
         }
-        String pageNo = request.getParameter(Fields.pageNo);
-        if (NumberUtil.isLong(pageNo)) {
-            result.setPageNo(Long.parseLong(pageNo));
+        String pageNum = request.getParameter(Fields.pageNum);
+        if (NumberUtil.isLong(pageNum)) {
+            result.setPageNum(Long.parseLong(pageNum));
         }
         String pageSize = request.getParameter(Fields.pageSize);
         if (NumberUtil.isLong(pageSize)) {
@@ -69,7 +69,7 @@ public class PageParam implements Serializable {
     }
 
     public <T> Page<T> toPage() {
-        return new Page<>(this.pageNo, this.pageSize, this.searchCount);
+        return new Page<>(this.pageNum, this.pageSize, this.searchCount);
     }
 
 }

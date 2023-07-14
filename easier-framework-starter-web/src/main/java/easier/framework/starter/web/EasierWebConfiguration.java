@@ -32,6 +32,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.event.EventListener;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -164,5 +165,32 @@ public class EasierWebConfiguration implements WebMvcConfigurer, InitializingBea
             failed.setExpandData(expandData);
             return failed;
         });
+
+        //参数校验异常
+        ExceptionHandlerRegister.register(BindException.class, exception -> {
+            List<ValidErrorDetail> errorDetails = exception.getBindingResult()
+                    .getAllErrors()
+                    .stream()
+                    .map(ValidErrorDetail::from)
+                    .collect(Collectors.toList());
+            List<String> properties = errorDetails.stream()
+                    .map(ValidErrorDetail::getProperty)
+                    .distinct()
+                    .collect(Collectors.toList());
+            List<String> batchMessage = errorDetails.stream()
+                    .map(ValidErrorDetail::getMergeMessage)
+                    .collect(Collectors.toList());
+            String message = StrUtil.join(StrPool.COMMA, batchMessage);
+            R<Object> failed = R.failed(message);
+            log.error("参数校验异常,属性:{},错误信息:{}", properties, message);
+            Map<String, Object> expandData = MapUtil
+                    .<String, Object>builder("batchMessage", batchMessage)
+                    .put("errorDetails", errorDetails)
+                    .build();
+            failed.setExpandData(expandData);
+            return failed;
+        });
+
+
     }
 }

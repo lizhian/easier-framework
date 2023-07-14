@@ -6,6 +6,7 @@ import com.tangzc.mpe.autotable.annotation.Column;
 import com.tangzc.mpe.autotable.annotation.Table;
 import easier.framework.core.domain.BaseLogicEntity;
 import easier.framework.core.plugin.dict.ShowDictDetail;
+import easier.framework.core.plugin.mybatis.TableCode;
 import easier.framework.core.plugin.validation.UpdateGroup;
 import easier.framework.core.util.TreeUtil;
 import easier.framework.test.enums.EnableStatus;
@@ -38,13 +39,14 @@ public class Role extends BaseLogicEntity {
     @NotBlank(groups = UpdateGroup.class)
     private String roleId;
 
-    @Column(comment = "应用编码", notNull = true)
+    @Column(comment = "角色编码", notNull = true)
+    @TableCode
     @NotBlank
-    @Size(min = 6, max = 30)
+    @Size(min = 3, max = 30)
     @Pattern(regexp = "^[a-z][a-z0-9_]*$", message = "必须以字母开头,且只能由小写字母、数字和下划线组成")
     private String roleCode;
 
-    @Column(comment = "应用名称")
+    @Column(comment = "角色名称")
     @NotBlank
     @Size(min = 2, max = 8)
     @Pattern(regexp = RegexPool.CHINESE_NAME, message = "必须由中文组成")

@@ -1,5 +1,6 @@
 package easier.framework.core.plugin.tree;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import easier.framework.core.plugin.jackson.annotation.Alias;
 import easier.framework.core.plugin.jackson.annotation.BoolReverse;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,7 +14,6 @@ import java.util.List;
  */
 @Data
 public class TreeNode<T> implements Serializable {
-    //@AliasId
     @Schema(description = "树节点主键")
     private Serializable key;
 
@@ -24,7 +24,6 @@ public class TreeNode<T> implements Serializable {
     @Schema(description = "树节点数据")
     private T data;
 
-    //@Alias("parentId")
     @Schema(description = "树父节点主键")
     private Serializable parentKey;
 
@@ -39,10 +38,8 @@ public class TreeNode<T> implements Serializable {
     @Schema(description = "是否启用")
     private Boolean enable;
 
-    @Schema(description = "风格")
-    private String style;
-
     @Schema(description = "子节点集合")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<TreeNode<T>> children;
 
 }

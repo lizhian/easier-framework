@@ -9,7 +9,7 @@ import easier.framework.core.plugin.dict.DictDetail;
 import easier.framework.test.eo.Role;
 import easier.framework.test.eo.User;
 import easier.framework.test.qo.RoleAssignAppQo;
-import easier.framework.test.qo.RolePageQo;
+import easier.framework.test.qo.RoleQo;
 import easier.framework.test.service.DictService;
 import easier.framework.test.service.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -59,7 +59,7 @@ public class RoleController {
      */
     @Operation(summary = "查询角色-分页")
     @GetMapping("/role/page")
-    public R<Page<Role>> pageRole(PageParam pageParam, RolePageQo qo) {
+    public R<Page<Role>> pageRole(PageParam pageParam, RoleQo qo) {
         Page<Role> page = this.roleService.pageRole(pageParam, qo);
         return R.success(page);
     }

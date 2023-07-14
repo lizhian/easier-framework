@@ -2,7 +2,6 @@ package easier.framework.core.plugin.tree;
 
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import easier.framework.core.util.StrUtil;
 import easier.framework.core.util.TreeUtil;
 import lombok.Builder;
 import lombok.Getter;
@@ -51,11 +50,6 @@ public class TreeBuilder<T> {
      */
     @Builder.Default
     private final SFunction<T, Boolean> enable = it -> true;
-    /**
-     * 风格
-     */
-    @Builder.Default
-    private final SFunction<T, String> style = it -> StrUtil.EMPTY;
     /**
      * 子节点字段
      */
@@ -142,6 +136,7 @@ public class TreeBuilder<T> {
                         return null;
                     }
                     it.setChildren(matchedChildren);
+                    it.setHasChildren(CollUtil.isNotEmpty(matchedChildren));
                     return it;
                 })
                 .filter(Objects::nonNull)
@@ -175,6 +170,7 @@ public class TreeBuilder<T> {
                     }
                     List<TreeNode<T>> excludedChildren = this.exclude(it.getChildren(), exclude);
                     it.setChildren(excludedChildren);
+                    it.setHasChildren(CollUtil.isNotEmpty(excludedChildren));
                     return it;
                 })
                 .filter(Objects::nonNull)

@@ -1,20 +1,19 @@
 package easier.framework.test.qo;
 
-import easier.framework.test.enums.EnableStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-public class RolePageQo {
+public class RoleQo {
 
 
     @Schema(description = "角色名称")
-    private String appName;
+    private String roleName;
 
     @Schema(description = "角色编码")
-    private String appCode;
+    private String roleCode;
 
-    @Schema(description = "状态")
-    private EnableStatus status;
+    @Schema(description = "角色类型")
+    private String roleType;
 
 }

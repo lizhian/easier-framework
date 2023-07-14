@@ -19,7 +19,6 @@ import org.jasypt.encryption.StringEncryptor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,23 +36,20 @@ public class UserService {
     private final Repo<User> _user = Repos.of(User.class);
     private final Repo<UserRole> _user_role = Repos.of(UserRole.class);
     private final StringEncryptor encryptor;
-
+    private final DeptService deptService;
 
     public Page<User> pageUser(PageParam pageParam, UserQo qo) {
-        List<String> deptIds = new ArrayList<>();
-        if (StrUtil.isNotBlank(qo.getDeptId())) {
-
-        }
+        List<String> deptIds = this.deptService.getDescendantsAndSelf(qo.getDeptId());
         return this._user.newQuery()
                 .whenNotBlank()
                 .like(User::getUsername, qo.getUsername())
                 .like(User::getNickname, qo.getNickname())
-                .like(User::getPhone, qo.getPhone())
                 .whenNotNull()
                 .eq(User::getStatus, qo.getStatus())
                 .whenNotEmpty()
                 .in(User::getDeptId, deptIds)
                 .end()
+                .bind(User::getRoles, User::getRoleCodes)
                 .page(pageParam.toPage());
     }
 
@@ -112,7 +108,6 @@ public class UserService {
     public void assignRole(UserAssignRoleQo qo) {
         ValidUtil.valid(qo);
         String username = qo.getUsername();
-        this._user_role.deleteBy(UserRole::getUsername, username);
         List<UserRole> userRoles = qo.getRoleCodes()
                 .orEmpty()
                 .stream()
@@ -123,6 +118,7 @@ public class UserService {
                         .build()
                 )
                 .collect(Collectors.toList());
+        this._user_role.deleteBy(UserRole::getUsername, username);
         this._user_role.addBatch(userRoles);
     }
 }

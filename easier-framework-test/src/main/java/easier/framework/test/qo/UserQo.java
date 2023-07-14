@@ -19,7 +19,4 @@ public class UserQo {
 
     @Schema(description = "状态")
     private EnableStatus status;
-
-    @Schema(description = "手机号码")
-    private String phone;
 }

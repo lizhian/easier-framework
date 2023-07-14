@@ -6,11 +6,14 @@ import easier.framework.core.domain.CodesQo;
 import easier.framework.core.domain.PageParam;
 import easier.framework.core.domain.R;
 import easier.framework.core.plugin.dict.DictDetail;
+import easier.framework.core.plugin.tree.TreeNode;
+import easier.framework.test.eo.Dept;
+import easier.framework.test.eo.Role;
 import easier.framework.test.eo.User;
-import easier.framework.test.qo.ResetPasswordQo;
-import easier.framework.test.qo.UserAssignRoleQo;
-import easier.framework.test.qo.UserQo;
+import easier.framework.test.qo.*;
+import easier.framework.test.service.DeptService;
 import easier.framework.test.service.DictService;
+import easier.framework.test.service.RoleService;
 import easier.framework.test.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,14 +34,10 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 public class UserController {
-    /**
-     * 字典服务
-     */
     private final DictService dictService;
-    /**
-     * 用户服务
-     */
     private final UserService userService;
+    private final DeptService deptService;
+    private final RoleService roleService;
 
 
     /**
@@ -53,6 +53,19 @@ public class UserController {
         return R.success(map);
     }
 
+    @Operation(summary = "查询部门树")
+    @GetMapping("/user/dept/tree")
+    public R<List<TreeNode<Dept>>> deptTree(DeptTreeQo qo) {
+        List<TreeNode<Dept>> tree = this.deptService.getDeptTree(qo);
+        return R.success(tree);
+    }
+
+    @Operation(summary = "查询角色列表")
+    @GetMapping("/user/role/list")
+    public R<List<Role>> roleList(RoleQo qo) {
+        List<Role> list = this.roleService.list(qo);
+        return R.success(list);
+    }
 
     /**
      * 分页用户

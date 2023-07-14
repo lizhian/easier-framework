@@ -1,5 +1,6 @@
 package easier.framework.test;
 
+import cn.hutool.extra.spring.EnableSpringUtil;
 import com.fasterxml.jackson.databind.JavaType;
 import com.tangzc.mpe.autotable.EnableAutoTable;
 import easier.framework.core.plugin.cache.CacheBuilder;
@@ -15,18 +16,24 @@ import easier.framework.starter.doc.EnableEasierDoc;
 import easier.framework.starter.job.EnableEasierJob;
 import easier.framework.starter.logging.EnableEasierLogging;
 import easier.framework.starter.mybatis.EnableEasierMybatis;
+import easier.framework.starter.mybatis.repo.Repos;
 import easier.framework.starter.web.EnableEasierWeb;
 import easier.framework.test.cache.DictCache;
+import easier.framework.test.cache.ShowDeptDetail;
 import easier.framework.test.enums.SexType;
+import easier.framework.test.eo.Dept;
 import easier.framework.test.eo.User;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Mapper;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.util.Map;
+
 @Slf4j
-@MapperScan
+@MapperScan(annotationClass = Mapper.class)
 @SpringBootApplication
 @EnableEasierMybatis
 @EnableEasierJob
@@ -35,13 +42,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @EnableEasierAuth
 @EnableEasierDoc
 @EnableAutoTable(activeProfile = SpringUtil.dev)
+@EnableSpringUtil
 public class EasierFrameworkTestApplication implements
         ShowDictDetail.ShowDetailDetailBean
-        , ShowUserDetail.ShowUserDetailBean {
+        , ShowUserDetail.ShowUserDetailBean
+        , ShowDeptDetail.ShowDeptDetailBean {
 
     @SneakyThrows
     public static void main(String[] args) {
         SpringApplication.run(EasierFrameworkTestApplication.class, args);
+        Map<String, ShowDeptDetail.ShowDeptDetailBean> beansOfType = SpringUtil.getBeansOfType(ShowDeptDetail.ShowDeptDetailBean.class);
+        String string = beansOfType.toString();
     }
 
     @Override
@@ -89,6 +100,26 @@ public class EasierFrameworkTestApplication implements
         User sysUser = new User();
         sysUser.setUsername(fieldValue.toString());
         sysUser.setSexType(SexType.man);
-        return null;
+        return new UserDetail();
+    }
+
+    @Override
+    public Object getDeptDetail(Object fieldValue) {
+        if (fieldValue == null) {
+            return new DeptDetail();
+        }
+        Dept dept = Repos.of(Dept.class).getById(fieldValue.toString());
+        if (dept == null) {
+            return new DeptDetail();
+
+        }
+        return DeptDetail.builder()
+                .deptId(dept.getDeptId())
+                .deptName(dept.getDeptName())
+                .leader(dept.getLeader())
+                .email(dept.getEmail())
+                .phone(dept.getPhone())
+                .status(dept.getStatus())
+                .build();
     }
 }

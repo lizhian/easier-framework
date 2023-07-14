@@ -82,7 +82,6 @@ public class TreeUtil {
         String name = treeBuilder.getName().apply(data);
         Serializable parentKey = treeBuilder.getParentKey().apply(data);
         Boolean enable = treeBuilder.getEnable().apply(data);
-        String style = treeBuilder.getStyle().apply(data);
         if (StrUtil.isBlankIfStr(key) || StrUtil.isBlankIfStr(parentKey)) {
             return null;
         }
@@ -91,10 +90,9 @@ public class TreeUtil {
         treeNode.setName(name);
         treeNode.setParentKey(parentKey);
         treeNode.setData(data);
-        treeNode.setChildren(CollUtil.isNotEmpty(children) ? children : null);
+        treeNode.setChildren(children);
         treeNode.setHasChildren(CollUtil.isNotEmpty(children));
         treeNode.setEnable(enable);
-        treeNode.setStyle(style);
         return treeNode;
     }
 

@@ -25,7 +25,7 @@ public @interface ShowDictDetail {
 
     String value() default "";
 
-    String property() default "{}DictDetail";
+    String property() default "{}_DictDetail";
 
 
     interface ShowDetailDetailBean {

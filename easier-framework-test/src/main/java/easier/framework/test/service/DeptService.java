@@ -16,8 +16,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.ExtensionMethod;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 /**
@@ -190,5 +192,20 @@ public class DeptService {
     private void updateDescendants(String deptId, String oldAncestors, String newAncestors) {
 
     }
+
+    public List<String> getDescendantsAndSelf(String deptId) {
+        if (StrUtil.isBlank(deptId)) {
+            return new ArrayList<>();
+        }
+        List<String> list = this._dept.newQuery()
+                .like(Dept::getAncestors, deptId)
+                .stream()
+                .filter(it -> it.ancestorsAsList().contains(deptId))
+                .map(Dept::getDeptId)
+                .collect(Collectors.toList());
+        list.add(0, deptId);
+        return list;
+    }
+
 
 }

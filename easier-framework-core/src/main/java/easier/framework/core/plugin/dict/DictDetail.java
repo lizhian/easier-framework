@@ -1,5 +1,6 @@
 package easier.framework.core.plugin.dict;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tangzc.mpe.autotable.annotation.Column;
 import easier.framework.core.plugin.jackson.annotation.BoolReverse;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,6 +19,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 public class DictDetail {
     @Schema(description = "当前值对应的字典项")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private DictItemDetail selected;
 
     @Schema(description = "字典编码")
