@@ -18,13 +18,14 @@ import java.util.concurrent.TimeUnit;
  * 缓存代理执行器
  */
 @Slf4j
+@Deprecated
 public class CacheBuilderInvoker implements CacheBuilder.Invoker {
 
     @Override
     @SneakyThrows
     public Object invoke(Object proxy, Method method, Object[] args) {
         CacheMethodDetail methodDetail = InstanceUtil.in(CacheBuilderInvoker.class)
-                                                     .getInstance(method, CacheMethodDetail::new);
+                .getInstance(method, CacheMethodDetail::new);
         //获取缓存
         if (methodDetail.isGet()) {
             return this.invokeGet(methodDetail, proxy, args);
@@ -99,7 +100,7 @@ public class CacheBuilderInvoker implements CacheBuilder.Invoker {
         //缓存不过期
         if (timeToLive <= 0) {
             redisCache.setAsync(newCacheValue);
-            localCache.set(cacheKey, newCacheValue);
+            localCache.update(cacheKey, newCacheValue);
             return;
         }
 
@@ -107,9 +108,9 @@ public class CacheBuilderInvoker implements CacheBuilder.Invoker {
         redisCache.setAsync(newCacheValue, timeToLive, timeUnit);
         //redis 缓存时间必须大于本地缓存时间
         if (timeUnit.toMillis(timeToLive) >= localCache.getLocalCacheLiveMillis()) {
-            localCache.set(cacheKey, newCacheValue);
+            localCache.update(cacheKey, newCacheValue);
         } else {
-            localCache.delete(cacheKey);
+            localCache.clean(cacheKey);
         }
     }
 }

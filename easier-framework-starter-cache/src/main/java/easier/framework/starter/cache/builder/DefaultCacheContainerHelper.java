@@ -1,7 +1,7 @@
 package easier.framework.starter.cache.builder;
 
 import cn.hutool.core.collection.CollUtil;
-import easier.framework.core.plugin.cache.newCache.CacheHandlerInvoker;
+import easier.framework.core.plugin.cache.container.CacheContainerHelper;
 import easier.framework.starter.cache.redis.RedissonClients;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RedissonClient;
@@ -9,8 +9,14 @@ import org.redisson.api.RedissonClient;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 默认缓存容器助手
+ *
+ * @author lizhian
+ * @date 2023年07月15日
+ */
 @RequiredArgsConstructor
-public class DefaultCacheHandlerHelper implements CacheHandlerInvoker {
+public class DefaultCacheContainerHelper implements CacheContainerHelper {
     private final RedissonClients redissonClients;
 
     @Override
@@ -33,31 +39,26 @@ public class DefaultCacheHandlerHelper implements CacheHandlerInvoker {
     }
 
     @Override
-    public boolean set(String source, String key, Object value) {
+    public void update(String source, String key, Object value) {
         RedissonClient client = this.redissonClients.getClient(source);
         client.getBucket(key).setAsync(value);
-        return true;
     }
 
     @Override
-    public boolean set(String source, String key, Object value, Duration timeToLive) {
+    public void update(String source, String key, Object value, Duration timeToLive) {
         RedissonClient client = this.redissonClients.getClient(source);
         client.getBucket(key).setAsync(value, timeToLive.getSeconds(), TimeUnit.SECONDS);
-        return true;
     }
 
     @Override
-    public boolean delete(String source, String key) {
+    public void clean(String source, String key) {
         RedissonClient client = this.redissonClients.getClient(source);
         client.getBucket(key).deleteAsync();
-        return true;
     }
 
     @Override
-    public boolean deleteAll(String source, String pattern) {
+    public void cleanAll(String source, String pattern) {
         RedissonClient client = this.redissonClients.getClient(source);
         client.getKeys().deleteByPatternAsync(pattern);
-        return true;
     }
-
 }

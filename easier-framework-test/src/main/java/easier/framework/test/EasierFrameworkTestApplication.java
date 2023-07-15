@@ -20,6 +20,7 @@ import easier.framework.starter.mybatis.repo.Repos;
 import easier.framework.starter.web.EnableEasierWeb;
 import easier.framework.test.cache.DictCache;
 import easier.framework.test.cache.ShowDeptDetail;
+import easier.framework.test.cache.UserCenterCaches;
 import easier.framework.test.enums.SexType;
 import easier.framework.test.eo.Dept;
 import easier.framework.test.eo.User;
@@ -60,12 +61,12 @@ public class EasierFrameworkTestApplication implements
         DictCache dictCache = CacheBuilder.build(DictCache.class);
         DictDetail dictDetail = null;
         if (StrUtil.isNotBlank(dictCode)) {
-            dictDetail = dictCache.getDictDetail(dictCode);
+            dictDetail = UserCenterCaches.DICT_DETAIL.get(dictCode);
         }
         if (dictDetail == null && currentType.getRawClass().isEnum()) {
             EnumCodec<?> codec = EnumCodec.of(currentType.getRawClass());
             if (codec.getDict() != null) {
-                dictDetail = dictCache.getDictDetail(codec.getDict().code());
+                dictDetail = UserCenterCaches.DICT_DETAIL.get(codec.getDict().code())
             }
         }
         if (dictDetail == null) {

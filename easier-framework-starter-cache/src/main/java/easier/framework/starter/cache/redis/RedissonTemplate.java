@@ -18,15 +18,16 @@ public class RedissonTemplate {
     }
 
     public <T> void setValue(final String key, final T value) {
-        redissonClient.getBucket(key).set(value);
+        this.redissonClient.getBucket(key).set(value);
     }
 
     public <T> void setValue(final String key, final T value, final Duration timeout) {
-        redissonClient.getBucket(key).set(value, timeout.getSeconds(), TimeUnit.SECONDS);
+        this.redissonClient.getBucket(key).set(value, timeout.getSeconds(), TimeUnit.SECONDS);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T getValue(final String key) {
-        Object value = redissonClient.getBucket(key).get();
+        Object value = this.redissonClient.getBucket(key).get();
         if (value == null) {
             return null;
         }
@@ -34,11 +35,11 @@ public class RedissonTemplate {
     }
 
     public boolean delete(final String key) {
-        return redissonClient.getBucket(key).delete();
+        return this.redissonClient.getBucket(key).delete();
     }
 
     public boolean expire(final String key, final Duration timeout) {
-        return redissonClient.getBucket(key).expire(timeout);
+        return this.redissonClient.getBucket(key).expire(timeout);
     }
 
 
@@ -49,15 +50,15 @@ public class RedissonTemplate {
      * -1 = key不过期
      */
     public long remainTimeToLive(final String key) {
-        return redissonClient.getBucket(key).remainTimeToLive();
+        return this.redissonClient.getBucket(key).remainTimeToLive();
     }
 
     public Iterable<String> keys(final String pattern) {
-        return redissonClient.getKeys().getKeysByPattern(pattern);
+        return this.redissonClient.getKeys().getKeysByPattern(pattern);
     }
 
     public boolean hasKey(final String key) {
-        return redissonClient.getKeys().countExists(key) > 0;
+        return this.redissonClient.getKeys().countExists(key) > 0;
     }
 
 }

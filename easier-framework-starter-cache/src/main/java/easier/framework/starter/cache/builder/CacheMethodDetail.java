@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
  * 缓存方法详情
  */
 @Getter
+@Deprecated
 public class CacheMethodDetail {
     private final Method method;
     private boolean get;

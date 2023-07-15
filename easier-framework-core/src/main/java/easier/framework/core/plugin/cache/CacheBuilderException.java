@@ -8,6 +8,7 @@ import lombok.experimental.StandardException;
  * 缓存异常
  */
 @StandardException
+@Deprecated
 public class CacheBuilderException extends BaseException {
 
     public static CacheBuilderException of(String template, Object... params) {

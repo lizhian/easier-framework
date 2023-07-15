@@ -12,9 +12,10 @@ import java.util.Map;
 @Data
 @ConfigurationProperties(prefix = EasierCacheProperties.prefix)
 public class EasierCacheProperties {
-    public static final String prefix = "easier.cache";
+    public static final String prefix = "spring.easier.cache";
     private String enableRedis;
     private Map<String, RedissonProperties> redis = new HashMap<>();
+
 
     public enum Type {
         single,
@@ -26,6 +27,11 @@ public class EasierCacheProperties {
     public static class RedissonProperties {
         private String alias;
         private Type type = Type.single;
+        private String nodes;
+        private int database = 0;
+        private String password;
+        private boolean ssl = false;
+        private int connectTimeoutMillis = 10000;
         private Single single;
         private Sentinel sentinel;
         private Cluster cluster;
@@ -33,41 +39,16 @@ public class EasierCacheProperties {
 
     @Data
     public static class Single {
-
-        private String host;
-        private int port;
-        private int database = 0;
-        private String password;
-        private boolean ssl;
-        /**
-         * 毫秒
-         */
-        private int connectTimeout;
     }
 
     @Data
     public static class Sentinel {
-
         private String masterName;
-        private String nodes;
-        private int database = 0;
-        private String password;
-        /**
-         * 毫秒
-         */
-        private int connectTimeout;
+
     }
 
     @Data
     public static class Cluster {
-
-        private String nodes;
-        private String password;
-        /**
-         * 毫秒
-         */
-        private int connectTimeout;
-
     }
 
 }

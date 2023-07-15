@@ -39,11 +39,9 @@ public enum LocalCache {
             return;
         }
         this.cache = Caffeine.newBuilder()
-                             .maximumSize(10000)
-                             .expireAfterWrite(duration, unit)
-                             .build();
-
-
+                .maximumSize(10000)
+                .expireAfterWrite(duration, unit)
+                .build();
     }
 
     public Object get(String key) {
@@ -56,7 +54,7 @@ public enum LocalCache {
         return this.cache.getIfPresent(key);
     }
 
-    public void set(String key, Object value) {
+    public void update(String key, Object value) {
         if (this.cache == null) {
             return;
         }
@@ -70,10 +68,17 @@ public enum LocalCache {
         this.cache.put(key, value);
     }
 
-    public void delete(String key) {
+    public void clean(String key) {
         if (this.cache == null) {
             return;
         }
         this.cache.invalidate(key);
+    }
+
+    public void cleanAll() {
+        if (this.cache == null) {
+            return;
+        }
+        this.cache.invalidateAll();
     }
 }

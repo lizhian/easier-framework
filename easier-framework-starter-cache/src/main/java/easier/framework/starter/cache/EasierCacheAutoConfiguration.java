@@ -1,8 +1,9 @@
 package easier.framework.starter.cache;
 
 import cn.hutool.extra.spring.EnableSpringUtil;
+import easier.framework.core.plugin.cache.container.CacheContainerHelper;
 import easier.framework.core.util.SpringUtil;
-import easier.framework.starter.cache.builder.CacheBuilderInvoker;
+import easier.framework.starter.cache.builder.DefaultCacheContainerHelper;
 import easier.framework.starter.cache.redis.RedissonClients;
 import easier.framework.starter.cache.redis.RedissonConfigCustomizer;
 import easier.framework.starter.cache.redis.RedissonJacksonCodec;
@@ -20,7 +21,7 @@ import org.springframework.context.annotation.Import;
 @EnableConfigurationProperties(easier.framework.starter.cache.EasierCacheProperties.class)
 @Configuration(proxyBeanMethods = false)
 @EnableSpringUtil
-@Import(CacheBuilderInvoker.class)
+@Import(DefaultCacheContainerHelper.class)
 public class EasierCacheAutoConfiguration {
 
     @Bean
@@ -47,5 +48,10 @@ public class EasierCacheAutoConfiguration {
     @Bean
     public RedissonClient redissonClient(RedissonClients redissonClients) {
         return redissonClients.getClient();
+    }
+
+    @Bean
+    public CacheContainerHelper cacheContainerHelper(RedissonClients redissonClients) {
+        return new DefaultCacheContainerHelper(redissonClients);
     }
 }

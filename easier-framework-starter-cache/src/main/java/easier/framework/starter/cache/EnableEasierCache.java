@@ -11,6 +11,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Import(easier.framework.starter.cache.EasierCacheAutoConfiguration.class)
+@Import(EasierCacheAutoConfiguration.class)
 public @interface EnableEasierCache {
 }

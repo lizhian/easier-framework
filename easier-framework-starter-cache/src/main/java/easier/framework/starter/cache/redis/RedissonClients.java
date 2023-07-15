@@ -2,8 +2,8 @@ package easier.framework.starter.cache.redis;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
-import easier.framework.core.plugin.cache.CacheBuilderException;
 import easier.framework.core.plugin.cache.RedisSources;
+import easier.framework.core.plugin.exception.biz.FrameworkException;
 import easier.framework.core.util.IdUtil;
 import easier.framework.core.util.SpringUtil;
 import easier.framework.core.util.StrUtil;
@@ -13,10 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.Redisson;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.redisson.config.ClusterServersConfig;
 import org.redisson.config.Config;
-import org.redisson.config.SentinelServersConfig;
-import org.redisson.config.SingleServerConfig;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -47,11 +44,11 @@ public class RedissonClients implements InitializingBean, DisposableBean {
     @Nonnull
     public RedissonClient getClient() {
         if (StrUtil.isBlank(this.primary)) {
-            throw CacheBuilderException.of("未配置主缓存源");
+            throw FrameworkException.of("未配置主缓存源");
         }
         RedissonClient redissonClient = this.clients.get(this.primary);
         if (redissonClient == null) {
-            throw CacheBuilderException.of("未找到缓存源:{}", this.primary);
+            throw FrameworkException.of("未找到缓存源:{}", this.primary);
         }
         return redissonClient;
     }
@@ -64,7 +61,7 @@ public class RedissonClients implements InitializingBean, DisposableBean {
         }
         RedissonClient redissonClient = this.clients.get(source);
         if (redissonClient == null) {
-            throw CacheBuilderException.of("未找到缓存源:{}", source);
+            throw FrameworkException.of("未找到缓存源:{}", source);
         }
         return redissonClient;
     }
@@ -95,8 +92,8 @@ public class RedissonClients implements InitializingBean, DisposableBean {
             return;
         }
         RedissonClient client = this.getClient(RedisSources.snowflake);
-        for (int dataCenterId = 0; dataCenterId < 32; dataCenterId++) {
-            for (int workerId = 0; workerId < 32; workerId++) {
+        for (int dataCenterId = 0; dataCenterId < 31; dataCenterId++) {
+            for (int workerId = 0; workerId < 31; workerId++) {
                 String snowflakeId = "Snowflake:" + dataCenterId + ":" + workerId;
                 RLock snowflakeIdLock = client.getLock(snowflakeId);
                 if (snowflakeIdLock.tryLock(0, TimeUnit.MINUTES)) {
@@ -110,68 +107,58 @@ public class RedissonClients implements InitializingBean, DisposableBean {
 
 
     public void init(EasierCacheProperties easierCacheProperties) {
-        List<String> enableRedis = easier.framework.core.util.StrUtil.smartSplit(easierCacheProperties.getEnableRedis());
+        List<String> enableRedis = StrUtil.smartSplit(easierCacheProperties.getEnableRedis());
         if (CollUtil.isEmpty(enableRedis)) {
             return;
         }
         this.primary = CollUtil.getFirst(enableRedis);
         for (String source : enableRedis) {
-            EasierCacheProperties.RedissonProperties redissonProperties = easierCacheProperties.getRedis().get(source);
-            if (redissonProperties == null) {
-                throw CacheBuilderException.of("无法获取缓存源配置:{}", source);
+            EasierCacheProperties.RedissonProperties properties = easierCacheProperties.getRedis().get(source);
+            if (properties == null) {
+                throw FrameworkException.of("无法获取缓存源配置:{}", source);
             }
-            RedissonClient redissonClient = this.createClient(redissonProperties);
+            RedissonClient redissonClient = this.createClient(properties);
             this.clients.put(source, redissonClient);
             log.info("已加载缓存源【{}】", source);
-            for (String alias : StrUtil.smartSplit(redissonProperties.getAlias())) {
+            for (String alias : StrUtil.smartSplit(properties.getAlias())) {
                 this.clients.put(alias, redissonClient);
                 log.info("已加载缓存源【{}】", alias);
             }
         }
     }
 
-    private RedissonClient createClient(EasierCacheProperties.RedissonProperties redissonProperties) {
-        //sentinel
-        if (sentinel.equals(redissonProperties.getType())) {
-            EasierCacheProperties.Sentinel sentinel = redissonProperties.getSentinel();
-            Config config = new Config();
-            SentinelServersConfig sentinelServersConfig = config.useSentinelServers()
-                    .setMasterName(sentinel.getMasterName())
-                    .addSentinelAddress(this.convert(sentinel.getNodes()));
-            sentinelServersConfig.setDatabase(sentinel.getDatabase());
-            sentinelServersConfig.setPassword(sentinel.getPassword());
-            if (sentinel.getConnectTimeout() > 0) {
-                sentinelServersConfig.setConnectTimeout(sentinel.getConnectTimeout());
-            }
-            this.customize(config);
-            return Redisson.create(config);
-        }
-        //cluster
-        if (cluster.equals(redissonProperties.getType())) {
-            EasierCacheProperties.Cluster cluster = redissonProperties.getCluster();
-            Config config = new Config();
-            ClusterServersConfig clusterServersConfig = config.useClusterServers()
-                    .addNodeAddress(this.convert(cluster.getNodes()));
-            clusterServersConfig.setPassword(cluster.getPassword());
-            if (cluster.getConnectTimeout() > 0) {
-                clusterServersConfig.setConnectTimeout(cluster.getConnectTimeout());
-            }
-            this.customize(config);
-            return Redisson.create(config);
-        }
-        //single
-        EasierCacheProperties.Single single = redissonProperties.getSingle();
+    private RedissonClient createClient(EasierCacheProperties.RedissonProperties properties) {
+        String nodes = properties.getNodes();
+        String password = properties.getPassword();
+        int database = properties.getDatabase();
+        boolean ssl = properties.isSsl();
+        int connectTimeoutMillis = properties.getConnectTimeoutMillis();
+        String[] address = this.convert(nodes, ssl);
         Config config = new Config();
-        String prefix = REDIS_PROTOCOL_PREFIX;
-        if (single.isSsl()) {
-            prefix = REDISS_PROTOCOL_PREFIX;
-        }
-        SingleServerConfig singleServerConfig = config.useSingleServer();
-        singleServerConfig.setAddress(prefix + single.getHost() + ":" + single.getPort())
-                .setDatabase(single.getDatabase())
-                .setPassword(single.getPassword());
-        if (single.getConnectTimeout() > 0) {
-            singleServerConfig.setConnectTimeout(single.getConnectTimeout());
+
+        if (sentinel.equals(properties.getType())) {
+            //sentinel
+            config.useSentinelServers()
+                    .setMasterName(properties.getSentinel().getMasterName())
+                    .addSentinelAddress(address)
+                    .setDatabase(database)
+                    .setPassword(password)
+                    .setConnectTimeout(connectTimeoutMillis);
+        } else if (cluster.equals(properties.getType())) {
+            //cluster
+            config.useClusterServers()
+                    .addNodeAddress(address)
+                    .setPassword(password)
+                    .setConnectTimeout(connectTimeoutMillis);
+            this.customize(config);
+            return Redisson.create(config);
+        } else {
+            //single
+            config.useSingleServer()
+                    .setAddress(address[0])
+                    .setDatabase(database)
+                    .setPassword(password)
+                    .setConnectTimeout(connectTimeoutMillis);
         }
         this.customize(config);
         return Redisson.create(config);
@@ -184,15 +171,15 @@ public class RedissonClients implements InitializingBean, DisposableBean {
 
     }
 
-    private String[] convert(String nodes) {
-        List<String> nodeList = easier.framework.core.util.StrUtil.smartSplit(nodes)
+    private String[] convert(String nodes, boolean ssl) {
+        List<String> nodeList = StrUtil.smartSplit(nodes)
                 .stream()
                 .filter(StrUtil::isNotBlank)
                 .map(node -> {
                     if (node.startsWith(REDIS_PROTOCOL_PREFIX) || node.startsWith(REDISS_PROTOCOL_PREFIX)) {
                         return node;
                     }
-                    return REDIS_PROTOCOL_PREFIX + node;
+                    return ssl ? REDISS_PROTOCOL_PREFIX : REDIS_PROTOCOL_PREFIX + node;
                 })
                 .collect(Collectors.toList());
         return ArrayUtil.toArray(nodeList, String.class);

@@ -11,6 +11,8 @@ import java.lang.reflect.Method;
 /**
  * 缓存接口构建者
  */
+@Deprecated
+
 public class CacheBuilder implements InvocationHandler {
 
     /**
@@ -18,7 +20,7 @@ public class CacheBuilder implements InvocationHandler {
      */
     public static <T extends Cache> T build(Class<T> interfaces) {
         return InstanceUtil.in(CacheBuilder.class)
-                           .getInstance(interfaces, CacheBuilder::newInstance);
+                .getInstance(interfaces, CacheBuilder::newInstance);
     }
 
     private static <T> T newInstance(Class<T> clazz) {

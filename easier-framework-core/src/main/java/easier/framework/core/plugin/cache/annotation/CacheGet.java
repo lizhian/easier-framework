@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
+@Deprecated
 public @interface CacheGet {
     /**
      * 实际缓存键={name}:{key}
