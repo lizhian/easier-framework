@@ -13,6 +13,7 @@ import java.util.Map;
 @ConfigurationProperties(prefix = EasierDiscoveryProperties.prefix)
 public class EasierDiscoveryProperties {
     public static final String prefix = "spring.easier.discovery";
+    public boolean registry = true;
     /**
      * host优先获取,可以填写网卡名称或者网段(ip前缀)
      */

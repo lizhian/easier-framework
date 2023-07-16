@@ -8,7 +8,6 @@ import easier.framework.core.plugin.cache.RedisSources;
 import easier.framework.core.plugin.job.LoopJob;
 import easier.framework.core.util.SpringUtil;
 import easier.framework.core.util.StrUtil;
-import easier.framework.starter.cache.condition.ConditionalOnRedisSource;
 import easier.framework.starter.cache.redis.RedissonClients;
 import easier.framework.starter.discovery.EasierDiscoveryProperties;
 import easier.framework.starter.job.loop.LoopJobContext;
@@ -29,7 +28,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-@ConditionalOnRedisSource(RedisSources.discovery)
 @RequiredArgsConstructor
 public class RedissonServiceRegistry implements DisposableBean, ApplicationListener<WebServerInitializedEvent> {
 

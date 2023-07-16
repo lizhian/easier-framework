@@ -3,7 +3,6 @@ package easier.framework.starter.discovery.core;
 import cn.hutool.core.collection.CollUtil;
 import easier.framework.core.plugin.cache.RedisSources;
 import easier.framework.core.util.StrUtil;
-import easier.framework.starter.cache.condition.ConditionalOnRedisSource;
 import easier.framework.starter.cache.redis.RedissonClients;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +14,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
-@ConditionalOnRedisSource(RedisSources.discovery)
 @RequiredArgsConstructor
 public class RedissonDiscoveryClient implements DiscoveryClient {
     private final RedissonClients redissonClients;
