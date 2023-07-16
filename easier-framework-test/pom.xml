@@ -47,6 +47,12 @@
             <groupId>easier.framework</groupId>
             <artifactId>easier-framework-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>easier.framework</groupId>
+            <artifactId>easier-framework-starter-rpc</artifactId>
+            <version>2023.07.03-2.7.12</version>
+            <scope>compile</scope>
+        </dependency>
 
     </dependencies>
     <build>

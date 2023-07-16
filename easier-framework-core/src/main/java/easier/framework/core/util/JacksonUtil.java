@@ -85,12 +85,21 @@ public class JacksonUtil {
 
     private static JavaType collectionType(Class<?> collectionClazz, Class<?> elementClazz) {
         return ObjectMapperHolder.get().getTypeFactory()
-                                 .constructParametricType(collectionClazz, elementClazz);
+                .constructParametricType(collectionClazz, elementClazz);
     }
 
     @SneakyThrows
     public static Map<String, Object> toMapObject(String json) {
         return ObjectMapperHolder.get().readValue(json, new TypeReference<Map<String, Object>>() {
         });
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T deserialize(byte[] bytes) {
+        return (T) toObject(bytes);
+    }
+
+    public static byte[] serialize(Object object) {
+        return toTypingBytes(object);
     }
 }

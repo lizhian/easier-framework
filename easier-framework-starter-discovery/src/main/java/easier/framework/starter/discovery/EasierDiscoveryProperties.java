@@ -7,11 +7,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 多缓存源配置
+ * @author lizhian
+ * @date 2023年07月16日
  */
 @Data
 @ConfigurationProperties(prefix = EasierDiscoveryProperties.prefix)
 public class EasierDiscoveryProperties {
+    public static final String REDIS_KEY_PREFIX = "Easier:Discovery:";
     public static final String prefix = "spring.easier.discovery";
     public boolean registry = true;
     /**

@@ -8,6 +8,12 @@ import org.springframework.cloud.client.ServiceInstance;
 import java.net.URI;
 import java.util.Map;
 
+/**
+ * redisson服务实例
+ *
+ * @author lizhian
+ * @date 2023年07月16日
+ */
 @Data
 @FieldNameConstants
 public class RedissonServiceInstance implements ServiceInstance {

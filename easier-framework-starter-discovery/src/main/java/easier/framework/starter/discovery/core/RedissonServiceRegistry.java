@@ -27,6 +27,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * redisson服务注册
+ *
+ * @author lizhian
+ * @date 2023年07月16日
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class RedissonServiceRegistry implements DisposableBean, ApplicationListener<WebServerInitializedEvent> {
@@ -45,7 +51,7 @@ public class RedissonServiceRegistry implements DisposableBean, ApplicationListe
         this.serviceInstance = this.initServiceInstance(event.getWebServer().getPort());
         this.instanceCache = this.redissonClients
                 .getClient(RedisSources.discovery)
-                .getMapCache("Easier:Discovery:" + this.serviceInstance.getServiceId());
+                .getMapCache(EasierDiscoveryProperties.REDIS_KEY_PREFIX + this.serviceInstance.getServiceId());
         this.registry = true;
     }
 

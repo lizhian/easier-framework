@@ -33,6 +33,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
 import org.springframework.validation.BindException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -191,6 +192,11 @@ public class EasierWebConfiguration implements WebMvcConfigurer, InitializingBea
             return failed;
         });
 
+        //.HttpRequestMethodNotSupportedException
+        ExceptionHandlerRegister.register(HttpRequestMethodNotSupportedException.class, exception -> {
+            String method = exception.getMethod();
+            return R.failed("不支持使用[" + method + "]方法请求此接口");
+        });
 
     }
 }
