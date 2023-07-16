@@ -14,14 +14,12 @@ import org.redisson.api.RedissonClient;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 @Slf4j
 @RequiredArgsConstructor
 @EnableConfigurationProperties(easier.framework.starter.cache.EasierCacheProperties.class)
 @Configuration(proxyBeanMethods = false)
 @EnableSpringUtil
-@Import(DefaultCacheContainerHelper.class)
 public class EasierCacheAutoConfiguration {
 
     @Bean
@@ -51,7 +49,7 @@ public class EasierCacheAutoConfiguration {
     }
 
     @Bean
-    public CacheContainerHelper cacheContainerHelper(RedissonClients redissonClients) {
+    public CacheContainerHelper defaultCacheContainerHelper(RedissonClients redissonClients) {
         return new DefaultCacheContainerHelper(redissonClients);
     }
 }

@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Import(easier.framework.starter.discovery.EasierDiscoveryAutoConfiguration.class)
+@Import(EasierDiscoveryAutoConfiguration.class)
 @EnableDiscoveryClient
 public @interface EnableEasierDiscovery {
 }

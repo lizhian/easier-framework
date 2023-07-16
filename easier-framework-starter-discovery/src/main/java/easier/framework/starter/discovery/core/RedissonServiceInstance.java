@@ -3,14 +3,15 @@ package easier.framework.starter.discovery.core;
 import lombok.Data;
 import lombok.experimental.FieldNameConstants;
 import org.springframework.cloud.client.DefaultServiceInstance;
-import org.springframework.cloud.client.serviceregistry.Registration;
+import org.springframework.cloud.client.ServiceInstance;
 
 import java.net.URI;
 import java.util.Map;
 
 @Data
 @FieldNameConstants
-public class RedissonRegistration implements Registration {
+public class RedissonServiceInstance implements ServiceInstance {
+    private String instanceId;
     private String serviceId;
     private String host;
     private int port;

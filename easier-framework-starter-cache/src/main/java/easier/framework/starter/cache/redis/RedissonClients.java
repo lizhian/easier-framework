@@ -172,7 +172,7 @@ public class RedissonClients implements InitializingBean, DisposableBean {
     }
 
     private String[] convert(String nodes, boolean ssl) {
-        List<String> nodeList = StrUtil.smartSplit(nodes)
+        List<String> nodeList = StrUtil.splitTrim(nodes, ",")
                 .stream()
                 .filter(StrUtil::isNotBlank)
                 .map(node -> {

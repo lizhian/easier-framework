@@ -3,7 +3,6 @@ package easier.framework.test;
 import cn.hutool.extra.spring.EnableSpringUtil;
 import com.fasterxml.jackson.databind.JavaType;
 import com.tangzc.mpe.autotable.EnableAutoTable;
-import easier.framework.core.plugin.cache.CacheBuilder;
 import easier.framework.core.plugin.dict.DictDetail;
 import easier.framework.core.plugin.dict.DictItemDetail;
 import easier.framework.core.plugin.dict.ShowDictDetail;
@@ -12,13 +11,14 @@ import easier.framework.core.plugin.jackson.annotation.ShowUserDetail;
 import easier.framework.core.util.SpringUtil;
 import easier.framework.core.util.StrUtil;
 import easier.framework.starter.auth.EnableEasierAuth;
+import easier.framework.starter.discovery.EnableEasierDiscovery;
+import easier.framework.starter.discovery.core.RedissonDiscoveryClient;
 import easier.framework.starter.doc.EnableEasierDoc;
 import easier.framework.starter.job.EnableEasierJob;
 import easier.framework.starter.logging.EnableEasierLogging;
 import easier.framework.starter.mybatis.EnableEasierMybatis;
 import easier.framework.starter.mybatis.repo.Repos;
 import easier.framework.starter.web.EnableEasierWeb;
-import easier.framework.test.cache.DictCache;
 import easier.framework.test.cache.ShowDeptDetail;
 import easier.framework.test.cache.UserCenterCaches;
 import easier.framework.test.enums.SexType;
@@ -30,7 +30,9 @@ import org.apache.ibatis.annotations.Mapper;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.ServiceInstance;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -44,6 +46,7 @@ import java.util.Map;
 @EnableEasierDoc
 @EnableAutoTable(activeProfile = SpringUtil.dev)
 @EnableSpringUtil
+@EnableEasierDiscovery
 public class EasierFrameworkTestApplication implements
         ShowDictDetail.ShowDetailDetailBean
         , ShowUserDetail.ShowUserDetailBean
@@ -52,13 +55,14 @@ public class EasierFrameworkTestApplication implements
     @SneakyThrows
     public static void main(String[] args) {
         SpringApplication.run(EasierFrameworkTestApplication.class, args);
+        RedissonDiscoveryClient bean = SpringUtil.getBean(RedissonDiscoveryClient.class);
+        List<ServiceInstance> easierFrameworkTestApplication = bean.getInstances("EasierFrameworkTestApplication");
         Map<String, ShowDeptDetail.ShowDeptDetailBean> beansOfType = SpringUtil.getBeansOfType(ShowDeptDetail.ShowDeptDetailBean.class);
         String string = beansOfType.toString();
     }
 
     @Override
     public DictDetail getDictDetail(Object currentValue, String dictCode, JavaType currentType) {
-        DictCache dictCache = CacheBuilder.build(DictCache.class);
         DictDetail dictDetail = null;
         if (StrUtil.isNotBlank(dictCode)) {
             dictDetail = UserCenterCaches.DICT_DETAIL.get(dictCode);
@@ -66,7 +70,7 @@ public class EasierFrameworkTestApplication implements
         if (dictDetail == null && currentType.getRawClass().isEnum()) {
             EnumCodec<?> codec = EnumCodec.of(currentType.getRawClass());
             if (codec.getDict() != null) {
-                dictDetail = UserCenterCaches.DICT_DETAIL.get(codec.getDict().code())
+                dictDetail = UserCenterCaches.DICT_DETAIL.get(codec.getDict().code());
             }
         }
         if (dictDetail == null) {

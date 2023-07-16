@@ -1,45 +1,173 @@
 package easier.framework.starter.discovery.core;
 
 
-import lombok.AllArgsConstructor;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.net.NetUtil;
+import cn.hutool.system.oshi.OshiUtil;
+import easier.framework.core.plugin.cache.RedisSources;
+import easier.framework.core.plugin.job.LoopJob;
+import easier.framework.core.util.SpringUtil;
+import easier.framework.core.util.StrUtil;
+import easier.framework.starter.cache.condition.ConditionalOnRedisSource;
+import easier.framework.starter.cache.redis.RedissonClients;
+import easier.framework.starter.discovery.EasierDiscoveryProperties;
+import easier.framework.starter.job.loop.LoopJobContext;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.client.serviceregistry.ServiceRegistry;
+import org.redisson.api.RMapCache;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.boot.web.context.WebServerInitializedEvent;
+import org.springframework.context.ApplicationListener;
+
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
-@AllArgsConstructor
-public class RedissonServiceRegistry implements ServiceRegistry<RedissonRegistration> {
+@ConditionalOnRedisSource(RedisSources.discovery)
+@RequiredArgsConstructor
+public class RedissonServiceRegistry implements DisposableBean, ApplicationListener<WebServerInitializedEvent> {
 
-    public static final String UP = "UP";
-    public static final String DOWN = "DOWN";
+
+    private final EasierDiscoveryProperties properties;
+    private final RedissonClients redissonClients;
+
+    private boolean registry = false;
+    private RedissonServiceInstance serviceInstance;
+    private RMapCache<String, RedissonServiceInstance> instanceCache;
 
 
     @Override
-    public void register(RedissonRegistration registration) {
-        log.info("register {}", registration);
+    public void onApplicationEvent(WebServerInitializedEvent event) {
+        this.serviceInstance = this.initServiceInstance(event.getWebServer().getPort());
+        this.instanceCache = this.redissonClients
+                .getClient(RedisSources.discovery)
+                .getMapCache("Easier:Discovery:" + this.serviceInstance.getServiceId());
+        this.registry = true;
     }
 
-    @Override
-    public void deregister(RedissonRegistration registration) {
-        log.info("deregister {}", registration);
-    }
 
-    @Override
-    public void close() {
-        log.info("RedissonServiceRegistry  close");
-    }
-
-    @Override
-    public void setStatus(RedissonRegistration registration, String status) {
-        log.info("setStatus {} {}", registration, status);
-    }
-
-    @Override
-    public <T> T getStatus(RedissonRegistration registration) {
-        try {
-            return (T) "111";
-        } catch (Exception ignored) {
-
+    @LoopJob(delay = 5, timeUnit = TimeUnit.SECONDS, lock = false)
+    public void registryServiceInstance() {
+        if (!this.registry) {
+            return;
         }
-        return null;
+        String instanceId = this.serviceInstance.getInstanceId();
+        long ttl = LoopJobContext.get().getLoopJob().delay() + 1;
+        TimeUnit timeUnit = LoopJobContext.get().getLoopJob().timeUnit();
+        this.instanceCache.putAsync(instanceId, this.serviceInstance, ttl, timeUnit);
+        this.instanceCache.clearExpireAsync();
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        this.registry = false;
+        String instanceId = this.serviceInstance.getInstanceId();
+        this.instanceCache.remove(instanceId);
+    }
+
+    private RedissonServiceInstance initServiceInstance(int port) {
+        RedissonServiceInstance instance = new RedissonServiceInstance();
+        instance.setServiceId(SpringUtil.getApplicationName());
+        instance.setHost(this.getHost());
+        instance.setPort(SpringUtil.getServerPort(port));
+        instance.setSecure(this.properties.isSecure());
+        instance.setGroup(this.properties.getGroup());
+        instance.setWeight(this.getWeight());
+        instance.setMetadata(this.buildMetadata(instance));
+        String instanceId = StrUtil.format("{}@{}@{}@{}"
+                , instance.getServiceId()
+                , instance.getGroup()
+                , instance.getHost()
+                , instance.getPort()
+        );
+        instance.setInstanceId(instanceId);
+        return instance;
+    }
+
+
+    private int getWeight() {
+        int weight = this.properties.getWeight();
+        if (weight >= 0) {
+            return weight;
+        }
+        return OshiUtil.getCpuInfo().getCpuNum();
+    }
+
+    private Map<String, String> buildMetadata(RedissonServiceInstance serviceInstance) {
+        Map<String, String> metadata = this.properties.getMetadata();
+        metadata.put(RedissonServiceInstance.Fields.group, serviceInstance.getGroup());
+        metadata.put(RedissonServiceInstance.Fields.weight, String.valueOf(serviceInstance.getWeight()));
+        return metadata;
+    }
+
+    private String getHost() {
+        List<String> hostPriorities = StrUtil.splitTrim(this.properties.getHostPriorities(), ",");
+        if (CollUtil.isEmpty(hostPriorities)) {
+            return NetUtil.getLocalhostStr();
+        }
+        LinkedHashSet<String> localIpv4s = NetUtil.localIpv4s();
+
+        for (String hostPriority : hostPriorities) {
+            //根据网段前缀匹配
+            String ipMatch = localIpv4s.stream()
+                    .filter(ip -> ip.startsWith(hostPriority))
+                    .findAny()
+                    .orElse(null);
+            if (StrUtil.isNotBlank(ipMatch)) {
+                return ipMatch;
+            }
+            //根据网卡名称匹配
+            NetworkInterface networkInterface = NetUtil.getNetworkInterface(hostPriority);
+            if (networkInterface != null) {
+                //额外过滤
+                InetAddress inetAddress = this.additionalFilter(networkInterface.getInterfaceAddresses());
+                if (inetAddress != null) {
+                    return inetAddress.getHostAddress();
+                }
+            }
+        }
+        return NetUtil.getLocalhostStr();
+    }
+
+
+    /**
+     * 附加过滤器
+     *
+     * @param addresses 地址
+     * @return {@link InetAddress}
+     */
+    private InetAddress additionalFilter(List<InterfaceAddress> addresses) {
+        if (addresses == null) {
+            return null;
+        }
+        InetAddress finalAddress = null;
+        for (InterfaceAddress interfaceAddress : addresses) {
+            InetAddress inetAddress = interfaceAddress.getAddress();
+            if (inetAddress == null) {
+                continue;
+            }
+            // 非loopback地址，指127.*.*.*的地址
+            if (inetAddress.isLoopbackAddress()) {
+                continue;
+            }
+            // 需为IPV4地址
+            if (!(inetAddress instanceof Inet4Address)) {
+                continue;
+            }
+            if (!inetAddress.isSiteLocalAddress()) {
+                // 非地区本地地址，指10.0.0.0 ~ 10.255.255.255、172.16.0.0 ~ 172.31.255.255、192.168.0.0 ~ 192.168.255.255
+                return inetAddress;
+            }
+            if (finalAddress == null) {
+                finalAddress = inetAddress;
+            }
+        }
+        return finalAddress;
     }
 }

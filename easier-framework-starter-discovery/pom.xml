@@ -13,11 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>easier.framework</groupId>
-            <artifactId>easier-framework-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>easier.framework</groupId>
-            <artifactId>easier-framework-starter-cache</artifactId>
+            <artifactId>easier-framework-starter-job</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>

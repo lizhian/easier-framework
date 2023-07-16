@@ -41,6 +41,10 @@
         </dependency>
         <dependency>
             <groupId>easier.framework</groupId>
+            <artifactId>easier-framework-starter-discovery</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>easier.framework</groupId>
             <artifactId>easier-framework-core</artifactId>
         </dependency>
 

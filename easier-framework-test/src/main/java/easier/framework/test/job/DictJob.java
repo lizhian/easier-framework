@@ -1,11 +1,9 @@
 package easier.framework.test.job;
 
-import easier.framework.core.plugin.cache.CacheBuilder;
 import easier.framework.core.plugin.dict.DictDetail;
 import easier.framework.core.plugin.job.LoopJob;
 import easier.framework.starter.mybatis.repo.Repo;
 import easier.framework.starter.mybatis.repo.Repos;
-import easier.framework.test.cache.DictCache;
 import easier.framework.test.cache.UserCenterCaches;
 import easier.framework.test.eo.Dict;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +23,6 @@ import java.util.stream.Collectors;
 @Component
 public class DictJob {
     private final Repo<Dict> _sys_dict = Repos.of(Dict.class);
-    private final DictCache dictCache = CacheBuilder.build(DictCache.class);
 
 
     @LoopJob(delay = 60, timeUnit = TimeUnit.SECONDS)

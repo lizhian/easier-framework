@@ -44,18 +44,18 @@ public class StrUtil extends cn.hutool.core.util.StrUtil {
                     .filter(StrUtil::isNotBlank)
                     .collect(Collectors.toList());
         }
-        if (contains(src, "|")) {
+        /*if (contains(src, "|")) {
             return splitTrim(src, "|")
                     .stream()
                     .filter(StrUtil::isNotBlank)
                     .collect(Collectors.toList());
-        }
-        if (contains(src, ".")) {
+        }*/
+        /*if (contains(src, ".")) {
             return splitTrim(src, ".")
                     .stream()
                     .filter(StrUtil::isNotBlank)
                     .collect(Collectors.toList());
-        }
+        }*/
         return StrUtil.lines(src)
                 .filter(StrUtil::isNotBlank)
                 .collect(Collectors.toList());

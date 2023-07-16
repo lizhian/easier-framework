@@ -27,7 +27,7 @@ public class SpringUtil extends cn.hutool.extra.spring.SpringUtil {
      */
     public static <T> T getAndCache(Class<T> clazz) {
         return InstanceUtil.in(SpringUtil.class)
-                           .getInstance(clazz, SpringUtil::getBeanDefaultNull);
+                .getInstance(clazz, SpringUtil::getBeanDefaultNull);
     }
 
     public static <T> T getBeanDefaultNull(Class<T> clazz) {
@@ -47,28 +47,32 @@ public class SpringUtil extends cn.hutool.extra.spring.SpringUtil {
     }
 
     public static int getServerPort() {
+        return getServerPort(8080);
+    }
+
+    public static int getServerPort(int defaultValue) {
         return getApplicationContext()
                 .getEnvironment()
-                .getProperty("server.port", Integer.class, 8080);
+                .getProperty("server.port", Integer.class, defaultValue);
     }
 
     public static <T> T getBeanByClassName(Class<T> type, String className) {
         return SpringUtil.getBeansOfType(type)
-                         .values()
-                         .stream()
-                         .filter(it -> {
-                             if (it.getClass().getName().equals(className)) {
-                                 return true;
-                             }
-                             boolean interfaceMatch = Arrays.stream(it.getClass().getInterfaces())
-                                                            .map(Class::getName)
-                                                            .anyMatch(interfaceName -> interfaceName.equals(className));
-                             boolean superClassMatch = it.getClass().getSuperclass().getName().equals(className);
-                             return interfaceMatch || superClassMatch;
+                .values()
+                .stream()
+                .filter(it -> {
+                    if (it.getClass().getName().equals(className)) {
+                        return true;
+                    }
+                    boolean interfaceMatch = Arrays.stream(it.getClass().getInterfaces())
+                            .map(Class::getName)
+                            .anyMatch(interfaceName -> interfaceName.equals(className));
+                    boolean superClassMatch = it.getClass().getSuperclass().getName().equals(className);
+                    return interfaceMatch || superClassMatch;
 
-                         })
-                         .findAny()
-                         .orElse(null);
+                })
+                .findAny()
+                .orElse(null);
     }
 
     /**

@@ -12,13 +12,14 @@ import java.util.Map;
 @Data
 @ConfigurationProperties(prefix = EasierDiscoveryProperties.prefix)
 public class EasierDiscoveryProperties {
-    public static final String prefix = "easier.discovery";
+    public static final String prefix = "spring.easier.discovery";
     /**
-     * 网卡名称
+     * host优先获取,可以填写网卡名称或者网段(ip前缀)
      */
-    private String networkCard;
+    private String hostPriorities;
     private boolean secure;
-    private Map<String, String> metadata = new HashMap<>();
     private int weight = -1;
     private String group = "default";
+    private Map<String, String> metadata = new HashMap<>();
+
 }

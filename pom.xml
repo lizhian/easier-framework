@@ -29,6 +29,7 @@
         <module>easier-framework-starter-auth</module>
         <module>easier-framework-starter-discovery</module>
         <module>easier-framework-starter-web</module>
+        <module>easier-framework-starter-rpc</module>
         <!--<module>easier-framework-test</module>-->
     </modules>
     <properties>
