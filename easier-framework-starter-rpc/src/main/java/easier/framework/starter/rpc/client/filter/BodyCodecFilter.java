@@ -35,14 +35,14 @@ public class BodyCodecFilter implements EasierRpcClientFilter {
                 .args(request.getArgs())
                 .build();
         byte[] requestBodyBytes = ZipUtil.gzip(JacksonUtil.serialize(body));
-        request.trace("请求对象大小: {}", DataSizeUtil.format(requestBodyBytes.length));
+        request.debug("请求对象大小: {}", DataSizeUtil.format(requestBodyBytes.length));
         request.setRequestBodyBytes(requestBodyBytes);
         filterChain.doFilter(request);
         byte[] responseBodyBytes = request.getResponseBodyBytes();
         if (responseBodyBytes == null) {
             throw FrameworkException.of("远程服务调用,服务端异常,响应体为空,状态码: {}", request.getResponseStatus());
         }
-        request.trace("响应对象大小: {}", DataSizeUtil.format(responseBodyBytes.length));
+        request.debug("响应对象大小: {}", DataSizeUtil.format(responseBodyBytes.length));
         RpcResponseBody rpcResponseBody = JacksonUtil.deserialize(ZipUtil.unGzip(responseBodyBytes));
         if (rpcResponseBody.isSuccess()) {
             request.setResult(rpcResponseBody.getResult());

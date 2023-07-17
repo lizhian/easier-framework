@@ -26,10 +26,12 @@ import java.util.stream.Collectors;
 @Configuration(proxyBeanMethods = false)
 @EnableSpringUtil
 @Import({
-        RpcClientTraceFilter.class
+        DebugFilter.class
         , DiscoveryConverterFilter.class
         , PropertyConverterFilter.class
         , BodyCodecFilter.class
+        , TraceIdRpcClientFilter.class
+        , TokenRpcClientFilter.class
         , FinalValidFilter.class
 })
 public class EasierRpcAutoConfiguration {

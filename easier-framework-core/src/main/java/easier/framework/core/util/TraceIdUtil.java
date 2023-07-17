@@ -5,7 +5,7 @@ import com.plumelog.core.TraceId;
 
 public class TraceIdUtil {
 
-    public static String traceId = "traceId";
+    public static String key_trace_id = "x-trace-id";
 
     public static String get() {
         return TraceId.logTraceID.get();

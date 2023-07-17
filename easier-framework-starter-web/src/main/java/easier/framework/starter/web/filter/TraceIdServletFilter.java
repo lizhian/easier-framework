@@ -11,6 +11,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
 /**
  * TraceId加载
  */
@@ -19,9 +20,9 @@ public class TraceIdServletFilter extends OncePerRequestFilter implements Ordere
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
-        String traceId = request.getHeader(TraceIdUtil.traceId);
+        String traceId = request.getHeader(TraceIdUtil.key_trace_id);
         if (StrUtil.isBlank(traceId)) {
-            traceId = request.getParameter(TraceIdUtil.traceId);
+            traceId = request.getParameter(TraceIdUtil.key_trace_id);
         }
         if (StrUtil.isBlank(traceId)) {
             TraceIdUtil.create();

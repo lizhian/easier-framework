@@ -37,7 +37,7 @@ public class DefaultInnerRequestClientTemplate implements easier.framework.start
 
         //设置追踪码
         String traceId = TraceIdUtil.getOrCreate();
-        httpRequest.header(TraceIdUtil.traceId, traceId);
+        httpRequest.header(TraceIdUtil.key_trace_id, traceId);
     }
 
     private String tryGetTokenValue() {

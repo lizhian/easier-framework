@@ -58,7 +58,7 @@ public class User extends BaseLogicEntity {
     @Column(comment = "用户名称")
     @NotBlank
     @Size(min = 2, max = 8)
-    @Pattern(regexp = RegexPool.CHINESE_NAME, message = "必须由中文组成")
+    @Pattern(regexp = RegexPool.CHINESE_NAME, message = "必须为中文姓名")
     private String nickname;
 
     @Column(comment = "所属部门")
@@ -66,16 +66,18 @@ public class User extends BaseLogicEntity {
     private String deptId;
 
     @Column(comment = "用户邮箱")
-    @Email
     @Size(max = 50)
+    @Email
     private String email;
 
     @Column(comment = "手机号码")
     @Size(max = 11)
+    @Pattern(regexp = RegexPool.MOBILE, message = "错误的手机号码格式")
     private String phone;
 
     @Column(comment = "身份证")
     @Size(max = 18)
+    @Pattern(regexp = RegexPool.CITIZEN_ID, message = "错误的身份证格式")
     private String idCard;
 
     @Column(comment = "用户性别")

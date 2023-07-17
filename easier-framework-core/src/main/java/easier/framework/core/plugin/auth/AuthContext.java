@@ -105,8 +105,8 @@ public class AuthContext {
 
     public static void login(String account) {
         SaLoginModel model = SaLoginModel.create()
-                                         .setDevice(SpringUtil.getApplicationName())
-                                         .build();
+                .setDevice(SpringUtil.getApplicationName())
+                .build();
         StpUtil.login(account, model);
     }
 
@@ -115,5 +115,13 @@ public class AuthContext {
             login(account);
         }
         StpUtil.login(account, model);
+    }
+
+    public static String tryGetTokenValue() {
+        try {
+            return StpUtil.getTokenValue();
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 }

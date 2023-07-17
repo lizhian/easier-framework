@@ -25,7 +25,7 @@ public class RpcRequest implements Serializable {
     private final Method method;
     private final Object[] args;
     @Builder.Default
-    private final List<String> traceMessages = new ArrayList<>();
+    private final List<String> debugMessages = new ArrayList<>();
     @Builder.Default
     private final Map<String, List<String>> headers = new HashMap<>();
     private final HostType type;
@@ -39,7 +39,7 @@ public class RpcRequest implements Serializable {
     private int responseStatus;
     private Object result;
 
-    public void trace(String template, Object... params) {
-        this.traceMessages.add(StrUtil.format(template, params));
+    public void debug(String template, Object... params) {
+        this.debugMessages.add(StrUtil.format(template, params));
     }
 }

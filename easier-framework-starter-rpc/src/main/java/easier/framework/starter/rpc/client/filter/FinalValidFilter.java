@@ -44,7 +44,8 @@ public class FinalValidFilter implements EasierRpcClientFilter {
         }
         request.setHost(host);
         request.setPath(path);
-        request.trace("请求链接: {}", host + path);
+        request.debug("请求链接: {}", host + path);
+        request.debug("请求头: {}", request.getHeaders());
         filterChain.doFilter(request);
     }
 

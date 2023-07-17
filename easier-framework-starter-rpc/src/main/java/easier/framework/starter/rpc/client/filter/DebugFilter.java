@@ -14,7 +14,7 @@ import org.springframework.cloud.client.ConditionalOnDiscoveryEnabled;
 
 @Slf4j
 @ConditionalOnDiscoveryEnabled
-public class RpcClientTraceFilter implements EasierRpcClientFilter {
+public class DebugFilter implements EasierRpcClientFilter {
 
     @Override
     public int getOrder() {
@@ -25,25 +25,25 @@ public class RpcClientTraceFilter implements EasierRpcClientFilter {
     @SneakyThrows
     public void doFilter(RpcRequest request, FilterChain filterChain) {
         TimeInterval timer = DateUtil.timer();
-        request.trace("远程服务调用Debug\n开始时间: {}", DateTime.now().toMsStr());
-        request.trace("接口方法: {}.{}({})"
+        request.debug("远程服务调用debug\n开始时间: {}", DateTime.now().toMsStr());
+        request.debug("接口方法: {}.{}({})"
                 , request.getMethod().getDeclaringClass().getName()
                 , request.getMethod().getName()
                 , request.getMethod().getParameterTypes()
         );
         try {
             filterChain.doFilter(request);
-            request.trace("请求完成,时间: {}", DateTime.now().toMsStr());
+            request.debug("请求完成,时间: {}", DateTime.now().toMsStr());
         } catch (Exception e) {
-            request.trace("异常信息: {}", e.getMessage());
+            request.debug("异常信息: {}", e.getMessage());
             if (e instanceof FrameworkException) {
                 throw e;
             }
             throw new FrameworkException(e);
         } finally {
-            request.trace("总耗时: {}", timer.intervalPretty());
+            request.debug("总耗时: {}", timer.intervalPretty());
             if (log.isDebugEnabled()) {
-                log.debug(StrUtil.join("\n", request.getTraceMessages()));
+                log.debug(StrUtil.join("\n", request.getDebugMessages()));
             }
         }
     }

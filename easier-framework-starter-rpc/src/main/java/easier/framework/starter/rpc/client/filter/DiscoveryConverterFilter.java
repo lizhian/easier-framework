@@ -31,7 +31,7 @@ public class DiscoveryConverterFilter implements EasierRpcClientFilter {
             }
             String newHost = instance.getUri().toString();
             request.setHost(newHost);
-            request.trace("通过服务发现转换请求地址: {} -> {}", host, newHost);
+            request.debug("通过服务发现转换请求地址: {} -> {}", host, newHost);
         }
         filterChain.doFilter(request);
     }

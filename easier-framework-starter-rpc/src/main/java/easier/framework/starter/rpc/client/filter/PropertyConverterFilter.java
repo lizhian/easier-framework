@@ -26,12 +26,12 @@ public class PropertyConverterFilter implements EasierRpcClientFilter {
             String host = request.getHost();
             String newHost = SpringUtil.getProperty(host);
             if (StrUtil.isBlank(newHost)) {
-                request.trace("通过配置文件转换请求地址,未找到对应配置:{}", host);
+                request.debug("通过配置文件转换请求地址,未找到对应配置:{}", host);
                 filterChain.doFilter(request);
                 return;
             }
             request.setHost(newHost);
-            request.trace("通过配置文件转换请求地址: {} -> {}", host, newHost);
+            request.debug("通过配置文件转换请求地址: {} -> {}", host, newHost);
         }
         filterChain.doFilter(request);
     }
