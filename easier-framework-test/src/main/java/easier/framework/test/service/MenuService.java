@@ -75,7 +75,7 @@ public class MenuService {
         } else {
             parent = this._menu.getById(parentId);
             if (parent == null) {
-                throw BizException.of("无线的父菜单主键:{}", parentId);
+                throw BizException.of("无效的父菜单主键:{}", parentId);
             }
             entity.setAncestors(parent.getAncestors() + "," + parentId);
         }

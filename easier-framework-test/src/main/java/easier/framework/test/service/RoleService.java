@@ -8,12 +8,12 @@ import easier.framework.core.util.StrUtil;
 import easier.framework.core.util.ValidUtil;
 import easier.framework.starter.mybatis.repo.Repo;
 import easier.framework.starter.mybatis.repo.Repos;
-import easier.framework.test.eo.Role;
-import easier.framework.test.eo.RoleApp;
-import easier.framework.test.eo.RoleMenu;
-import easier.framework.test.eo.UserRole;
+import easier.framework.test.enums.EnableStatus;
+import easier.framework.test.eo.*;
 import easier.framework.test.qo.RoleAssignAppQo;
+import easier.framework.test.qo.RoleAssignUserQo;
 import easier.framework.test.qo.RoleQo;
+import easier.framework.test.qo.UserQo;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.ExtensionMethod;
 import org.springframework.stereotype.Service;
@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 @ExtensionMethod(ExtensionCore.class)
 public class RoleService {
     private final Repo<Role> _role = Repos.of(Role.class);
+    private final Repo<User> _user = Repos.of(User.class);
     private final Repo<UserRole> _user_role = Repos.of(UserRole.class);
     private final Repo<RoleApp> _role_app = Repos.of(RoleApp.class);
     private final Repo<RoleMenu> _role_menu = Repos.of(RoleMenu.class);
@@ -119,4 +120,83 @@ public class RoleService {
     }
 
 
+    public Page<User> assignedUserPage(String roleCode, UserQo qo, PageParam pageParam) {
+        if (StrUtil.isBlank(roleCode)) {
+            throw BizException.of("角色编码不能为空");
+        }
+        String username = qo.getUsername();
+        String nickname = qo.getNickname();
+        EnableStatus status = qo.getStatus();
+        return this._user.newJoinQuery()
+                .selectAll(User.class)
+                .leftJoin(UserRole.class, on -> on
+                        .eq(User::getUsername, UserRole::getUsername)
+                        .eq(UserRole::getRoleCode, roleCode)
+                )
+                .isNotNull(UserRole::getRoleCode)
+                .like(StrUtil.isNotBlank(username), User::getUsername, username)
+                .like(StrUtil.isNotBlank(nickname), User::getNickname, nickname)
+                .eq(status != null, User::getStatus, status)
+                .page(pageParam.toPage(), User.class);
+    }
+
+    public Page<User> unassignedUserPage(String roleCode, UserQo qo, PageParam pageParam) {
+        if (StrUtil.isBlank(roleCode)) {
+            throw BizException.of("角色编码不能为空");
+        }
+        String username = qo.getUsername();
+        String nickname = qo.getNickname();
+        EnableStatus status = qo.getStatus();
+        return this._user.newJoinQuery()
+                .selectAll(User.class)
+                .leftJoin(UserRole.class, on -> on
+                        .eq(User::getUsername, UserRole::getUsername)
+                        .eq(UserRole::getRoleCode, roleCode)
+                )
+                .isNull(UserRole::getRoleCode)
+                .like(StrUtil.isNotBlank(username), User::getUsername, username)
+                .like(StrUtil.isNotBlank(nickname), User::getNickname, nickname)
+                .eq(status != null, User::getStatus, status)
+                .page(pageParam.toPage(), User.class);
+    }
+
+    @Transactional
+    public void assignUser(RoleAssignUserQo qo) {
+        ValidUtil.valid(qo);
+        String roleCode = qo.getRoleCode();
+        List<String> usernames = qo.getUsernames();
+        if (!this._role.existsByCode(roleCode)) {
+            throw BizException.of("非法的角色编码:{}", roleCode);
+        }
+        if (this._user.countByCodes(usernames) < usernames.size()) {
+            throw BizException.of("非法的用户账号:{}", usernames);
+        }
+        this._user_role.newUpdate()
+                .eq(UserRole::getRoleCode, roleCode)
+                .in(UserRole::getUsername, usernames)
+                .remove();
+        List<UserRole> list = qo.getUsernames()
+                .stream()
+                .map(username -> UserRole.builder()
+                        .username(username)
+                        .roleCode(roleCode)
+                        .build()
+                )
+                .collect(Collectors.toList());
+        this._user_role.addBatch(list);
+
+    }
+
+    public void unAssignUser(RoleAssignUserQo qo) {
+        ValidUtil.valid(qo);
+        String roleCode = qo.getRoleCode();
+        List<String> usernames = qo.getUsernames();
+        if (!this._role.existsByCode(roleCode)) {
+            throw BizException.of("非法的角色编码:{}", roleCode);
+        }
+        this._user_role.newUpdate()
+                .eq(UserRole::getRoleCode, roleCode)
+                .in(UserRole::getUsername, usernames)
+                .remove();
+    }
 }

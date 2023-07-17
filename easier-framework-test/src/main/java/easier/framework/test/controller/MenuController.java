@@ -4,8 +4,11 @@ import easier.framework.core.domain.CodesQo;
 import easier.framework.core.domain.R;
 import easier.framework.core.plugin.dict.DictDetail;
 import easier.framework.core.plugin.tree.TreeNode;
+import easier.framework.test.eo.App;
 import easier.framework.test.eo.Menu;
+import easier.framework.test.qo.AppQo;
 import easier.framework.test.qo.MenuTreeQo;
+import easier.framework.test.service.AppService;
 import easier.framework.test.service.DictService;
 import easier.framework.test.service.MenuService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,6 +36,7 @@ public class MenuController {
 
     private final DictService dictService;
     private final MenuService menuService;
+    private final AppService appService;
 
 
     @Operation(summary = "加载字典")
@@ -40,6 +44,13 @@ public class MenuController {
     public R<Map<String, DictDetail>> dict(CodesQo qo) {
         Map<String, DictDetail> map = this.dictService.loadDictDetail(qo);
         return R.success(map);
+    }
+
+    @Operation(summary = "获取应用列表")
+    @GetMapping("/menu/app/list")
+    public R<List<App>> appList(AppQo qo) {
+        List<App> list = this.appService.list(qo);
+        return R.success(list);
     }
 
     @Operation(summary = "获取菜单树")

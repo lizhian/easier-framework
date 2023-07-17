@@ -6,10 +6,11 @@ import easier.framework.core.domain.CodesQo;
 import easier.framework.core.domain.PageParam;
 import easier.framework.core.domain.R;
 import easier.framework.core.plugin.dict.DictDetail;
+import easier.framework.test.eo.App;
 import easier.framework.test.eo.Role;
 import easier.framework.test.eo.User;
-import easier.framework.test.qo.RoleAssignAppQo;
-import easier.framework.test.qo.RoleQo;
+import easier.framework.test.qo.*;
+import easier.framework.test.service.AppService;
 import easier.framework.test.service.DictService;
 import easier.framework.test.service.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotBlank;
+import java.util.List;
 import java.util.Map;
 
 
@@ -35,6 +38,7 @@ public class RoleController {
     private final DictService dictService;
 
     private final RoleService roleService;
+    private final AppService appService;
 
 
     /**
@@ -107,6 +111,14 @@ public class RoleController {
     }
 
 
+    @Operation(summary = "应用列表")
+    @GetMapping("/role/app/list")
+    public R<List<App>> appList(AppQo qo) {
+        List<App> list = this.appService.list(qo);
+        return R.success(list);
+    }
+
+
     @Operation(summary = "分配应用")
     @PutMapping("/role/assignApp")
     public R<String> assignApp(@Validated @RequestBody RoleAssignAppQo qo) {
@@ -115,12 +127,33 @@ public class RoleController {
     }
 
 
-    /*@Operation(summary = "分配y")
-    @PutMapping("/role/assignApp")
-    public R<String> assignApp(@Validated @RequestBody RoleAssignAppQo qo) {
-        this.roleService.assignApp(qo);
+    @Operation(summary = "已分配角色的用户查询-分页")
+    @GetMapping("/role/user/assigned/page")
+    public R<Page<User>> assignedUserPage(@NotBlank String roleCode, UserQo qo, PageParam pageParam) {
+        Page<User> page = this.roleService.assignedUserPage(roleCode, qo, pageParam);
+        return R.success(page);
+    }
+
+    @Operation(summary = "未分配角色的用户查询-分页")
+    @GetMapping("/role/user/unassigned/page")
+    public R<Page<User>> unassignedUserPage(@NotBlank String roleCode, UserQo qo, PageParam pageParam) {
+        Page<User> page = this.roleService.unassignedUserPage(roleCode, qo, pageParam);
+        return R.success(page);
+    }
+
+    @Operation(summary = "分配用户")
+    @PutMapping("/role/assignUser")
+    public R<String> assignUser(@Validated @RequestBody RoleAssignUserQo qo) {
+        this.roleService.assignUser(qo);
         return R.success();
-    }*/
+    }
+
+    @Operation(summary = "取消分配用户")
+    @PutMapping("/role/unAssignUser")
+    public R<String> unAssignUser(@Validated @RequestBody RoleAssignUserQo qo) {
+        this.roleService.unAssignUser(qo);
+        return R.success();
+    }
 
 
 }

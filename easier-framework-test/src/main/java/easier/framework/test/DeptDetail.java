@@ -18,7 +18,6 @@ public class DeptDetail {
     @Schema(description = "部门名称")
     private String deptName;
 
-
     @Schema(description = "负责人")
     private String leader;
 

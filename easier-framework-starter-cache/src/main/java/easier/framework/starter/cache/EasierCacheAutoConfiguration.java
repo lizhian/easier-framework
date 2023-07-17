@@ -1,9 +1,12 @@
 package easier.framework.starter.cache;
 
 import cn.hutool.extra.spring.EnableSpringUtil;
+import easier.framework.core.plugin.cache.RedisSources;
 import easier.framework.core.plugin.cache.container.CacheContainerHelper;
 import easier.framework.core.util.SpringUtil;
 import easier.framework.starter.cache.builder.DefaultCacheContainerHelper;
+import easier.framework.starter.cache.condition.ConditionalOnRedisSource;
+import easier.framework.starter.cache.event.BroadcastEventListener;
 import easier.framework.starter.cache.redis.RedissonClients;
 import easier.framework.starter.cache.redis.RedissonConfigCustomizer;
 import easier.framework.starter.cache.redis.RedissonJacksonCodec;
@@ -17,7 +20,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Slf4j
 @RequiredArgsConstructor
-@EnableConfigurationProperties(easier.framework.starter.cache.EasierCacheProperties.class)
+@EnableConfigurationProperties(EasierCacheProperties.class)
 @Configuration(proxyBeanMethods = false)
 @EnableSpringUtil
 public class EasierCacheAutoConfiguration {
@@ -32,7 +35,7 @@ public class EasierCacheAutoConfiguration {
 
 
     @Bean
-    public RedissonClients dynamicRedissonClient(easier.framework.starter.cache.EasierCacheProperties easierCacheProperties) {
+    public RedissonClients dynamicRedissonClient(EasierCacheProperties easierCacheProperties) {
         RedissonClients redissonClients = new RedissonClients();
         redissonClients.init(easierCacheProperties);
         return redissonClients;
@@ -51,5 +54,12 @@ public class EasierCacheAutoConfiguration {
     @Bean
     public CacheContainerHelper defaultCacheContainerHelper(RedissonClients redissonClients) {
         return new DefaultCacheContainerHelper(redissonClients);
+    }
+
+
+    @Bean
+    @ConditionalOnRedisSource(RedisSources.event)
+    public BroadcastEventListener broadcastEventListener(RedissonClients redissonClients) {
+        return new BroadcastEventListener(redissonClients);
     }
 }

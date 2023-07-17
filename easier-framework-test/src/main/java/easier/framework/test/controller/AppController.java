@@ -8,7 +8,7 @@ import easier.framework.core.domain.R;
 import easier.framework.core.plugin.dict.DictDetail;
 import easier.framework.test.eo.App;
 import easier.framework.test.qo.AppAssignRoleQo;
-import easier.framework.test.qo.AppPageQo;
+import easier.framework.test.qo.AppQo;
 import easier.framework.test.service.AppService;
 import easier.framework.test.service.DictService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,7 +44,7 @@ public class AppController {
 
     @Operation(summary = "查询应用-分页")
     @GetMapping("/app/page")
-    public R<Page<App>> pageApp(PageParam pageParam, AppPageQo qo) {
+    public R<Page<App>> pageApp(PageParam pageParam, AppQo qo) {
         Page<App> page = this.appService.pageApp(pageParam, qo);
         return R.success(page);
     }

@@ -12,7 +12,7 @@ import easier.framework.test.eo.App;
 import easier.framework.test.eo.RoleApp;
 import easier.framework.test.eo.RoleMenu;
 import easier.framework.test.qo.AppAssignRoleQo;
-import easier.framework.test.qo.AppPageQo;
+import easier.framework.test.qo.AppQo;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.ExtensionMethod;
 import org.springframework.stereotype.Service;
@@ -37,8 +37,19 @@ public class AppService {
     private final Repo<RoleApp> _role_app = Repos.of(RoleApp.class);
     private final Repo<RoleMenu> _role_menu = Repos.of(RoleMenu.class);
 
+    public List<App> list(AppQo qo) {
+        return this._app.newQuery()
+                .whenNotBlank()
+                .like(App::getAppName, qo.getAppName())
+                .like(App::getAppCode, qo.getAppCode())
+                .whenNotNull()
+                .eq(App::getStatus, qo.getStatus())
+                .end()
+                .orderByAsc(App::getSort)
+                .list();
+    }
 
-    public Page<App> pageApp(PageParam pageParam, AppPageQo qo) {
+    public Page<App> pageApp(PageParam pageParam, AppQo qo) {
         return this._app.newQuery()
                 .whenNotBlank()
                 .like(App::getAppName, qo.getAppName())
@@ -112,4 +123,6 @@ public class AppService {
                 .collect(Collectors.toList());
         this._role_app.addBatch(roleApps);
     }
+
+
 }

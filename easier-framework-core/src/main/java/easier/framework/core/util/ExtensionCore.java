@@ -29,14 +29,6 @@ public class ExtensionCore {
         return StrUtil.isNotBlank(str);
     }
 
-    public static boolean isNull(Object object) {
-        return object == null;
-    }
-
-    public static boolean isNotNull(Object object) {
-        return object != null;
-    }
-
     public static <T> T or(T t, T other) {
         return t == null ? other : t;
     }
