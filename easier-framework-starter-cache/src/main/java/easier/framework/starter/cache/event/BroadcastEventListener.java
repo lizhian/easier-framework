@@ -21,8 +21,7 @@ import java.util.Set;
 
 @Slf4j
 @RequiredArgsConstructor
-public class BroadcastEventListener implements InitializingBean
-        , ApplicationListener<ApplicationEvent> {
+public class BroadcastEventListener implements InitializingBean, ApplicationListener<ApplicationEvent> {
 
     private final Set<Class<? extends ApplicationEvent>> IGNORE_EVENT = new ConcurrentHashSet<>();
 

@@ -3,7 +3,7 @@ package easier.framework.core.plugin.event;
 import java.lang.annotation.*;
 
 /**
- * 广播事件
+ * 全局广播事件
  *
  * @author lizhian
  * @date 2023年07月17日

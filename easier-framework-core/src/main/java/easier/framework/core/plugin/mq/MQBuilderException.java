@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import easier.framework.core.plugin.exception.BaseException;
 import lombok.experimental.StandardException;
 
+
 @StandardException
 public class MQBuilderException extends BaseException {
 

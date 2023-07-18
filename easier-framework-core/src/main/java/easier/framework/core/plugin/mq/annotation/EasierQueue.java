@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface Queue {
+public @interface EasierQueue {
     /**
      * 队列名称
      */
@@ -22,6 +22,10 @@ public @interface Queue {
      */
     MQType type();
 
+    /**
+     * 队列最大容量
+     * 仅在redis下有用
+     */
     int max() default -1;
 
     /**

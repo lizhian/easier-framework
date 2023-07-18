@@ -24,8 +24,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static easier.framework.starter.cache.EasierCacheProperties.Type.cluster;
-import static easier.framework.starter.cache.EasierCacheProperties.Type.sentinel;
+import static easier.framework.starter.cache.EasierCacheProperties.Type.*;
 
 /**
  * 动态 RedissonClient
@@ -128,6 +127,7 @@ public class RedissonClients implements InitializingBean, DisposableBean {
     }
 
     private RedissonClient createClient(EasierCacheProperties.RedissonProperties properties) {
+        EasierCacheProperties.Type type = properties.getType();
         String nodes = properties.getNodes();
         String password = properties.getPassword();
         int database = properties.getDatabase();
@@ -135,28 +135,27 @@ public class RedissonClients implements InitializingBean, DisposableBean {
         int connectTimeoutMillis = properties.getConnectTimeoutMillis();
         String[] address = this.convert(nodes, ssl);
         Config config = new Config();
-
-        if (sentinel.equals(properties.getType())) {
-            //sentinel
+        //single
+        if (single.equals(type)) {
+            config.useSingleServer()
+                    .setAddress(address[0])
+                    .setDatabase(database)
+                    .setPassword(password)
+                    .setConnectTimeout(connectTimeoutMillis);
+        }
+        //sentinel
+        if (sentinel.equals(type)) {
             config.useSentinelServers()
                     .setMasterName(properties.getSentinel().getMasterName())
                     .addSentinelAddress(address)
                     .setDatabase(database)
                     .setPassword(password)
                     .setConnectTimeout(connectTimeoutMillis);
-        } else if (cluster.equals(properties.getType())) {
-            //cluster
+        }
+        //cluster
+        if (cluster.equals(type)) {
             config.useClusterServers()
                     .addNodeAddress(address)
-                    .setPassword(password)
-                    .setConnectTimeout(connectTimeoutMillis);
-            this.customize(config);
-            return Redisson.create(config);
-        } else {
-            //single
-            config.useSingleServer()
-                    .setAddress(address[0])
-                    .setDatabase(database)
                     .setPassword(password)
                     .setConnectTimeout(connectTimeoutMillis);
         }
