@@ -35,7 +35,7 @@ public class EasierCacheAutoConfiguration {
 
 
     @Bean
-    public RedissonClients dynamicRedissonClient(EasierCacheProperties easierCacheProperties) {
+    public RedissonClients redissonClients(EasierCacheProperties easierCacheProperties) {
         RedissonClients redissonClients = new RedissonClients();
         redissonClients.init(easierCacheProperties);
         return redissonClients;

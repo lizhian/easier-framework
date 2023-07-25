@@ -29,7 +29,7 @@ public interface MethodForList<T> extends IRepo<T> {
      * 根据主键查询列表
      */
     @Nonnull
-    default List<T> listByIds(Collection<Serializable> ids) {
+    default List<T> listByIds(Collection<? extends Serializable> ids) {
         if (CollUtil.isEmpty(ids)) {
             return new ArrayList<>();
         }

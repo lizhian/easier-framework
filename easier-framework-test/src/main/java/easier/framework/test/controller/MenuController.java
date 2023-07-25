@@ -1,6 +1,7 @@
 package easier.framework.test.controller;
 
 import easier.framework.core.domain.CodesQo;
+import easier.framework.core.domain.IdQo;
 import easier.framework.core.domain.R;
 import easier.framework.core.plugin.dict.DictDetail;
 import easier.framework.core.plugin.tree.TreeNode;
@@ -14,10 +15,8 @@ import easier.framework.test.service.MenuService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -64,6 +63,20 @@ public class MenuController {
     @PostMapping("/menu/add")
     public R<String> add(@RequestBody Menu entity) {
         this.menuService.add(entity);
+        return R.success();
+    }
+
+    @Operation(summary = "修改菜单")
+    @PutMapping("/menu/update")
+    public R<String> update(@RequestBody Menu entity) {
+        this.menuService.update(entity);
+        return R.success();
+    }
+
+    @Operation(summary = "删除菜单")
+    @DeleteMapping("/menu/delete")
+    public R<String> delete(@Validated IdQo qo) {
+        this.menuService.delete(qo.getId());
         return R.success();
     }
 

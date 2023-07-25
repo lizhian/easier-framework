@@ -28,7 +28,7 @@ public class TraceIdUtil {
     }
 
     public static String create() {
-        TraceId.set();
+        TraceId.logTraceID.set(IdUtil.nextIdStr());
         return TraceId.logTraceID.get();
     }
 

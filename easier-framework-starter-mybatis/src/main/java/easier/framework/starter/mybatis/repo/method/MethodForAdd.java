@@ -47,7 +47,7 @@ public interface MethodForAdd<T> extends IRepo<T> {
         list.forEach(MybatisPlusUtil::preInsert);
         Class<T> entityClass = this.repo().getEntityClass();
         String sqlStatement = this.repo().getSqlStatement(SqlMethod.INSERT_ONE);
-        Log log = LogFactory.getLog(this.repo().getClass());
+        Log log = LogFactory.getLog(this.repo().getMapperClass());
         return SqlHelper.executeBatch(
                 entityClass, log, list, batchSize
                 , (sqlSession, entity) -> sqlSession.insert(sqlStatement, entity)

@@ -5,6 +5,12 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * 角色分配app请求对象
+ *
+ * @author lizhian
+ * @date 2023年07月18日
+ */
 @Data
 public class RoleAssignAppQo {
     @Schema(description = "角色编码")

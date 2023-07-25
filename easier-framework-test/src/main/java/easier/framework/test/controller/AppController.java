@@ -7,16 +7,20 @@ import easier.framework.core.domain.PageParam;
 import easier.framework.core.domain.R;
 import easier.framework.core.plugin.dict.DictDetail;
 import easier.framework.test.eo.App;
+import easier.framework.test.eo.Role;
 import easier.framework.test.qo.AppAssignRoleQo;
 import easier.framework.test.qo.AppQo;
+import easier.framework.test.qo.RoleQo;
 import easier.framework.test.service.AppService;
 import easier.framework.test.service.DictService;
+import easier.framework.test.service.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -34,6 +38,7 @@ public class AppController {
     private final DictService dictService;
 
     private final AppService appService;
+    private final RoleService roleService;
 
     @Operation(summary = "加载字典")
     @GetMapping("/app/dict")
@@ -71,6 +76,13 @@ public class AppController {
     public R<String> deleteApp(@Validated CodeQo qo) {
         this.appService.deleteApp(qo.getCode());
         return R.success();
+    }
+
+    @Operation(summary = "查询角色列表")
+    @GetMapping("/app/role/list")
+    public R<List<Role>> roleList(RoleQo qo) {
+        List<Role> list = this.roleService.list(qo);
+        return R.success(list);
     }
 
 

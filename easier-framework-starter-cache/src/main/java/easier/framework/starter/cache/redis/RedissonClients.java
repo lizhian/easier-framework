@@ -21,7 +21,6 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static easier.framework.starter.cache.EasierCacheProperties.Type.*;
@@ -77,6 +76,7 @@ public class RedissonClients implements InitializingBean, DisposableBean {
     @Override
     public void destroy() {
         this.clients.values().forEach(RedissonClient::shutdown);
+        log.info("已关闭RedissonClients");
     }
 
     @Override
@@ -87,15 +87,15 @@ public class RedissonClients implements InitializingBean, DisposableBean {
     @SneakyThrows
     private void resetWorkerID() {
         if (!this.contains(RedisSources.snowflake)) {
-            log.warn("未配置【snowflake】缓存源,【IdUtil】生成的主键可能会重复");
+            log.warn("未配置【{}】缓存源,【IdUtil】生成的主键可能会重复", RedisSources.snowflake);
             return;
         }
         RedissonClient client = this.getClient(RedisSources.snowflake);
         for (int dataCenterId = 0; dataCenterId < 31; dataCenterId++) {
             for (int workerId = 0; workerId < 31; workerId++) {
-                String snowflakeId = "Snowflake:" + dataCenterId + ":" + workerId;
+                String snowflakeId = "Easier:Snowflake:" + dataCenterId + "_" + workerId;
                 RLock snowflakeIdLock = client.getLock(snowflakeId);
-                if (snowflakeIdLock.tryLock(0, TimeUnit.MINUTES)) {
+                if (snowflakeIdLock.tryLock()) {
                     IdUtil.reset(workerId, dataCenterId);
                     log.info("【IdUtil】全局唯一主键初始化完成, workerId= {}, dataCenterId= {}", workerId, dataCenterId);
                     return;

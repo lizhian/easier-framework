@@ -9,13 +9,9 @@ import easier.framework.core.util.TraceIdUtil;
  */
 public class TraceIdConverter extends ClassicConverter {
 
-    public volatile static boolean showTraceId = false;
 
     @Override
     public String convert(ILoggingEvent iLoggingEvent) {
-        if (TraceIdConverter.showTraceId) {
-            return TraceIdUtil.getOrDefault("------------------");
-        }
-        return "";
+        return TraceIdUtil.getOrDefault("-------------------");
     }
 }

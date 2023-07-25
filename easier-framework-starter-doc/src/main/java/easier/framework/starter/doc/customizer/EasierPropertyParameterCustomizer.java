@@ -3,9 +3,9 @@ package easier.framework.starter.doc.customizer;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.databind.type.SimpleType;
-import easier.framework.core.plugin.dict.ShowDictDetail;
 import easier.framework.core.plugin.enums.EnumCodec;
 import easier.framework.core.plugin.enums.EnumDetail;
+import easier.framework.core.plugin.jackson.annotation.ShowDictDetail;
 import easier.framework.core.plugin.mybatis.TableCode;
 import easier.framework.core.util.ApiDocUtil;
 import easier.framework.core.util.StrUtil;
@@ -38,11 +38,11 @@ public class EasierPropertyParameterCustomizer implements PropertyCustomizer, Pa
             descriptions.add(property.getDescription());
         }
         List<String> _enum = new ArrayList<>();
-        forDescription(annotations, descriptions);
-        forEnumClass(clazz, descriptions, _enum);
-        forDict(annotations, descriptions);
-        forTableId(annotations, descriptions);
-        forTableCode(annotations, descriptions);
+        this.forDescription(annotations, descriptions);
+        this.forEnumClass(clazz, descriptions, _enum);
+        this.forDict(annotations, descriptions);
+        this.forTableId(annotations, descriptions);
+        this.forTableCode(annotations, descriptions);
         property.description(StrUtil.join(descriptions));
         property._enum(_enum.isEmpty() ? null : _enum);
         return property;
@@ -61,11 +61,11 @@ public class EasierPropertyParameterCustomizer implements PropertyCustomizer, Pa
         if (StrUtil.isNotBlank(parameter.getDescription())) {
             descriptions.add(parameter.getDescription());
         }
-        forDescription(annotations, descriptions);
-        forEnumClass(clazz, descriptions, _enum);
-        forDict(annotations, descriptions);
-        forTableId(annotations, descriptions);
-        forTableCode(annotations, descriptions);
+        this.forDescription(annotations, descriptions);
+        this.forEnumClass(clazz, descriptions, _enum);
+        this.forDict(annotations, descriptions);
+        this.forTableId(annotations, descriptions);
+        this.forTableCode(annotations, descriptions);
         Schema schema = parameter.getSchema();
         if (schema != null && !_enum.isEmpty()) {
             schema._enum(_enum);

@@ -3,7 +3,7 @@ package easier.framework.starter.job;
 import cn.hutool.extra.spring.EnableSpringUtil;
 import cn.hutool.system.oshi.OshiUtil;
 import easier.framework.starter.cache.EnableEasierCache;
-import easier.framework.starter.job.center.JobController;
+import easier.framework.starter.job.center.JobManager;
 import easier.framework.starter.job.corn.CornJobAutoConfiguration;
 import easier.framework.starter.job.loop.LoopJobAutoConfiguration;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableSpringUtil
 @EnableEasierCache
 @Import({
-        JobController.class
+        JobManager.class
         , LoopJobAutoConfiguration.class
         , CornJobAutoConfiguration.class
 })

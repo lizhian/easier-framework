@@ -9,10 +9,10 @@ import com.tangzc.mpe.bind.metadata.annotation.BindFieldByMid;
 import com.tangzc.mpe.bind.metadata.annotation.JoinOrderBy;
 import com.tangzc.mpe.bind.metadata.annotation.MidCondition;
 import easier.framework.core.domain.BaseLogicEntity;
-import easier.framework.core.plugin.dict.ShowDictDetail;
+import easier.framework.core.plugin.jackson.annotation.ShowDeptDetail;
+import easier.framework.core.plugin.jackson.annotation.ShowDictDetail;
 import easier.framework.core.plugin.mybatis.TableCode;
 import easier.framework.core.plugin.validation.UpdateGroup;
-import easier.framework.test.cache.ShowDeptDetail;
 import easier.framework.test.enums.EnableStatus;
 import easier.framework.test.enums.SexType;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -117,15 +117,16 @@ public class User extends BaseLogicEntity {
 
     @Schema(description = "关联的角色编码")
     @BindFieldByMid(
-            field = Role.Fields.roleCode,
             conditions = @MidCondition(
                     midEntity = UserRole.class
-                    , selfField = Fields.username
+                    , selfField = User.Fields.username
                     , selfMidField = UserRole.Fields.username
                     , joinMidField = UserRole.Fields.roleCode
                     , joinField = Role.Fields.roleCode
             ),
-            orderBy = @JoinOrderBy(field = Role.Fields.sort)
+            entity = Role.class,
+            orderBy = @JoinOrderBy(field = Role.Fields.sort),
+            field = Role.Fields.roleCode
     )
-    private List<Role> roleCodes;
+    private List<String> roleCodes;
 }

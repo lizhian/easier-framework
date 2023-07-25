@@ -10,5 +10,4 @@ import java.lang.annotation.*;
 @Inherited
 @Import(EasierLoggingAutoConfiguration.class)
 public @interface EnableEasierLogging {
-    boolean showTraceId() default true;
 }

@@ -24,7 +24,7 @@ import java.util.concurrent.ScheduledFuture;
 /**
  * Job 控制器
  */
-public class JobController {
+public class JobManager {
 
     /**
      * 提交任务

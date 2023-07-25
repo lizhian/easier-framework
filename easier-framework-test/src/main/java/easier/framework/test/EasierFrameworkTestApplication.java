@@ -5,8 +5,9 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.tangzc.mpe.autotable.EnableAutoTable;
 import easier.framework.core.plugin.dict.DictDetail;
 import easier.framework.core.plugin.dict.DictItemDetail;
-import easier.framework.core.plugin.dict.ShowDictDetail;
 import easier.framework.core.plugin.enums.EnumCodec;
+import easier.framework.core.plugin.jackson.annotation.ShowDeptDetail;
+import easier.framework.core.plugin.jackson.annotation.ShowDictDetail;
 import easier.framework.core.plugin.jackson.annotation.ShowUserDetail;
 import easier.framework.core.plugin.rpc.EasierRPC;
 import easier.framework.core.util.SpringUtil;
@@ -21,7 +22,6 @@ import easier.framework.starter.mybatis.repo.Repos;
 import easier.framework.starter.rpc.EnableEasierRpc;
 import easier.framework.starter.web.EnableEasierWeb;
 import easier.framework.test.api.MyRpc;
-import easier.framework.test.cache.ShowDeptDetail;
 import easier.framework.test.cache.UserCenterCaches;
 import easier.framework.test.enums.SexType;
 import easier.framework.test.eo.Dept;
@@ -50,7 +50,7 @@ import java.util.List;
 @EnableEasierDiscovery
 @EnableEasierRpc
 public class EasierFrameworkTestApplication implements
-        ShowDictDetail.ShowDetailDetailBean
+        ShowDictDetail.ShowDictDetailBean
         , ShowUserDetail.ShowUserDetailBean
         , ShowDeptDetail.ShowDeptDetailBean {
 

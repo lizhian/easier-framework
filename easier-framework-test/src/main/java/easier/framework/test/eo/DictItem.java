@@ -5,7 +5,7 @@ import com.tangzc.mpe.autotable.annotation.Column;
 import com.tangzc.mpe.autotable.annotation.Table;
 import easier.framework.core.domain.BaseEntity;
 import easier.framework.core.plugin.dict.DictItemDetail;
-import easier.framework.core.plugin.dict.ShowDictDetail;
+import easier.framework.core.plugin.jackson.annotation.ShowDictDetail;
 import easier.framework.core.plugin.validation.UpdateGroup;
 import easier.framework.core.util.TreeUtil;
 import easier.framework.test.enums.EnableStatus;

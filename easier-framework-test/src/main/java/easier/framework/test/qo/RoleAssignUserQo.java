@@ -7,6 +7,12 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
+/**
+ * 角色分配user请求对象
+ *
+ * @author lizhian
+ * @date 2023年07月18日
+ */
 @Data
 public class RoleAssignUserQo {
     @Schema(description = "角色编码")

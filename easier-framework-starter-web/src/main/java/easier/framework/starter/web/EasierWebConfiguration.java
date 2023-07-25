@@ -19,6 +19,7 @@ import easier.framework.starter.web.error.EasierErrorController;
 import easier.framework.starter.web.filter.TraceIdServletFilter;
 import easier.framework.starter.web.handler.GlobalExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -56,7 +57,7 @@ import java.util.stream.Collectors;
 @Import(TraceIdServletFilter.class)
 public class EasierWebConfiguration implements WebMvcConfigurer, InitializingBean {
     @Override
-    public void addFormatters(FormatterRegistry registry) {
+    public void addFormatters(@NotNull FormatterRegistry registry) {
         DateTimeFormatterRegistrar registrar = new DateTimeFormatterRegistrar();
         registrar.setTimeFormatter(DateTimeFormatter.ofPattern(DatePattern.NORM_TIME_PATTERN));
         registrar.setDateFormatter(DateTimeFormatter.ofPattern(DatePattern.NORM_DATE_PATTERN));
@@ -100,16 +101,18 @@ public class EasierWebConfiguration implements WebMvcConfigurer, InitializingBea
                 .sorted(Comparator.comparingLong(NetUtil::ipv4ToLong))
                 .map(it -> "http://" + it + ":" + SpringUtil.getServerPort() + "/doc.html")
                 .collect(Collectors.joining("\n┃ 　　   "));
-        String banner = StrUtil.format(("┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n" +
-                        "┃ 服务 : {}\n" +
-                        "┃ 端口 : {}\n" +
-                        "┃ 状态 : 启动成功\n" +
-                        "┃ 时间 : {}\n" +
-                        "┃ 耗时 : {}\n" +
-                        "┃ 实例 : {}\n" +
-                        "┃ 接口 : {}\n" +
-                        "┃ 文档 : {}\n" +
-                        "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛").trim()
+        String template = "\n" +
+                "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n" +
+                "┃ 服务 : {}\n" +
+                "┃ 端口 : {}\n" +
+                "┃ 状态 : 启动成功\n" +
+                "┃ 时间 : {}\n" +
+                "┃ 耗时 : {}\n" +
+                "┃ 实例 : {}\n" +
+                "┃ 接口 : {}\n" +
+                "┃ 文档 : {}\n" +
+                "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛";
+        String banner = StrUtil.format(template.trim()
                 , SpringUtil.getApplicationName()
                 , SpringUtil.getServerPort()
                 , DateTime.now().toMsStr()

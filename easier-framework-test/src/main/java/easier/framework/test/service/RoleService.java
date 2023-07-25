@@ -1,5 +1,6 @@
 package easier.framework.test.service;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import easier.framework.core.domain.PageParam;
 import easier.framework.core.plugin.exception.biz.BizException;
@@ -10,10 +11,7 @@ import easier.framework.starter.mybatis.repo.Repo;
 import easier.framework.starter.mybatis.repo.Repos;
 import easier.framework.test.enums.EnableStatus;
 import easier.framework.test.eo.*;
-import easier.framework.test.qo.RoleAssignAppQo;
-import easier.framework.test.qo.RoleAssignUserQo;
-import easier.framework.test.qo.RoleQo;
-import easier.framework.test.qo.UserQo;
+import easier.framework.test.qo.*;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.ExtensionMethod;
 import org.springframework.stereotype.Service;
@@ -34,6 +32,7 @@ import java.util.stream.Collectors;
 public class RoleService {
     private final Repo<Role> _role = Repos.of(Role.class);
     private final Repo<User> _user = Repos.of(User.class);
+    private final Repo<Menu> _menu = Repos.of(Menu.class);
     private final Repo<UserRole> _user_role = Repos.of(UserRole.class);
     private final Repo<RoleApp> _role_app = Repos.of(RoleApp.class);
     private final Repo<RoleMenu> _role_menu = Repos.of(RoleMenu.class);
@@ -46,6 +45,7 @@ public class RoleService {
                 .like(Role::getRoleName, qo.getRoleName())
                 .like(Role::getRoleType, qo.getRoleType())
                 .end()
+                .bind(Role::getAppCodes, Role::getApps)
                 .page(pageParam.toPage());
     }
 
@@ -198,5 +198,38 @@ public class RoleService {
                 .eq(UserRole::getRoleCode, roleCode)
                 .in(UserRole::getUsername, usernames)
                 .remove();
+    }
+
+    public List<String> menuSelected(RoleMenuQo qo) {
+        ValidUtil.valid(qo);
+        return this._role_menu.newQuery()
+                .eq(RoleMenu::getAppCole, qo.getAppCode())
+                .eq(RoleMenu::getRoleCode, qo.getRoleCode())
+                .list()
+                .stream()
+                .map(RoleMenu::getMenuId)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void assignMenu(RoleMenuQo qo) {
+        ValidUtil.valid(qo);
+        this._role_menu.newUpdate()
+                .eq(RoleMenu::getAppCole, qo.getAppCode())
+                .eq(RoleMenu::getRoleCode, qo.getRoleCode())
+                .remove();
+        List<Menu> menus = this._menu.listByIds(qo.getMenuIds());
+        if (CollUtil.isEmpty(menus)) {
+            return;
+        }
+        List<RoleMenu> list = menus.stream()
+                .map(menu -> RoleMenu.builder()
+                        .menuId(menu.getMenuId())
+                        .appCole(menu.getAppCode())
+                        .roleCode(qo.getRoleCode())
+                        .build()
+                )
+                .collect(Collectors.toList());
+        this._role_menu.addBatch(list);
     }
 }

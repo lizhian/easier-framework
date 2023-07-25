@@ -7,6 +7,12 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 
+/**
+ * 菜单树请求对象
+ *
+ * @author lizhian
+ * @date 2023年07月18日
+ */
 @Data
 public class MenuTreeQo {
 

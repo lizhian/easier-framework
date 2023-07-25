@@ -1,4 +1,4 @@
-package easier.framework.test.cache;
+package easier.framework.core.plugin.jackson.annotation;
 
 import cn.hutool.core.util.StrUtil;
 import easier.framework.core.plugin.jackson.expland.JsonExpand;
@@ -12,7 +12,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * 序列化显示用户详情
+ * 序列化显示部门详情
  */
 @JsonExpand(
         expandBy = ShowDeptDetail.Expander.class

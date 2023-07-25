@@ -10,6 +10,7 @@ import com.plumelog.logback.util.LogMessageUtil;
 import easier.framework.core.plugin.cache.RedisSources;
 import easier.framework.core.util.SpringUtil;
 import easier.framework.core.util.StrUtil;
+import easier.framework.starter.cache.condition.ConditionalOnRedisSource;
 import easier.framework.starter.cache.redis.RedissonClients;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
@@ -23,6 +24,7 @@ import java.time.Duration;
  * 使用 Redisson 推送 plume-log 日志
  */
 @Slf4j
+@ConditionalOnRedisSource(RedisSources.logging)
 public class RedissonAppender extends AppenderBase<ILoggingEvent> implements InitializingBean {
     private static final Codec codec = new StringCodec();
     private static final int queueMaxSize = 50000;
@@ -35,13 +37,7 @@ public class RedissonAppender extends AppenderBase<ILoggingEvent> implements Ini
     @Override
     public void afterPropertiesSet() {
         RedissonClients redissonClients = SpringUtil.getAndCache(RedissonClients.class);
-        if (redissonClients == null) {
-            return;
-        }
-        if (!redissonClients.contains(RedisSources.plumeLog)) {
-            return;
-        }
-        RedissonAppender.client = redissonClients.getClient(RedisSources.plumeLog);
+        RedissonAppender.client = redissonClients.getClient(RedisSources.logging);
         String activeProfile = SpringUtil.getActiveProfile();
         if (StrUtil.isNotBlank(activeProfile)) {
             RedissonAppender.env = activeProfile;
@@ -65,13 +61,15 @@ public class RedissonAppender extends AppenderBase<ILoggingEvent> implements Ini
     @Override
     protected void append(ILoggingEvent event) {
         if (event != null && RedissonAppender.running) {
-            final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(RedissonAppender.applicationName, RedissonAppender.env, event, null);
+            final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(RedissonAppender.applicationName, RedissonAppender.env, event, "2");
             if (logMessage instanceof RunLogMessage) {
                 final String message = LogMessageUtil.getLogMessage(logMessage, event);
-                RedissonAppender.client.getQueue(LogMessageConstant.LOG_KEY, codec)
+                RedissonAppender.client
+                        .getQueue(LogMessageConstant.LOG_KEY, codec)
                         .addAsync(message);
             } else {
-                RedissonAppender.client.getQueue(LogMessageConstant.LOG_KEY, codec)
+                RedissonAppender.client
+                        .getQueue(LogMessageConstant.LOG_KEY, codec)
                         .addAsync(GfJsonUtil.toJSONString(logMessage));
             }
         }

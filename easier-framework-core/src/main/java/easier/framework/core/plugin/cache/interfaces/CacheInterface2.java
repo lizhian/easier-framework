@@ -23,7 +23,6 @@ public interface CacheInterface2<T> {
      */
     default BiFunction<String, String, T> valueFunction() {
         throw FrameworkException.of("请在子类或子接口重写此方法");
-
     }
 
     default boolean has(String param1, String param2) {

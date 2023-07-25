@@ -28,7 +28,9 @@ public class TraceIdServletFilter extends OncePerRequestFilter implements Ordere
             TraceIdUtil.create();
         } else {
             TraceIdUtil.set(traceId);
-            log.info("接收traceId=[{}],path=[{}]", traceId, path);
+            if (log.isDebugEnabled()) {
+                log.debug("接收 traceId={}, path={}", traceId, path);
+            }
         }
         filterChain.doFilter(request, response);
     }

@@ -6,12 +6,15 @@ import easier.framework.core.domain.CodesQo;
 import easier.framework.core.domain.PageParam;
 import easier.framework.core.domain.R;
 import easier.framework.core.plugin.dict.DictDetail;
+import easier.framework.core.plugin.tree.TreeNode;
 import easier.framework.test.eo.App;
+import easier.framework.test.eo.Menu;
 import easier.framework.test.eo.Role;
 import easier.framework.test.eo.User;
 import easier.framework.test.qo.*;
 import easier.framework.test.service.AppService;
 import easier.framework.test.service.DictService;
+import easier.framework.test.service.MenuService;
 import easier.framework.test.service.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -39,6 +42,7 @@ public class RoleController {
 
     private final RoleService roleService;
     private final AppService appService;
+    private final MenuService menuService;
 
 
     /**
@@ -152,6 +156,36 @@ public class RoleController {
     @PutMapping("/role/unAssignUser")
     public R<String> unAssignUser(@Validated @RequestBody RoleAssignUserQo qo) {
         this.roleService.unAssignUser(qo);
+        return R.success();
+    }
+
+
+    /*@Operation(summary = "获取角色关联的应用列表")
+    @GetMapping("/role/app/listByRoleCode")
+    public R<List<App>> appList(@Validated RoleCodeQo qo) {
+        List<App> list = this.appService.listByRoleCode(qo.getRoleCode());
+        return R.success(list);
+    }*/
+
+    @Operation(summary = "获取已选中的菜单列表")
+    @GetMapping("/role/menu/selected")
+    public R<List<String>> menuSelected(@Validated RoleMenuQo qo) {
+        List<String> tree = this.roleService.menuSelected(qo);
+        return R.success(tree);
+    }
+
+    @Operation(summary = "获取菜单列表")
+    @GetMapping("/role/menu/tree")
+    public R<List<TreeNode<Menu>>> menuList(@Validated MenuTreeQo qo) {
+        List<TreeNode<Menu>> tree = this.menuService.tree(qo);
+        return R.success(tree);
+    }
+
+
+    @Operation(summary = "角色分配菜单")
+    @PutMapping("/role/assignMenu")
+    public R<String> assignMenu(@Validated RoleMenuQo qo) {
+        this.roleService.assignMenu(qo);
         return R.success();
     }
 

@@ -43,7 +43,7 @@ public interface MethodForDelete<T> extends IRepo<T> {
     /**
      * 根据主键批量删除
      */
-    default boolean deleteByIds(Collection<Serializable> ids) {
+    default boolean deleteByIds(Collection<? extends Serializable> ids) {
         int defaultBatchSize = this.repo().getDefaultBatchSize();
         return this.deleteByIds(ids, defaultBatchSize);
     }
@@ -51,13 +51,13 @@ public interface MethodForDelete<T> extends IRepo<T> {
     /**
      * 根据主键批量删除
      */
-    default boolean deleteByIds(Collection<Serializable> ids, int batchSize) {
+    default boolean deleteByIds(Collection<? extends Serializable> ids, int batchSize) {
         SFunction<T, Serializable> tableId = this.repo().getTableId();
         if (CollUtil.isEmpty(ids)) {
             return false;
         }
         TableInfo tableInfo = this.repo().getTableInfo();
-        for (List<Serializable> splitIds : CollUtil.split(ids, batchSize)) {
+        for (List<? extends Serializable> splitIds : CollUtil.split(ids, batchSize)) {
             if (tableInfo.isWithLogicDelete()) {
                 String logicDeleteSql = tableInfo.getLogicDeleteSql(false, false);
                 this.repo()

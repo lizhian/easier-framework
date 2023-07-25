@@ -1,5 +1,6 @@
 package easier.framework.test.service;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import easier.framework.core.domain.PageParam;
 import easier.framework.core.plugin.exception.biz.BizException;
@@ -18,6 +19,7 @@ import lombok.experimental.ExtensionMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,6 +60,7 @@ public class AppService {
                 .eq(App::getStatus, qo.getStatus())
                 .end()
                 .orderByAsc(App::getSort)
+                .bind(App::getRoles, App::getRoleCodes)
                 .page(pageParam.toPage());
     }
 
@@ -125,4 +128,12 @@ public class AppService {
     }
 
 
+    public List<App> listByRoleCode(String roleCode) {
+        List<String> appCodes = this._role_app.withPair(RoleApp::getAppCole, RoleApp::getAppCole)
+                .toValueList(roleCode);
+        if (CollUtil.isEmpty(appCodes)) {
+            return new ArrayList<>();
+        }
+        return this._app.listByCodes(appCodes);
+    }
 }

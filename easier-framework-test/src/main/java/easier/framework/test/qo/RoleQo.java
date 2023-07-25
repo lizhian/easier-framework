@@ -3,6 +3,12 @@ package easier.framework.test.qo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+/**
+ * 角色请求对象
+ *
+ * @author lizhian
+ * @date 2023年07月18日
+ */
 @Data
 public class RoleQo {
 

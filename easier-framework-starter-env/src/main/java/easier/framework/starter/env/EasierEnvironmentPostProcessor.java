@@ -3,6 +3,7 @@ package easier.framework.starter.env;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.ClassLoaderUtil;
+import cn.hutool.core.util.DesensitizedUtil;
 import easier.framework.core.util.StrUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +20,18 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * 更简单环境后处理器
+ *
+ * @author lizhian
+ * @date 2023年07月20日
+ */
 @Slf4j
 public class EasierEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered, ApplicationListener<ApplicationEnvironmentPreparedEvent> {
     public static final String STARTER_ENV_RESOURCE_LOCATION = "META-INF/starter.env";
     public static final String PROPERTY_SOURCE_NAME = "default-starter-env";
 
-    private static List<easier.framework.starter.env.DefaultEnv> loadedDefaultEnvs = new ArrayList<>();
+    private static List<DefaultProperty> loadedDefaultProperties = new ArrayList<>();
 
 
     @Override
@@ -37,20 +44,20 @@ public class EasierEnvironmentPostProcessor implements EnvironmentPostProcessor,
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
         Enumeration<URL> resources = ClassLoaderUtil.getContextClassLoader()
                 .getResources(STARTER_ENV_RESOURCE_LOCATION);
-        loadedDefaultEnvs = CollUtil.newArrayList(resources)
+        loadedDefaultProperties = CollUtil.newArrayList(resources)
                 .stream()
                 .flatMap(this::formatDefaultEnvs)
-                .filter(defaultEnv -> !environment.containsProperty(defaultEnv.getKey()))
-                .sorted(Comparator.comparing(DefaultEnv::getKey))
+                .filter(defaultProperty -> !environment.containsProperty(defaultProperty.getKey()))
+                .sorted(Comparator.comparing(DefaultProperty::getKey))
                 .collect(Collectors.toList());
         Map<String, Object> source = new LinkedHashMap<>();
         if (!environment.containsProperty("spring.application.name")) {
             String applicationName = application.getMainApplicationClass().getSimpleName();
             source.put("spring.application.name", applicationName);
         }
-        for (DefaultEnv defaultEnv : loadedDefaultEnvs) {
-            String key = defaultEnv.getKey();
-            String value = defaultEnv.getValue();
+        for (DefaultProperty defaultProperty : loadedDefaultProperties) {
+            String key = defaultProperty.getKey();
+            String value = defaultProperty.getValue();
             source.put(key, value);
         }
         environment.getPropertySources().addLast(new MapPropertySource(PROPERTY_SOURCE_NAME, source));
@@ -59,25 +66,23 @@ public class EasierEnvironmentPostProcessor implements EnvironmentPostProcessor,
 
     @Override
     public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
-        for (easier.framework.starter.env.DefaultEnv defaultEnv : loadedDefaultEnvs) {
-            String comment = defaultEnv.getComment();
+        for (DefaultProperty defaultProperty : loadedDefaultProperties) {
+            String comment = defaultProperty.getComment();
             if (StrUtil.isNotBlank(comment)) {
-                log.info("【{}】"
-                        , comment
-                );
+                log.info("# {}", comment);
             }
-            String key = defaultEnv.getKey();
-            String value = defaultEnv.getValue();
-            log.info("{}={}"
-                    , key
-                    , key.contains("password") ? StrUtil.hide(value, 3, value.length() - 3) : value
-            );
+            String key = defaultProperty.getKey();
+            String value = defaultProperty.getValue();
+            if (key.contains("password")) {
+                value = DesensitizedUtil.password(value);
+            }
+            log.info("{}={}", key, value);
         }
     }
 
     @SneakyThrows
-    private Stream<easier.framework.starter.env.DefaultEnv> formatDefaultEnvs(URL url) {
-        List<easier.framework.starter.env.DefaultEnv> result = new ArrayList<>();
+    private Stream<DefaultProperty> formatDefaultEnvs(URL url) {
+        List<DefaultProperty> result = new ArrayList<>();
         String content = IoUtil.readUtf8(url.openStream());
         List<String> lines = StrUtil.lines(content)
                 .filter(StrUtil::isNotBlank)
@@ -92,12 +97,12 @@ public class EasierEnvironmentPostProcessor implements EnvironmentPostProcessor,
             if (line.contains("=")) {
                 String key = StrUtil.subBefore(line, "=", false);
                 String value = StrUtil.subAfter(line, "=", false);
-                easier.framework.starter.env.DefaultEnv defaultEnv = easier.framework.starter.env.DefaultEnv.builder()
+                DefaultProperty defaultProperty = DefaultProperty.builder()
                         .comment(lastComment)
                         .key(key)
                         .value(value)
                         .build();
-                result.add(defaultEnv);
+                result.add(defaultProperty);
                 lastComment = "";
             }
         }

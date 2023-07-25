@@ -9,6 +9,7 @@ import easier.framework.starter.mybatis.repo.Repos;
 import easier.framework.test.enums.EnableStatus;
 import easier.framework.test.enums.MenuType;
 import easier.framework.test.eo.Menu;
+import easier.framework.test.eo.RoleMenu;
 import easier.framework.test.qo.MenuTreeQo;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.ExtensionMethod;
@@ -38,6 +39,7 @@ public class MenuService {
             .build();
 
     private final Repo<Menu> _menu = Repos.of(Menu.class);
+    private final Repo<RoleMenu> _role_menu = Repos.of(RoleMenu.class);
 
 
     public List<TreeNode<Menu>> tree(MenuTreeQo qo) {
@@ -71,22 +73,23 @@ public class MenuService {
         Menu parent = null;
         if (StrUtil.isBlank(parentId)) {
             entity.setParentId(TreeUtil.ROOT_KEY);
-            entity.setAncestors(TreeUtil.ROOT_KEY);
+            entity.setAncestors(TreeUtil.ROOT_KEY + ",");
         } else {
             parent = this._menu.getById(parentId);
             if (parent == null) {
                 throw BizException.of("无效的父菜单主键:{}", parentId);
             }
-            entity.setAncestors(parent.getAncestors() + "," + parentId);
+            entity.setAncestors(parent.getAncestors() + parentId + ",");
         }
         this._menu.newQuery()
+                .eq(Menu::getAppCode, appCode)
                 .eq(Menu::getParentId, parentId)
                 .eq(Menu::getMenuName, menuName)
                 .existsThenThrow("重复的名称:{}", menuName);
         //新增目录
         if (MenuType.isDir(entity.getMenuType())) {
             if (parent != null && !MenuType.isDir(parent.getMenuType())) {
-                throw BizException.of("目录类型的上级菜单只能是目录");
+                throw BizException.of("目录类型的上级只能是目录");
             }
             entity.setIsCache(null);
             entity.setComponent(null);
@@ -108,10 +111,10 @@ public class MenuService {
         //新增按钮
         if (MenuType.isButton(entity.getMenuType())) {
             if (parent == null) {
-                throw BizException.of("按钮类型的上级菜单不能为空");
+                throw BizException.of("按钮类型的上级不能为空");
             }
             if (!MenuType.isMenu(parent.getMenuType())) {
-                throw BizException.of("按钮类型的上级菜单只能是菜单");
+                throw BizException.of("按钮类型的上级只能是菜单");
             }
             entity.setIsCache(null);
             entity.setIsVisible(null);
@@ -186,4 +189,73 @@ public class MenuService {
         this._menu.addBatch(baseButtons);
     }
 
+    public void update(Menu entity) {
+        ValidUtil.validOnUpdate(entity);
+        String menuId = entity.getMenuId();
+        String parentId = entity.getParentId();
+        String menuName = entity.getMenuName();
+        String appCode = entity.getAppCode();
+        Menu old = this._menu.getById(menuId);
+        if (old == null) {
+            throw BizException.of("无效的菜单主键:{}", menuId);
+        }
+        Menu parent = null;
+        if (StrUtil.isBlank(parentId) || parentId.equals(TreeUtil.ROOT_KEY)) {
+            entity.setParentId(TreeUtil.ROOT_KEY);
+            entity.setAncestors(TreeUtil.ROOT_KEY);
+        } else {
+            parent = this._menu.getById(parentId);
+            if (parent == null) {
+                throw BizException.of("无效的父菜单主键:{}", parentId);
+            }
+            entity.setAncestors(parent.getAncestors() + "," + parentId);
+        }
+        this._menu.newQuery()
+                .eq(Menu::getAppCode, appCode)
+                .eq(Menu::getParentId, parentId)
+                .eq(Menu::getMenuName, menuName)
+                .ne(Menu::getMenuId, menuId)
+                .existsThenThrow("重复的名称:{}", menuName);
+
+    }
+
+    public void delete(String menuId) {
+        Menu menu = this._menu.getById(menuId);
+        if (menu == null) {
+            throw BizException.of("无效的菜单主键:{}", menuId);
+        }
+        MenuType menuType = menu.getMenuType();
+        String menuName = menu.getMenuName().orEmpty();
+        if (MenuType.isButton(menuType)) {
+            boolean basePerm = BASE_PERMS.keySet()
+                    .stream()
+                    .anyMatch(key -> menuName.endsWith(":" + key));
+            if (basePerm) {
+                throw BizException.of("基础权限按钮不允许删除");
+            }
+            this._menu.deleteById(menuId);
+            this._role_menu.deleteBy(RoleMenu::getMenuId, menuId);
+            return;
+        }
+
+        if (MenuType.isMenu(menuType)) {
+            List<String> menuIds = this._menu.newQuery()
+                    .eq(Menu::getParentId, menuId)
+                    .toList(Menu::getMenuId);
+            menuIds.add(menuId);
+            this._menu.deleteByIds(menuIds);
+            this._role_menu.newUpdate()
+                    .in(RoleMenu::getMenuId, menuIds)
+                    .remove();
+            return;
+        }
+
+        if (MenuType.isDir(menuType)) {
+            this._menu.newQuery()
+                    .eq(Menu::getParentId, menuId)
+                    .existsThenThrow("此目录下存在子目录或者子菜单,不允许删除");
+            this._menu.deleteById(menuId);
+            this._role_menu.deleteBy(RoleMenu::getMenuId, menuId);
+        }
+    }
 }

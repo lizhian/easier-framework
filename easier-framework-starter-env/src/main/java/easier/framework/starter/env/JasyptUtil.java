@@ -7,8 +7,14 @@ import org.jasypt.encryption.StringEncryptor;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.encryption.pbe.config.SimpleStringPBEConfig;
 
+/**
+ * 属性加密工具
+ *
+ * @author lizhian
+ * @date 2023年07月20日
+ */
 public class JasyptUtil {
-    private static final JasyptEncryptorConfigurationProperties properties = new JasyptEncryptorConfigurationProperties();
+    public static final JasyptEncryptorConfigurationProperties properties = new JasyptEncryptorConfigurationProperties();
 
 
     public static void main(String[] args) {

@@ -30,6 +30,10 @@
         <module>easier-framework-starter-auth</module>
         <module>easier-framework-starter-discovery</module>
         <module>easier-framework-starter-web</module>
+        <module>easier-framework-application</module>
+        <module>easier-framework-application-web</module>
+        <module>user-center-interfaces</module>
+        <module>user-center-application</module>
         <!--<module>easier-framework-test</module>-->
     </modules>
     <properties>
@@ -140,6 +144,18 @@
             <dependency>
                 <groupId>easier.framework</groupId>
                 <artifactId>easier-framework-starter-discovery</artifactId>
+                <version>${easier-framework.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>easier.framework</groupId>
+                <artifactId>easier-framework-application</artifactId>
+                <version>${easier-framework.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>easier.framework</groupId>
+                <artifactId>easier-framework-application-web</artifactId>
                 <version>${easier-framework.version}</version>
             </dependency>
             <!--项目依赖 end-->

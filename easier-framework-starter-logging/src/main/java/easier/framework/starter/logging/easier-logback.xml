@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <!--显示traceId-->
+    <conversionRule conversionWord="traceId"
+                    converterClass="easier.framework.starter.logging.converter.TraceIdConverter"/>
+
+    <!--控制台格式-->
+    <property name="logging.pattern.console" value="${CONSOLE_LOG_PATTERN}"/>
+    <!--文件格式-->
+    <property name="logging.pattern.file" value="${FILE_LOG_PATTERN}"/>
+    <!--文件路径-->
+    <property name="logging.file.path" value="${LOG_PATH}"/>
+    <!--编码格式-->
+    <property name="logging.charset" value="UTF-8"/>
+    <!--文件配置-->
+    <property name="logging.file.cleanHistoryOnStart" value="${LOGBACK_ROLLINGPOLICY_CLEAN_HISTORY_ON_START:-false}"/>
+    <property name="logging.file.maxFileSize" value="${LOGBACK_ROLLINGPOLICY_MAX_FILE_SIZE:-10MB}"/>
+    <property name="logging.file.totalSizeCap" value="${LOGBACK_ROLLINGPOLICY_TOTAL_SIZE_CAP:-0}"/>
+    <property name="logging.file.maxHistory" value="${LOGBACK_ROLLINGPOLICY_MAX_HISTORY:-7}"/>
+
+
+    <!--控制台输出-->
+    <appender name="appender.console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${logging.pattern.console}</pattern>
+            <charset>${logging.charset}</charset>
+        </encoder>
+    </appender>
+    <!--控制台文件输出-->
+    <appender name="appender.file.console" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${logging.pattern.file}</pattern>
+            <charset>${logging.charset}</charset>
+        </encoder>
+        <file>${logging.file.path}/console.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logging.file.path}/history/%d{yyyy-MM-dd}/console.%i.log</fileNamePattern>
+            <cleanHistoryOnStart>${logging.file.cleanHistoryOnStart}</cleanHistoryOnStart>
+            <maxFileSize>${logging.file.maxFileSize}</maxFileSize>
+            <totalSizeCap>${logging.file.totalSizeCap}</totalSizeCap>
+            <maxHistory>${logging.file.maxHistory}</maxHistory>
+        </rollingPolicy>
+    </appender>
+    <!--控制台文件输出-->
+    <appender name="appender.file.sql" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="easier.framework.starter.logging.filter.LoggerGroupFilter">
+            <group>sql</group>
+        </filter>
+        <encoder>
+            <pattern>${logging.pattern.file}</pattern>
+            <charset>${logging.charset}</charset>
+        </encoder>
+        <file>${logging.file.path}/sql.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logging.file.path}/history/%d{yyyy-MM-dd}/sql.%i.log</fileNamePattern>
+            <cleanHistoryOnStart>${logging.file.cleanHistoryOnStart}</cleanHistoryOnStart>
+            <maxFileSize>${logging.file.maxFileSize}</maxFileSize>
+            <totalSizeCap>${logging.file.totalSizeCap}</totalSizeCap>
+            <maxHistory>${logging.file.maxHistory}</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="appender.file.web" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="easier.framework.starter.logging.filter.LoggerGroupFilter">
+            <group>web</group>
+        </filter>
+        <encoder>
+            <pattern>${logging.pattern.file}</pattern>
+            <charset>${logging.charset}</charset>
+        </encoder>
+        <file>${logging.file.path}/web.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logging.file.path}/history/%d{yyyy-MM-dd}/web.%i.log</fileNamePattern>
+            <cleanHistoryOnStart>${logging.file.cleanHistoryOnStart}</cleanHistoryOnStart>
+            <maxFileSize>${logging.file.maxFileSize}</maxFileSize>
+            <totalSizeCap>${logging.file.totalSizeCap}</totalSizeCap>
+            <maxHistory>${logging.file.maxHistory}</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="appender.file.error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <encoder>
+            <pattern>${logging.pattern.file}</pattern>
+            <charset>${logging.charset}</charset>
+        </encoder>
+        <file>${logging.file.path}/error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logging.file.path}/history/%d{yyyy-MM-dd}/error.%i.log</fileNamePattern>
+            <cleanHistoryOnStart>${logging.file.cleanHistoryOnStart}</cleanHistoryOnStart>
+            <maxFileSize>${logging.file.maxFileSize}</maxFileSize>
+            <totalSizeCap>${logging.file.totalSizeCap}</totalSizeCap>
+            <maxHistory>${logging.file.maxHistory}</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="appender.file.info" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder>
+            <pattern>${logging.pattern.file}</pattern>
+            <charset>${logging.charset}</charset>
+        </encoder>
+        <file>${logging.file.path}/info.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logging.file.path}/history/%d{yyyy-MM-dd}/info.%i.log</fileNamePattern>
+            <cleanHistoryOnStart>${logging.file.cleanHistoryOnStart}</cleanHistoryOnStart>
+            <maxFileSize>${logging.file.maxFileSize}</maxFileSize>
+            <totalSizeCap>${logging.file.totalSizeCap}</totalSizeCap>
+            <maxHistory>${logging.file.maxHistory}</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="appender.file.debug" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>${logging.pattern.file}</pattern>
+            <charset>${logging.charset}</charset>
+        </encoder>
+        <file>${logging.file.path}/debug.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logging.file.path}/history/%d{yyyy-MM-dd}/debug.%i.log</fileNamePattern>
+            <cleanHistoryOnStart>${logging.file.cleanHistoryOnStart}</cleanHistoryOnStart>
+            <maxFileSize>${logging.file.maxFileSize}</maxFileSize>
+            <totalSizeCap>${logging.file.totalSizeCap}</totalSizeCap>
+            <maxHistory>${logging.file.maxHistory}</maxHistory>
+        </rollingPolicy>
+    </appender>
+    <appender name="appender.redisson" class="easier.framework.starter.logging.appender.RedissonAppender"/>
+    <root level="INFO">
+        <appender-ref ref="appender.console"/>
+        <appender-ref ref="appender.redisson"/>
+        <appender-ref ref="appender.file.console"/>
+        <appender-ref ref="appender.file.sql"/>
+        <appender-ref ref="appender.file.web"/>
+        <appender-ref ref="appender.file.error"/>
+        <appender-ref ref="appender.file.info"/>
+        <appender-ref ref="appender.file.debug"/>
+    </root>
+</configuration>

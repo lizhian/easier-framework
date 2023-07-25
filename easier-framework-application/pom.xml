@@ -1,0 +1,36 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>easier.framework</groupId>
+        <artifactId>easier-framework-parent</artifactId>
+        <version>2023.07.03-2.7.12</version>
+    </parent>
+    <artifactId>easier-framework-application</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>easier.framework</groupId>
+            <artifactId>easier-framework-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>easier.framework</groupId>
+            <artifactId>easier-framework-starter-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>easier.framework</groupId>
+            <artifactId>easier-framework-starter-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>easier.framework</groupId>
+            <artifactId>easier-framework-starter-job</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>easier.framework</groupId>
+            <artifactId>easier-framework-starter-logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>easier.framework</groupId>
+            <artifactId>easier-framework-starter-web</artifactId>
+        </dependency>
+    </dependencies>
+</project>

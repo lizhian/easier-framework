@@ -1,7 +1,8 @@
-package easier.framework.core.plugin.dict;
+package easier.framework.core.plugin.jackson.annotation;
 
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.databind.JavaType;
+import easier.framework.core.plugin.dict.DictDetail;
 import easier.framework.core.plugin.jackson.expland.JsonExpand;
 import easier.framework.core.plugin.jackson.expland.JsonExpandContext;
 import easier.framework.core.plugin.jackson.expland.JsonExpander;
@@ -13,7 +14,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * 序列化显示用户详情
+ * 序列化显示字典详情
  */
 @JsonExpand(
         expandBy = ShowDictDetail.Expander.class
@@ -28,7 +29,7 @@ public @interface ShowDictDetail {
     String property() default "{}_DictDetail";
 
 
-    interface ShowDetailDetailBean {
+    interface ShowDictDetailBean {
         DictDetail getDictDetail(Object currentValue, String dictCode, JavaType currentType);
     }
 
@@ -38,7 +39,7 @@ public @interface ShowDictDetail {
         public void doExpand(ShowDictDetail annot, JsonExpandContext context) {
             String key = StrUtil.format(annot.property(), context.getCurrentProperty());
             DictDetail dictDetail = null;
-            ShowDetailDetailBean bean = SpringUtil.getAndCache(ShowDetailDetailBean.class);
+            ShowDictDetailBean bean = SpringUtil.getAndCache(ShowDictDetailBean.class);
             if (bean != null) {
                 Object currentValue = context.getCurrentValue();
                 JavaType currentType = context.getCurrentType();

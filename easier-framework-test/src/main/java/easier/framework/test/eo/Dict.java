@@ -10,7 +10,7 @@ import com.tangzc.mpe.bind.metadata.annotation.JoinOrderBy;
 import easier.framework.core.domain.BaseLogicEntity;
 import easier.framework.core.plugin.dict.DictDetail;
 import easier.framework.core.plugin.dict.DictItemDetail;
-import easier.framework.core.plugin.dict.ShowDictDetail;
+import easier.framework.core.plugin.jackson.annotation.ShowDictDetail;
 import easier.framework.core.plugin.mybatis.TableCode;
 import easier.framework.core.plugin.validation.UpdateGroup;
 import easier.framework.test.enums.DictType;
