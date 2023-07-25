@@ -34,6 +34,18 @@ import javax.validation.constraints.Size;
 @Table(value = "t_menu", comment = "菜单表")
 public class Menu extends BaseEntity {
 
+    @Column(comment = "父菜单主键")
+    @NotBlank(groups = ButtonGroup.class)
+    private String parentId;
+    @Column(comment = "权限标识")
+    @Size(max = 100)
+    @NotBlank(groups = {MenuGroup.class, ButtonGroup.class})
+    private String perms;
+    @Column(comment = "路由地址")
+    @Size(max = 255)
+    @NotBlank(groups = {DirGroup.class, MenuGroup.class})
+    private String path;
+
     @TableField(exist = false)
     public static TreeBuilder<Menu> treeBuilder = TreeBuilder
             .of(Menu.class)
@@ -62,9 +74,10 @@ public class Menu extends BaseEntity {
     @NotBlank
     @Size(min = 2, max = 50)
     private String menuName;
-
-    @Column(comment = "父菜单主键")
-    private String parentId;
+    @Column(comment = "组件路径")
+    @Size(max = 255)
+    @NotBlank(groups = MenuGroup.class)
+    private String component;
 
     @Column(comment = "祖先列表", notNull = true, length = 1024)
     private String ancestors;
@@ -77,31 +90,28 @@ public class Menu extends BaseEntity {
     @NotNull
     @ShowDictDetail
     private EnableStatus status;
-
-    @Column(comment = "权限标识")
-    @Size(max = 100)
-    private String perms;
+    @Column(comment = "是否为外链")
+    @NotBlank(groups = {DirGroup.class, MenuGroup.class})
+    private String isFrame;
 
     @Column(comment = "菜单图标")
     private String icon;
-
-    @Column(comment = "路由地址")
-    @Size(max = 255)
-    private String path;
-
-    @Column(comment = "组件路径")
-    @Size(max = 255)
-    private String component;
+    @Column(comment = "是否可显示")
+    @NotBlank(groups = {DirGroup.class, MenuGroup.class})
+    private Boolean isVisible;
+    @Column(comment = "是否缓存")
+    @NotBlank(groups = MenuGroup.class)
+    private Boolean isCache;
 
     @Column(comment = "路由参数")
     private String query;
 
-    @Column(comment = "是否为外链")
-    private String isFrame;
+    public static class DirGroup {
+    }
 
-    @Column(comment = "是否可显示")
-    private Boolean isVisible;
+    public static class MenuGroup {
+    }
 
-    @Column(comment = "是否缓存")
-    private Boolean isCache;
+    public static class ButtonGroup {
+    }
 }
