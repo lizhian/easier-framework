@@ -21,14 +21,31 @@
 }
 
 .login-card {
-    width: 300px;
+    width: 320px;
 }
 
 .login-card .ant-card-head {
     text-align: center;
 }
 
+
 .bg-w {
-    background: white
+    background: white;
+}
+
+.ta-l {
+    text-align: left;
+}
+
+.ta-c {
+    text-align: center;
+}
+
+.ta-r {
+    text-align: right;
+}
+
+.ml-10 {
+    margin-left: 10px;
 }
 

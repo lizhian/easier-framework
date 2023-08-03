@@ -22,4 +22,12 @@ public class LoginQo {
     @NotBlank
     private String password;
 
+    @Schema(description = "验证码")
+    @NotBlank
+    private String code;
+
+    @Schema(description = "验证码主键")
+    @NotBlank
+    private String captchaId;
+
 }

@@ -77,6 +77,16 @@
             <artifactId>axios</artifactId>
             <version>1.4.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>ant-design-vue</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>dayjs</artifactId>
+            <version>1.11.7</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
