@@ -36,14 +36,13 @@ import java.util.Map;
 public class AppController {
 
     private final DictService dictService;
-
     private final AppService appService;
     private final RoleService roleService;
 
     @Operation(summary = "加载字典")
     @GetMapping("/app/dict")
     public R<Map<String, DictDetail>> dict(@Validated CodesQo qo) {
-        Map<String, DictDetail> map = this.dictService.loadDictDetail(qo);
+        Map<String, DictDetail> map = this.dictService.dictDetail(qo.getCodes());
         return R.success(map);
     }
 

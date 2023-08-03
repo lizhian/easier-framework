@@ -39,8 +39,8 @@ public class DictController {
      */
     @Operation(summary = "加载字典")
     @GetMapping("/dict/dict")
-    public R<Map<String, DictDetail>> dict(CodesQo qo) {
-        Map<String, DictDetail> map = this.dictService.loadDictDetail(qo);
+    public R<Map<String, DictDetail>> dict(@Validated CodesQo qo) {
+        Map<String, DictDetail> map = this.dictService.dictDetail(qo.getCodes());
         return R.success(map);
     }
 

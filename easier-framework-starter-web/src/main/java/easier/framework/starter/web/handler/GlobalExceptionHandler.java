@@ -55,9 +55,11 @@ public class GlobalExceptionHandler implements ExceptionHandler {
             httpStatus = ExceptionHandlerRegister.getHttpStatus(throwableClass);
             isPrintStackTrace = false;
         }
-        //是否需要打印日志
+        //是否需要打印详细日志
         if (isPrintStackTrace) {
-            log.error("全局异常处理:{}", throwable != null ? throwable.getMessage() : null, throwable);
+            log.error("全局异常处理: {}", throwable != null ? throwable.getMessage() : null, throwable);
+        } else {
+            log.error("全局异常处理: {}", throwable != null ? throwable.getMessage() : null);
         }
         if (response instanceof HttpServletResponse) {
             HttpServletResponse httpServletResponse = (HttpServletResponse) response;

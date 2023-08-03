@@ -37,13 +37,13 @@ public class RoleService {
     private final Repo<RoleApp> _role_app = Repos.of(RoleApp.class);
     private final Repo<RoleMenu> _role_menu = Repos.of(RoleMenu.class);
 
-    public Page<Role> pageRole(PageParam pageParam, RoleQo qo) {
+    public Page<Role> page(PageParam pageParam, RoleQo qo) {
         return this._role
                 .newQuery()
                 .whenNotBlank()
                 .like(Role::getRoleCode, qo.getRoleCode())
                 .like(Role::getRoleName, qo.getRoleName())
-                .like(Role::getRoleType, qo.getRoleType())
+                .eq(Role::getRoleType, qo.getRoleType())
                 .end()
                 .bind(Role::getAppCodes, Role::getApps)
                 .page(pageParam.toPage());
@@ -109,6 +109,7 @@ public class RoleService {
                 .orEmpty()
                 .stream()
                 .filter(StrUtil::isNotBlank)
+                .distinct()
                 .map(appCode -> RoleApp.builder()
                         .appCole(appCode)
                         .roleCode(roleCode)

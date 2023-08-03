@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @FieldNameConstants
 @Builder(toBuilder = true)
-public final class SimpleAuthDetail implements AuthDetail {
-    private List<String> permissionList;
-    private List<String> roleList;
+public final class BaseAuthDetail implements AuthDetail {
+    private List<String> permissions;
+    private List<String> roles;
 }

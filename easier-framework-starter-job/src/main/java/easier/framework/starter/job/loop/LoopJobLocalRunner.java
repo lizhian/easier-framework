@@ -22,7 +22,7 @@ public class LoopJobLocalRunner implements Runnable {
     private DynamicDelayTrigger trigger;
 
     public LoopJobLocalRunner init() {
-        if (this.loopJob.delay() <= 0) {
+        if (this.loopJob.delay() < 1) {
             throw JobException.of("LoopJob.delay()不可小于1 method:{}", this.method);
         }
         this.trigger = new DynamicDelayTrigger(this.loopJob.delay());
@@ -34,11 +34,11 @@ public class LoopJobLocalRunner implements Runnable {
     public void run() {
         try {
             LoopJobContext context = LoopJobContext.builder()
-                                                   .bean(this.bean)
-                                                   .method(this.method)
-                                                   .loopJob(this.loopJob)
-                                                   .concurrent(this.concurrent)
-                                                   .build();
+                    .bean(this.bean)
+                    .method(this.method)
+                    .loopJob(this.loopJob)
+                    .concurrent(this.concurrent)
+                    .build();
             LoopJobContext.threadLocal.set(context);
             TraceIdUtil.create();
             this.method.invoke(this.bean);

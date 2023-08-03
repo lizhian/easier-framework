@@ -11,7 +11,7 @@ import easier.framework.starter.mybatis.repo.Repos;
 import easier.framework.test.enums.EnableStatus;
 import easier.framework.test.eo.Dept;
 import easier.framework.test.eo.User;
-import easier.framework.test.qo.DeptTreeQo;
+import easier.framework.test.qo.DeptQo;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.ExtensionMethod;
 import org.springframework.stereotype.Service;
@@ -42,27 +42,21 @@ public class DeptService {
      * @param qo 请求对象
      * @return {@link List}<{@link TreeNode}<{@link Dept}>>
      */
-    public List<TreeNode<Dept>> getDeptTree(DeptTreeQo qo) {
+    public List<TreeNode<Dept>> tree(DeptQo qo) {
         List<Dept> list = this._dept.newQuery()
                 .whenNotNull()
                 .eq(Dept::getStatus, qo.getStatus())
                 .end()
                 .list();
         List<TreeNode<Dept>> tree = Dept.treeBuilder.build(list);
-        String excludeDeptId = qo.getExcludeDeptId();
         String deptName = qo.getDeptName();
-        tree = Dept.treeBuilder.include(tree, dept -> {
-            if (StrUtil.isNotBlank(deptName)) {
-                return dept.getDeptName().orEmpty().contains(deptName);
-            }
-            return true;
-        });
-        tree = Dept.treeBuilder.exclude(tree, dept -> {
-            if (StrUtil.isNotBlank(excludeDeptId)) {
-                return excludeDeptId.equals(dept.getDeptId());
-            }
-            return false;
-        });
+        if (StrUtil.isNotBlank(deptName)) {
+            tree = Dept.treeBuilder.include(tree, dept -> StrUtil.contains(dept.getDeptName(), deptName));
+        }
+        String excludeDeptId = qo.getExcludeDeptId();
+        if (StrUtil.isNotBlank(excludeDeptId)) {
+            tree = Dept.treeBuilder.exclude(tree, dept -> excludeDeptId.equals(dept.getDeptId()));
+        }
         return tree;
     }
 
@@ -197,14 +191,33 @@ public class DeptService {
         if (StrUtil.isBlank(deptId)) {
             return new ArrayList<>();
         }
+        String separator = "," + deptId + ",";
         List<String> list = this._dept.newQuery()
-                .like(Dept::getAncestors, deptId)
+                .like(Dept::getAncestors, separator)
                 .stream()
-                .filter(it -> it.ancestorsAsList().contains(deptId))
                 .map(Dept::getDeptId)
                 .collect(Collectors.toList());
         list.add(0, deptId);
         return list;
+    }
+
+    public void updateDescendants(Dept entity) {
+        String ancestors = entity.getAncestors();
+        String deptId = entity.getDeptId();
+        String separator = "," + deptId + ",";
+        List<Dept> descendants = this._dept.newQuery()
+                .like(Dept::getAncestors, separator)
+                .stream()
+                .peek(descendant -> {
+                    String oldAncestors = descendant.getAncestors();
+                    String before = StrUtil.subBefore(oldAncestors, separator, false);
+                    String searchStr = before + "," + deptId + ",";
+                    String replacement = ancestors + deptId + ",";
+                    String newAncestors = StrUtil.replace(oldAncestors, searchStr, replacement);
+                    descendant.setAncestors(newAncestors);
+                })
+                .collect(Collectors.toList());
+        this._dept.updateBatch(descendants);
     }
 
 

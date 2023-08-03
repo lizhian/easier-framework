@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
@@ -17,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @FieldNameConstants
 @Builder(toBuilder = true)
-public class DictDetail {
+public class DictDetail implements Serializable {
     @Schema(description = "当前值对应的字典项")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private DictItemDetail selected;

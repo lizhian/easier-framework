@@ -8,16 +8,15 @@ import easier.framework.core.plugin.job.LoopJob;
 import easier.framework.core.util.JacksonUtil;
 import easier.framework.starter.cache.condition.ConditionalOnRedisSource;
 import easier.framework.starter.cache.redis.RedissonClients;
-import easier.framework.starter.job.loop.LoopJobContext;
 import easier.framework.starter.mybatis.repo.Repo;
 import easier.framework.starter.mybatis.repo.Repos;
 import easier.framework.test.eo.RunningLog;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RQueue;
+import org.redisson.api.RedissonClient;
 import org.redisson.client.codec.Codec;
 import org.redisson.client.codec.StringCodec;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -29,37 +28,37 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 @ConditionalOnRedisSource(RedisSources.logging)
-public class RunningLogListener implements InitializingBean {
+public class RunningLogListener {
     private static final Codec codec = new StringCodec();
     private static final Repo<RunningLog> _running_log = Repos.of(RunningLog.class);
     private final RedissonClients redissonClients;
-    private RQueue<String> queue;
-
-    @Override
-    public void afterPropertiesSet() {
-        this.queue = this.redissonClients.getClient(RedisSources.logging)
-                .getQueue(LogMessageConstant.LOG_KEY, codec);
-    }
 
 
     /**
      * 插入运行日志
      */
-    @LoopJob(delay = 1, timeUnit = TimeUnit.MILLISECONDS, lock = false)
-    public void insertRunningLog() {
+    @LoopJob(delay = 100, timeUnit = TimeUnit.MILLISECONDS, concurrency = 3, lock = false)
+    public void saveRunningLog() {
         try {
-            List<String> records = this.queue.poll(100);
-            if (CollUtil.isEmpty(records)) {
-                LoopJobContext.setNextDelay(500);
-                return;
+            while (true) {
+                List<String> records = this.getRecords(100);
+                if (CollUtil.isEmpty(records)) {
+                    break;
+                }
+                List<RunningLog> runningLogs = records.stream()
+                        .map(record -> JacksonUtil.toBean(record, RunningLog.class))
+                        .collect(Collectors.toList());
+                _running_log.addBatch(runningLogs);
             }
-            List<RunningLog> runningLogs = records.stream()
-                    .map(record -> JacksonUtil.toBean(record, RunningLog.class))
-                    .collect(Collectors.toList());
-            _running_log.addBatch(runningLogs);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private List<String> getRecords(int size) {
+        RedissonClient clientsClient = this.redissonClients.getClient(RedisSources.logging);
+        RQueue<String> queue = clientsClient.getQueue(LogMessageConstant.LOG_KEY, codec);
+        return queue.poll(size);
     }
 
     /**
@@ -68,8 +67,8 @@ public class RunningLogListener implements InitializingBean {
     @LoopJob(delay = 10, timeUnit = TimeUnit.MINUTES)
     public void deleteRunningLog() {
         try {
-            //删除一个小时前的数据
-            long time = DateTime.now().getTime() - Duration.ofHours(1).toMillis();
+            //删除3个小时前的数据
+            long time = DateTime.now().getTime() - Duration.ofHours(3).toMillis();
             _running_log.newUpdate()
                     .lt(RunningLog::getDtTime, time)
                     .remove();

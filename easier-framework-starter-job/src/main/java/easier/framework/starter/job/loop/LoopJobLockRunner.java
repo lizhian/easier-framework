@@ -31,7 +31,7 @@ public class LoopJobLockRunner implements Runnable {
     private DynamicDelayTrigger trigger;
 
     public LoopJobLockRunner init() {
-        if (this.loopJob.delay() <= 0) {
+        if (this.loopJob.delay() < 1) {
             throw JobException.of("LoopJob.delay()不可小于1 method:{}", this.method);
         }
         String prefix = "LoopJob:" + ClassUtil.shortClassName(this.method.getDeclaringClass()) + ":" + this.method.getName();
@@ -60,11 +60,11 @@ public class LoopJobLockRunner implements Runnable {
         try {
             LoopJobContext.threadLocal.remove();
             LoopJobContext context = LoopJobContext.builder()
-                                                   .bean(this.bean)
-                                                   .method(this.method)
-                                                   .loopJob(this.loopJob)
-                                                   .concurrent(this.concurrent)
-                                                   .build();
+                    .bean(this.bean)
+                    .method(this.method)
+                    .loopJob(this.loopJob)
+                    .concurrent(this.concurrent)
+                    .build();
             LoopJobContext.threadLocal.set(context);
             TraceIdUtil.create();
             this.method.invoke(this.bean);
@@ -86,7 +86,7 @@ public class LoopJobLockRunner implements Runnable {
         TimeUnit timeUnit = this.loopJob.timeUnit();
         long nextTime = DateTime.now().getTime() + timeUnit.toMillis(nextDelay);
         this.redissonClient.getBucket(this.nextKey)
-                           .setAsync(nextTime, nextDelay, timeUnit);
+                .setAsync(nextTime, nextDelay, timeUnit);
     }
 
     private boolean afterTheNextTime() {

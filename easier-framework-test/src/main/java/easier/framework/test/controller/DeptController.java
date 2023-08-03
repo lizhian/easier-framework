@@ -6,7 +6,7 @@ import easier.framework.core.domain.R;
 import easier.framework.core.plugin.dict.DictDetail;
 import easier.framework.core.plugin.tree.TreeNode;
 import easier.framework.test.eo.Dept;
-import easier.framework.test.qo.DeptTreeQo;
+import easier.framework.test.qo.DeptQo;
 import easier.framework.test.service.DeptService;
 import easier.framework.test.service.DictService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,16 +33,16 @@ public class DeptController {
 
     @Operation(summary = "加载字典")
     @GetMapping("/dept/dict")
-    public R<Map<String, DictDetail>> dict(CodesQo qo) {
-        Map<String, DictDetail> map = this.dictService.loadDictDetail(qo);
+    public R<Map<String, DictDetail>> dict(@Validated CodesQo qo) {
+        Map<String, DictDetail> map = this.dictService.dictDetail(qo.getCodes());
         return R.success(map);
     }
 
 
     @Operation(summary = "获取部门树")
     @GetMapping("/dept/tree")
-    public R<List<TreeNode<Dept>>> getDeptTree(DeptTreeQo qo) {
-        List<TreeNode<Dept>> list = this.deptService.getDeptTree(qo);
+    public R<List<TreeNode<Dept>>> getDeptTree(DeptQo qo) {
+        List<TreeNode<Dept>> list = this.deptService.tree(qo);
         return R.success(list);
     }
 

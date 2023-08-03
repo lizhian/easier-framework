@@ -50,8 +50,6 @@ public class Dict extends BaseLogicEntity {
     @Column(comment = "字典编码", notNull = true)
     @TableCode
     @NotBlank
-    @Size(max = 100)
-    @Pattern(regexp = "^[a-z][a-z0-9_]*$", message = "必须以字母开头,且只能由小写字母、数字和下滑线组成")
     private String dictCode;
 
     @Column(comment = "字典名称", notNull = true)
@@ -87,9 +85,9 @@ public class Dict extends BaseLogicEntity {
     private List<DictItem> items;
 
     public DictDetail toDictDetail() {
-        List<DictItemDetail> itemDetails = null;
+        List<DictItemDetail> items = null;
         if (this.items != null) {
-            itemDetails = this.items.stream()
+            items = this.items.stream()
                     .map(DictItem::toDictItemDetail)
                     .collect(Collectors.toList());
         }
@@ -100,7 +98,7 @@ public class Dict extends BaseLogicEntity {
                 .enable(EnableStatus.isEnable(this.status))
                 .style(this.style)
                 .remark(this.remark)
-                .items(itemDetails)
+                .items(items)
                 .build();
     }
 }

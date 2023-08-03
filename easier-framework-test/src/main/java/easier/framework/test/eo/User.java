@@ -4,10 +4,7 @@ import cn.hutool.core.lang.RegexPool;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.tangzc.mpe.autotable.annotation.Column;
 import com.tangzc.mpe.autotable.annotation.Table;
-import com.tangzc.mpe.bind.metadata.annotation.BindEntityByMid;
-import com.tangzc.mpe.bind.metadata.annotation.BindFieldByMid;
-import com.tangzc.mpe.bind.metadata.annotation.JoinOrderBy;
-import com.tangzc.mpe.bind.metadata.annotation.MidCondition;
+import com.tangzc.mpe.bind.metadata.annotation.*;
 import easier.framework.core.domain.BaseLogicEntity;
 import easier.framework.core.plugin.jackson.annotation.ShowDeptDetail;
 import easier.framework.core.plugin.jackson.annotation.ShowDictDetail;
@@ -48,10 +45,8 @@ public class User extends BaseLogicEntity {
     private String userId;
 
     @Column(comment = "用户账号", notNull = true)
-    @TableCode
+    @TableCode(specialCharacters = "", max = 30)
     @NotBlank
-    @Size(min = 3, max = 30)
-    @Pattern(regexp = "^[a-z][a-z0-9]*$", message = "必须以字母开头,且只能由小写字母和数字组成")
     private String username;
 
 
@@ -105,11 +100,11 @@ public class User extends BaseLogicEntity {
     @Schema(description = "关联的角色")
     @BindEntityByMid(
             conditions = @MidCondition(
-                    midEntity = UserRole.class
-                    , selfField = User.Fields.username
-                    , selfMidField = UserRole.Fields.username
-                    , joinMidField = UserRole.Fields.roleCode
-                    , joinField = Role.Fields.roleCode
+                    midEntity = UserRole.class,
+                    selfField = User.Fields.username,
+                    selfMidField = UserRole.Fields.username,
+                    joinMidField = UserRole.Fields.roleCode,
+                    joinField = Role.Fields.roleCode
             ),
             orderBy = @JoinOrderBy(field = Role.Fields.sort)
     )
@@ -118,15 +113,25 @@ public class User extends BaseLogicEntity {
     @Schema(description = "关联的角色编码")
     @BindFieldByMid(
             conditions = @MidCondition(
-                    midEntity = UserRole.class
-                    , selfField = User.Fields.username
-                    , selfMidField = UserRole.Fields.username
-                    , joinMidField = UserRole.Fields.roleCode
-                    , joinField = Role.Fields.roleCode
+                    midEntity = UserRole.class,
+                    selfField = User.Fields.username,
+                    selfMidField = UserRole.Fields.username,
+                    joinMidField = UserRole.Fields.roleCode,
+                    joinField = Role.Fields.roleCode
             ),
-            entity = Role.class,
             orderBy = @JoinOrderBy(field = Role.Fields.sort),
+            entity = Role.class,
             field = Role.Fields.roleCode
     )
     private List<String> roleCodes;
+
+
+    @Schema(description = "所属部门")
+    @BindEntity(
+            conditions = @JoinCondition(
+                    selfField = User.Fields.deptId,
+                    joinField = Dept.Fields.deptId
+            )
+    )
+    private Dept dept;
 }

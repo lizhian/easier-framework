@@ -159,7 +159,7 @@ public class MenuService {
                         .menuType(MenuType.button)
                         .menuName(entry.getValue())
                         .parentId(entity.getMenuId())
-                        .ancestors(entity.getAncestors() + "," + entity.getMenuId())
+                        .ancestors(entity.getAncestors() + entity.getMenuId() + ",")
                         .sort(sort.getAndIncrement())
                         .status(EnableStatus.enable)
                         .perms(entity.getPerms() + ":" + entry.getKey())
@@ -366,16 +366,24 @@ public class MenuService {
         }
     }
 
-    private void updateDescendants(Menu entity) {
+    /**
+     * 更新后代
+     *
+     * @param entity 实体
+     */
+    public void updateDescendants(Menu entity) {
         String ancestors = entity.getAncestors();
         String menuId = entity.getMenuId();
+        String separator = "," + menuId + ",";
         List<Menu> descendants = this._menu.newQuery()
-                .like(Menu::getAncestors, "," + menuId + ",")
+                .like(Menu::getAncestors, separator)
                 .stream()
                 .peek(descendant -> {
                     String oldAncestors = descendant.getAncestors();
-                    String before = StrUtil.subBefore(oldAncestors, "," + menuId + ",", false);
-                    String newAncestors = StrUtil.replace(oldAncestors, before + "," + menuId + ",", ancestors + menuId + ",");
+                    String before = StrUtil.subBefore(oldAncestors, separator, false);
+                    String searchStr = before + separator;
+                    String replacement = ancestors + menuId + ",";
+                    String newAncestors = StrUtil.replace(oldAncestors, searchStr, replacement);
                     descendant.setAncestors(newAncestors);
                 })
                 .collect(Collectors.toList());

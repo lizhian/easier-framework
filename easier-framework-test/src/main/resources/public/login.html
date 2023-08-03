@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-ch">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>登录页</title>
+    <link href="css/base.css" rel="stylesheet"/>
+    <script src="webjars/vue/3.3.4/dist/vue.global.prod.js"></script>
+    <script src="webjars/axios/1.4.0/dist/axios.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/1.3.6/axios.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/dayjs/1.11.7/dayjs.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/dayjs/1.11.7/plugin/customParseFormat.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/dayjs/1.11.7/plugin/weekday.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/dayjs/1.11.7/plugin/localeData.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/dayjs/1.11.7/plugin/weekOfYear.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/dayjs/1.11.7/plugin/weekYear.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/dayjs/1.11.7/plugin/advancedFormat.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/dayjs/1.11.7/plugin/quarterOfYear.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/ant-design-vue/3.2.17/antd.min.js"></script>
+    <link href="https://cdn.bootcdn.net/ajax/libs/ant-design-vue/3.2.17/antd.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+<div class="container comet" id="app">
+    <a-card class="login-card" hoverable title="用户登录">
+        <a-form :model="bind.form" @finish="onFinish" @finishFailed="onFinishFailed">
+            <a-form-item :rules="[{ required: true, message: '请输入您的账号' }]" name="username">
+                <a-input placeholder="账号" v-model:value="bind.form.username"></a-input>
+            </a-form-item>
+            <a-form-item :rules="[{ required: true, message: '请输入您的密码' }]" name="password">
+                <a-input-password placeholder="密码" v-model:value="bind.form.password"></a-input-password>
+            </a-form-item>
+            <a-form-item :rules="[{ required: true, message: '请输入验证码' }]" name="code">
+                <a-layout>
+                    <a-layout-content>
+                        <a-input placeholder="验证码" v-model:value="bind.form.code"></a-input>
+                    </a-layout-content>
+                    <a-layout-sider style="background: white;text-align: right" width="100">
+                        <a-image :loading="true" :preview="false" :src="bind.imageBase64Data" @click="refreshCaptcha"
+                                 height="32"
+                                 width="80"></a-image>
+                    </a-layout-sider>
+                </a-layout>
+            </a-form-item>
+            <div style="text-align: center;">
+                <a-button :loading="bind.form.loading" html-type="submit" type="primary">登录</a-button>
+                <a-button @click="forgetPassword" style="margin-left: 10px">忘记密码</a-button>
+            </div>
+        </a-form>
+    </a-card>
+</div>
+</body>
+
+<script>
+    const {createApp, reactive, toRefs} = Vue;
+    const {Form} = antd;
+    const useForm = Form.useForm;
+    const bind = reactive({
+        msg: "LLT123",
+        imageBase64Data: '',
+        form: {
+            username: '',
+            password: '',
+            code: '',
+            loading: false
+        }
+    })
+
+    const refreshCaptcha = () => {
+        axios.get("login/captcha")
+            .then(response => {
+                if (response.status === 200 && response.data && response.data.code === 200) {
+                    bind.imageBase64Data = response.data.data.imageBase64Data
+                }
+            })
+            .catch(error => {
+                console.log(error);
+            })
+    }
+    const changeMsg = () => {
+        console.log("changeMsg", this.form)
+        console.log("changeMsg", this)
+        this.msg = this.msg + "+1"
+        antd.message.success(this.msg)
+    }
+
+    const onFinish = (values) => {
+        antd.message.success(values)
+        bind.form.loading = true
+        console.log('Success:', values);
+    }
+    const onFinishFailed = (errorInfo) => {
+        antd.message.error(errorInfo)
+        console.log("errorInfo", errorInfo)
+    }
+    const forgetPassword = () => {
+        antd.message.warning({
+            content: '暂不支持忘记密码功能',
+        });
+    }
+
+    const form = reactive({
+        username: null,
+        password: null,
+        code: null
+    });
+    const rules = reactive({
+        username: [{
+            required: true,
+            message: '请输入您的账号',
+        }],
+        password: [{
+            required: true,
+            message: '请输入您的密码',
+        }],
+        code: [{
+            required: true,
+            message: '请输入验证码',
+        }],
+    });
+    const {
+        resetFields,
+        validate,
+        validateInfos,
+    } = antd.Form.useForm(form, rules);
+    const created = () => {
+        refreshCaptcha()
+    }
+    createApp({
+        setup() {
+            return {
+                resetFields,
+                validate,
+                validateInfos,
+                refreshCaptcha,
+                changeMsg,
+                onFinish,
+                onFinishFailed,
+                forgetPassword,
+                bind,
+                //...toRefs(bind)
+            }
+        },
+        created
+    }).use(antd).mount("#app");
+</script>
+</html>

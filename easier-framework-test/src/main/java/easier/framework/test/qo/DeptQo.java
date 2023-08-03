@@ -11,7 +11,7 @@ import lombok.Data;
  * @date 2023年07月18日
  */
 @Data
-public class DeptTreeQo {
+public class DeptQo {
 
     @Schema(description = "部门名称")
     private String deptName;

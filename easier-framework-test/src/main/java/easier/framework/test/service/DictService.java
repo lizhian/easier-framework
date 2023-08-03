@@ -2,7 +2,6 @@ package easier.framework.test.service;
 
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import easier.framework.core.domain.CodesQo;
 import easier.framework.core.domain.PageParam;
 import easier.framework.core.plugin.dict.DictDetail;
 import easier.framework.core.plugin.enums.EnumCodec;
@@ -142,15 +141,13 @@ public class DictService {
      * @param qo 查询对象
      * @return {@link Map}<{@link String}, {@link DictDetail}>
      */
-    public Map<String, DictDetail> loadDictDetail(CodesQo qo) {
-        ValidUtil.valid(qo);
-        List<String> codes = qo.getCodes();
+    public Map<String, DictDetail> dictDetail(List<String> dictCodes) {
         Map<String, DictDetail> result = this._dict.withBind()
-                .listByCodes(codes)
+                .listByCodes(dictCodes)
                 .stream()
                 .map(Dict::toDictDetail)
                 .collect(Collectors.toMap(DictDetail::getCode, it -> it));
-        for (String code : codes) {
+        for (String code : dictCodes) {
             if (result.containsKey(code)) {
                 continue;
             }

@@ -53,8 +53,8 @@ public class RoleController {
      */
     @Operation(summary = "加载字典")
     @GetMapping("/role/dict")
-    public R<Map<String, DictDetail>> dict(CodesQo qo) {
-        Map<String, DictDetail> map = this.dictService.loadDictDetail(qo);
+    public R<Map<String, DictDetail>> dict(@Validated CodesQo qo) {
+        Map<String, DictDetail> map = this.dictService.dictDetail(qo.getCodes());
         return R.success(map);
     }
 
@@ -68,7 +68,7 @@ public class RoleController {
     @Operation(summary = "查询角色-分页")
     @GetMapping("/role/page")
     public R<Page<Role>> pageRole(PageParam pageParam, RoleQo qo) {
-        Page<Role> page = this.roleService.pageRole(pageParam, qo);
+        Page<Role> page = this.roleService.page(pageParam, qo);
         return R.success(page);
     }
 

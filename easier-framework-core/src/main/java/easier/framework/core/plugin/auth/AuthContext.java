@@ -80,13 +80,13 @@ public class AuthContext {
     }
 
 
-    public static <T extends AuthDetail> void setDetail(Class<T> clazz, T t) {
+    public static <T extends AuthDetail> void setDetail(T t) {
         mustLogin();
         SaSession session = StpUtil.getSession();
-        if (clazz == null) {
+        if (t == null) {
             return;
         }
-        session.set(clazz.getName(), t);
+        session.set(t.getClass().getName(), t);
     }
 
     @Nullable

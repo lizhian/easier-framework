@@ -48,8 +48,6 @@ public class App extends BaseLogicEntity {
     @Column(comment = "应用编码", notNull = true)
     @TableCode
     @NotBlank
-    @Size(min = 2, max = 30)
-    @Pattern(regexp = "^[a-z][a-z0-9_]*$", message = "必须以小写字母开头,且只能由小写字母、数字和下划线组成")
     private String appCode;
 
     @Column(comment = "应用名称")

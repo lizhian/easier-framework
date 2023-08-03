@@ -48,15 +48,15 @@ public class UserController {
      */
     @Operation(summary = "加载字典")
     @GetMapping("/user/dict")
-    public R<Map<String, DictDetail>> dict(CodesQo qo) {
-        Map<String, DictDetail> map = this.dictService.loadDictDetail(qo);
+    public R<Map<String, DictDetail>> dict(@Validated CodesQo qo) {
+        Map<String, DictDetail> map = this.dictService.dictDetail(qo.getCodes());
         return R.success(map);
     }
 
     @Operation(summary = "查询部门树")
     @GetMapping("/user/dept/tree")
-    public R<List<TreeNode<Dept>>> deptTree(DeptTreeQo qo) {
-        List<TreeNode<Dept>> tree = this.deptService.getDeptTree(qo);
+    public R<List<TreeNode<Dept>>> deptTree(DeptQo qo) {
+        List<TreeNode<Dept>> tree = this.deptService.tree(qo);
         return R.success(tree);
     }
 

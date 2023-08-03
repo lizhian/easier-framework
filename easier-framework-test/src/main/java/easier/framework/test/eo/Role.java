@@ -48,14 +48,12 @@ public class Role extends BaseLogicEntity {
     @Column(comment = "角色编码", notNull = true)
     @TableCode
     @NotBlank
-    @Size(min = 3, max = 30)
-    @Pattern(regexp = "^[a-z][a-z0-9_]*$", message = "必须以字母开头,且只能由小写字母、数字和下划线组成")
     private String roleCode;
 
     @Column(comment = "角色名称")
     @NotBlank
     @Size(min = 2, max = 8)
-    @Pattern(regexp = RegexPool.CHINESE_NAME, message = "必须由中文组成")
+    @Pattern(regexp = RegexPool.CHINESES, message = "必须由中文组成")
     private String roleName;
 
     @Column(comment = "状态")
@@ -77,11 +75,11 @@ public class Role extends BaseLogicEntity {
     @Schema(description = "关联的应用")
     @BindEntityByMid(
             conditions = @MidCondition(
-                    midEntity = RoleApp.class
-                    , selfField = Role.Fields.roleCode
-                    , selfMidField = RoleApp.Fields.roleCode
-                    , joinMidField = RoleApp.Fields.appCole
-                    , joinField = App.Fields.appCode
+                    midEntity = RoleApp.class,
+                    selfField = Role.Fields.roleCode,
+                    selfMidField = RoleApp.Fields.roleCode,
+                    joinMidField = RoleApp.Fields.appCole,
+                    joinField = App.Fields.appCode
             ),
             orderBy = @JoinOrderBy(field = App.Fields.sort)
     )
@@ -90,11 +88,11 @@ public class Role extends BaseLogicEntity {
     @Schema(description = "关联的应用编码")
     @BindFieldByMid(
             conditions = @MidCondition(
-                    midEntity = RoleApp.class
-                    , selfField = Role.Fields.roleCode
-                    , selfMidField = RoleApp.Fields.roleCode
-                    , joinMidField = RoleApp.Fields.appCole
-                    , joinField = App.Fields.appCode
+                    midEntity = RoleApp.class,
+                    selfField = Role.Fields.roleCode,
+                    selfMidField = RoleApp.Fields.roleCode,
+                    joinMidField = RoleApp.Fields.appCole,
+                    joinField = App.Fields.appCode
             ),
             orderBy = @JoinOrderBy(field = App.Fields.sort),
             entity = App.class,

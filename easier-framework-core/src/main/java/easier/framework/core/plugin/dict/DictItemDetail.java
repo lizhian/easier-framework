@@ -7,11 +7,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldNameConstants;
 
+import java.io.Serializable;
+
 @Data
 @AllArgsConstructor
 @FieldNameConstants
 @Builder(toBuilder = true)
-public class DictItemDetail {
+public class DictItemDetail implements Serializable {
     @Schema(description = "值")
     private String value;
 

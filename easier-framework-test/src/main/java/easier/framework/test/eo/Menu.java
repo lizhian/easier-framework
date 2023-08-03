@@ -53,7 +53,7 @@ public class Menu extends BaseEntity {
             .name(Menu::getMenuName)
             .parentKey(Menu::getParentId)
             .sort(Menu::getSort)
-            .enable(it -> EnableStatus.enable.equals(it.getStatus()))
+            .enable(it -> EnableStatus.isEnable(it.getStatus()))
             .build();
 
     @Column(comment = "菜单主键")
@@ -74,6 +74,7 @@ public class Menu extends BaseEntity {
     @NotBlank
     @Size(min = 2, max = 50)
     private String menuName;
+
     @Column(comment = "组件路径")
     @Size(max = 255)
     @NotBlank(groups = MenuGroup.class)
@@ -90,28 +91,31 @@ public class Menu extends BaseEntity {
     @NotNull
     @ShowDictDetail
     private EnableStatus status;
-    @Column(comment = "是否为外链")
-    @NotBlank(groups = {DirGroup.class, MenuGroup.class})
-    private String isFrame;
 
     @Column(comment = "菜单图标")
     private String icon;
+
+    @Column(comment = "是否为外链")
+    @NotNull(groups = {DirGroup.class, MenuGroup.class})
+    private Boolean isFrame;
+
     @Column(comment = "是否可显示")
-    @NotBlank(groups = {DirGroup.class, MenuGroup.class})
+    @NotNull(groups = {DirGroup.class, MenuGroup.class})
     private Boolean isVisible;
+
     @Column(comment = "是否缓存")
-    @NotBlank(groups = MenuGroup.class)
+    @NotNull(groups = MenuGroup.class)
     private Boolean isCache;
 
     @Column(comment = "路由参数")
     private String query;
 
-    public static class DirGroup {
+    public interface DirGroup {
     }
 
-    public static class MenuGroup {
+    public interface MenuGroup {
     }
 
-    public static class ButtonGroup {
+    public interface ButtonGroup {
     }
 }

@@ -1,5 +1,6 @@
 package easier.framework.test.eo;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.tangzc.mpe.autotable.annotation.*;
 import com.tangzc.mpe.autotable.annotation.enums.IndexSortTypeEnum;
 import lombok.*;
@@ -19,20 +20,24 @@ import lombok.experimental.FieldNameConstants;
 @FieldNameConstants
 @Builder(toBuilder = true)
 @TableIndexes({
+        @TableIndex(name = RunningLog.Fields.traceId, fields = RunningLog.Fields.traceId),
         @TableIndex(name = "sorted", fields = {}, indexFields = {
                 @IndexField(field = RunningLog.Fields.dtTime, sort = IndexSortTypeEnum.DESC),
                 @IndexField(field = RunningLog.Fields.seq, sort = IndexSortTypeEnum.DESC)
-        }),
-        @TableIndex(name = RunningLog.Fields.traceId, fields = RunningLog.Fields.traceId)
+        })
 })
 @Table(value = "t_running_log", comment = "运行日志表")
 public class RunningLog {
 
-    @Column(comment = "记录服务IP")
-    private String serverName;
+    @TableId
+    @Column(comment = "日志主键")
+    private String runningLogId;
 
     @Column(comment = "追踪码")
     private String traceId;
+
+    @Column(comment = "服务IP")
+    private String serverName;
 
     @Column(comment = "应用名")
     private String appName;
