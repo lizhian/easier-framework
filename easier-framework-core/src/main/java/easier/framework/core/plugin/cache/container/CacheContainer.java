@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NonNull;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.function.Function;
 
 @Data
@@ -137,6 +138,24 @@ public class CacheContainer<T> {
                 () -> StrUtil.replace(this.keyTemplate, "{}", "*"),
                 this.localCache
         );
+    }
+
+    public List<String> keys() {
+        CacheContainerHelper helper = SpringUtil.getBean(CacheContainerHelper.class);
+        if (helper == null) {
+            throw FrameworkException.of("未找到[{}]实现类", CacheContainerHelper.class.getSimpleName());
+        }
+        String pattern = StrUtil.replace(this.keyTemplate, "{}", "*");
+        return helper.keys(this.source, pattern);
+    }
+
+    public List<T> values() {
+        CacheContainerHelper helper = SpringUtil.getBean(CacheContainerHelper.class);
+        if (helper == null) {
+            throw FrameworkException.of("未找到[{}]实现类", CacheContainerHelper.class.getSimpleName());
+        }
+        String pattern = StrUtil.replace(this.keyTemplate, "{}", "*");
+        return helper.values(this.source, pattern);
     }
 
 

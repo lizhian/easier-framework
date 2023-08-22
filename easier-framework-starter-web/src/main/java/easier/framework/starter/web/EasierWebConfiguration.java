@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorViewResolver;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.embedded.undertow.UndertowDeploymentInfoCustomizer;
@@ -96,10 +97,29 @@ public class EasierWebConfiguration implements WebMvcConfigurer, InitializingBea
 
     @EventListener
     public void showEasierWebBanner(ApplicationReadyEvent event) {
+        ServerProperties serverProperties = SpringUtil.getBean(ServerProperties.class);
         String doc = NetUtil.localIpv4s()
                 .stream()
                 .sorted(Comparator.comparingLong(NetUtil::ipv4ToLong))
-                .map(it -> "http://" + it + ":" + SpringUtil.getServerPort() + "/doc.html")
+                .map(it -> {
+                    StringBuilder builder = StrUtil.builder()
+                            .append("http://")
+                            .append(it)
+                            .append(":")
+                            .append(SpringUtil.getServerPort());
+                    String contextPath = serverProperties.getServlet().getContextPath();
+                    if (StrUtil.isBlank(contextPath)) {
+                        return builder.append("/doc.html").toString();
+                    }
+                    if (!contextPath.startsWith("/")) {
+                        builder.append("/");
+                    }
+                    builder.append(contextPath);
+                    if (contextPath.endsWith("/")) {
+                        return builder.append("doc.html").toString();
+                    }
+                    return builder.append("/doc.html").toString();
+                })
                 .collect(Collectors.joining("\n┃ 　　   "));
         String template = "\n" +
                 "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n" +

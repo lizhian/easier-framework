@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-ch">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>门户</title>
+    <script src="webjars/vue/3.3.4/dist/vue.global.prod.js"></script>
+    <script src="webjars/axios/1.4.0/dist/axios.min.js"></script>
+    <script src="webjars/dayjs/1.11.7/dayjs.min.js"></script>
+    <script src="webjars/dayjs/1.11.7/plugin/customParseFormat.js"></script>
+    <script src="webjars/dayjs/1.11.7/plugin/weekday.js"></script>
+    <script src="webjars/dayjs/1.11.7/plugin/localeData.js"></script>
+    <script src="webjars/dayjs/1.11.7/plugin/weekOfYear.js"></script>
+    <script src="webjars/dayjs/1.11.7/plugin/weekYear.js"></script>
+    <script src="webjars/dayjs/1.11.7/plugin/advancedFormat.js"></script>
+    <script src="webjars/dayjs/1.11.7/plugin/quarterOfYear.js"></script>
+    <script src="webjars/ant-design-vue/4.0.0/dist/antd.min.js"></script>
+    <link href="webjars/ant-design-vue/4.0.0/dist/reset.css" rel="stylesheet"/>
+    <link href="css/base.css" rel="stylesheet"/>
+    <script src="js/base.js"></script>
+    <style>
+        .app-card {
+            margin: 10px;
+            width: 350px;
+            height: 180px
+        }
+    </style>
+
+</head>
+
+<body>
+<div id="app">
+    <a-layout class="css100">
+        <a-layout-content
+                style="display: flex;flex-wrap: wrap;flex-direction: row;justify-content: center;overflow: auto">
+            <a-divider>应用列表</a-divider>
+
+
+            <a-card :title="app.appName"
+                    class="app-card"
+                    hoverable
+                    v-for="app in bind.apps">
+                <template #extra>
+                    <a-avatar>{{app.appCode}}</a-avatar>
+                </template>
+                <p style="text-overflow:ellipsis;overflow:hidden;">{{app.remark}}</p>
+                <p style="text-overflow:ellipsis;overflow:hidden;">{{app.remark}}</p>
+            </a-card>
+
+            <!--<a-card hoverable style="width: 300px;" class="app-card" v-for="app in bind.apps">
+                <a-row>
+                    <a-col :span="8">
+                        &lt;!&ndash;<a-image src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" height="100%"
+                                 with="100%"/>&ndash;&gt;
+
+                    </a-col>
+                    <a-col :span="1">
+                    </a-col>
+                    <a-col :span="15">
+                        <a-descriptions :title="app.appName">
+                            <a-descriptions-item label="描述">
+
+                            </a-descriptions-item>
+                            <br/>
+                            <a-descriptions-item label="链接">
+
+                            </a-descriptions-item>
+                        </a-descriptions>
+                    </a-col>
+                </a-row>
+            </a-card>-->
+        </a-layout-content>
+        <a-layout-sider style="display: grid;align-content: center;justify-content: center;align-items: center;" theme="light"
+                        width="250">
+
+            <div>
+                <a-avatar :size="120" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"/>
+            </div>
+            <div class="ta-c mt-10">
+                <a-dropdown placement="bottom" size="large" type="text">
+                    <template #overlay>
+                        <a-menu @click="handleMenuClick">
+                            <a-menu-item key="1">
+                                <UserOutlined/>
+                                修改密码
+                            </a-menu-item>
+                            <a-menu-item key="2">
+                                <UserOutlined/>
+                                退出登录
+                            </a-menu-item>
+                        </a-menu>
+                    </template>
+                    <a-button>
+                        Admin
+                        <DownOutlined/>
+                    </a-button>
+                </a-dropdown>
+            </div>
+
+
+        </a-layout-sider>
+    </a-layout>
+</div>
+</body>
+
+<script>
+    const {createApp, reactive, toRaw} = Vue;
+    /**
+     * 全局参数
+     */
+    const bind = reactive({
+        loading: false,
+        app: []
+    })
+
+    const handleMenuClick = e => {
+        console.log('click', e);
+    };
+
+    const loadUserDetail = () => {
+        apiGet({
+            url: "index/user",
+            then: r => {
+                console.log(r)
+            }
+        })
+    };
+    const loadApps = () => {
+        apiGet({
+            url: "index/app/list",
+            then: r => {
+                console.log(r)
+                bind.apps = r.data
+            }
+        })
+    };
+
+    const onReset = () => {
+        //resetFields()
+        //refreshCaptcha()
+    };
+    const created = () => {
+        loadUserDetail()
+        loadApps()
+    }
+    createApp({
+        created,
+        setup() {
+            return {
+                bind,
+                onReset,
+            }
+        },
+    }).use(antd).mount("#app");
+</script>
+</html>

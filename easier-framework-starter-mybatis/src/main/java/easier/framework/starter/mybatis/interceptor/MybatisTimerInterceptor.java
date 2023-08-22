@@ -25,10 +25,20 @@ public class MybatisTimerInterceptor implements Interceptor {
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
         TimeInterval timer = DateUtil.timer();
+        //this.logDs(invocation);
         Object proceed = invocation.proceed();
         this.logTimer(invocation, timer.intervalPretty());
         return proceed;
     }
+
+    /*private void logDs(Invocation invocation) {
+        String dsKey = DynamicDataSourceContextHolder.peek();
+        MappedStatement mappedStatement = (MappedStatement) invocation.getArgs()[0];
+        Log statementLog = mappedStatement.getStatementLog();
+        if (statementLog.isDebugEnabled()) {
+            statementLog.debug("==>  datasource: " + dsKey);
+        }
+    }*/
 
     private void logTimer(Invocation invocation, String intervalPretty) {
         MappedStatement mappedStatement = (MappedStatement) invocation.getArgs()[0];

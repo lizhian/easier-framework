@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.redisson.api.RedissonClient;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -18,13 +20,6 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class DefaultCacheContainerHelper implements CacheContainerHelper {
     private final RedissonClients redissonClients;
-
-    @Override
-    public long size(String source, String pattern) {
-        RedissonClient client = this.redissonClients.getClient(source);
-        Iterable<String> keys = client.getKeys().getKeysByPattern(pattern);
-        return CollUtil.size(keys);
-    }
 
     @Override
     public boolean has(String source, String key) {
@@ -57,8 +52,32 @@ public class DefaultCacheContainerHelper implements CacheContainerHelper {
     }
 
     @Override
+    public long size(String source, String pattern) {
+        RedissonClient client = this.redissonClients.getClient(source);
+        Iterable<String> keys = client.getKeys().getKeysByPattern(pattern);
+        return CollUtil.size(keys);
+    }
+
+    @Override
     public void cleanAll(String source, String pattern) {
         RedissonClient client = this.redissonClients.getClient(source);
         client.getKeys().deleteByPatternAsync(pattern);
+    }
+
+    @Override
+    public List<String> keys(String source, String pattern) {
+        RedissonClient client = this.redissonClients.getClient(source);
+        Iterable<String> keys = client.getKeys().getKeysByPattern(pattern);
+        return CollUtil.newArrayList(keys);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> List<T> values(String source, String pattern) {
+        RedissonClient client = this.redissonClients.getClient(source);
+        Iterable<String> keys = client.getKeys().getKeysByPattern(pattern);
+        String[] array = CollUtil.newArrayList(keys).toArray(new String[]{});
+        Map<String, Object> stringObjectMap = client.getBuckets().get(array);
+        return (List<T>) CollUtil.newArrayList(stringObjectMap.values());
     }
 }

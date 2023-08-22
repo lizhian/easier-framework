@@ -1,5 +1,7 @@
 package easier.framework.test;
 
+import cn.dev33.satoken.oauth2.logic.SaOAuth2Template;
+import cn.dev33.satoken.oauth2.model.SaClientModel;
 import cn.hutool.extra.spring.EnableSpringUtil;
 import com.fasterxml.jackson.databind.JavaType;
 import com.tangzc.mpe.autotable.EnableAutoTable;
@@ -9,7 +11,6 @@ import easier.framework.core.plugin.enums.EnumCodec;
 import easier.framework.core.plugin.jackson.annotation.ShowDeptDetail;
 import easier.framework.core.plugin.jackson.annotation.ShowDictDetail;
 import easier.framework.core.plugin.jackson.annotation.ShowUserDetail;
-import easier.framework.core.plugin.rpc.EasierRPC;
 import easier.framework.core.util.SpringUtil;
 import easier.framework.core.util.StrUtil;
 import easier.framework.starter.auth.EnableEasierAuth;
@@ -18,14 +19,14 @@ import easier.framework.starter.doc.EnableEasierDoc;
 import easier.framework.starter.job.EnableEasierJob;
 import easier.framework.starter.logging.EnableEasierLogging;
 import easier.framework.starter.mybatis.EnableEasierMybatis;
+import easier.framework.starter.mybatis.repo.Repo;
 import easier.framework.starter.mybatis.repo.Repos;
 import easier.framework.starter.rpc.EnableEasierRpc;
 import easier.framework.starter.web.EnableEasierWeb;
-import easier.framework.test.api.MyRpc;
 import easier.framework.test.cache.UserCenterCaches;
 import easier.framework.test.enums.SexType;
 import easier.framework.test.eo.Dept;
-import easier.framework.test.eo.DictItem;
+import easier.framework.test.eo.MetadataJcdManagerEntity;
 import easier.framework.test.eo.User;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +50,7 @@ import java.util.List;
 @EnableSpringUtil
 @EnableEasierDiscovery
 @EnableEasierRpc
-public class EasierFrameworkTestApplication implements
+public class EasierFrameworkTestApplication extends SaOAuth2Template implements
         ShowDictDetail.ShowDictDetailBean
         , ShowUserDetail.ShowUserDetailBean
         , ShowDeptDetail.ShowDeptDetailBean {
@@ -57,9 +58,18 @@ public class EasierFrameworkTestApplication implements
     @SneakyThrows
     public static void main(String[] args) {
         SpringApplication.run(EasierFrameworkTestApplication.class, args);
-        MyRpc myRpc = EasierRPC.of(MyRpc.class);
-        List<DictItem> list = myRpc.list();
-        List<DictItem> list2 = myRpc.list();
+        Repo<MetadataJcdManagerEntity> repo = Repos.of(MetadataJcdManagerEntity.class);
+        List<MetadataJcdManagerEntity> metadataJcdManagerEntities = repo.listAll();
+        log.info("");
+    }
+
+    @Override
+    public SaClientModel getClientModel(String clientId) {
+        return new SaClientModel()
+                .setClientId(clientId)
+                .setClientSecret(clientId)
+                .setAllowUrl("*")
+                .setIsAutoMode(true);
     }
 
     @Override

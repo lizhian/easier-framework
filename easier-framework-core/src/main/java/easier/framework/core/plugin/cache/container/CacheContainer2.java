@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NonNull;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.function.BiFunction;
 
 @Data
@@ -156,6 +157,23 @@ public class CacheContainer2<T> {
         );
     }
 
+    public List<String> keys() {
+        CacheContainerHelper helper = SpringUtil.getBean(CacheContainerHelper.class);
+        if (helper == null) {
+            throw FrameworkException.of("未找到[{}]实现类", CacheContainerHelper.class.getSimpleName());
+        }
+        String pattern = StrUtil.format(this.keyTemplate, "*", "*");
+        return helper.keys(this.source, pattern);
+    }
+
+    public List<T> values() {
+        CacheContainerHelper helper = SpringUtil.getBean(CacheContainerHelper.class);
+        if (helper == null) {
+            throw FrameworkException.of("未找到[{}]实现类", CacheContainerHelper.class.getSimpleName());
+        }
+        String pattern = StrUtil.format(this.keyTemplate, "*", "*");
+        return helper.values(this.source, pattern);
+    }
 
     public static class Builder<T> {
         private String source;

@@ -35,4 +35,16 @@ public class TraceIdUtil {
     public static void set(String traceId) {
         TraceId.logTraceID.set(traceId);
     }
+
+    /**
+     * 禁止输出和收集日志
+     */
+    public static void disable() {
+        TraceId.logTraceID.set("-1");
+    }
+
+    public static boolean isDisable() {
+        String traceId = get();
+        return "-1".equals(traceId);
+    }
 }

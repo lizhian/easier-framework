@@ -1,6 +1,5 @@
 package easier.framework.starter.auth;
 
-import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.exception.NotRoleException;
 import cn.hutool.extra.spring.EnableSpringUtil;
@@ -48,13 +47,7 @@ public class EasierAuthAutoConfiguration implements WebMvcConfigurer, Initializi
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        //未登录异常
-        ExceptionHandlerRegister.register(NotLoginException.class, HttpStatus.UNAUTHORIZED, exception -> {
-            R<Object> failed = R.failed(exception.getMessage());
-            failed.setCode(RCode.not_login.getValue());
-            exception.printStackTrace();
-            return failed;
-        });
+
         //没权限异常
         ExceptionHandlerRegister.register(NotPermissionException.class, HttpStatus.FORBIDDEN, exception -> {
             R<Object> failed = R.failed(exception.getMessage());

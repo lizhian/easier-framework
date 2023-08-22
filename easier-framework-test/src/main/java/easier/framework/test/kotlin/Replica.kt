@@ -15,6 +15,9 @@ typealias P1 = Person
 typealias P2 = Person
 
 fun main() {
+    """
+        
+    """.trimIndent()
     println(Book())
     val param = listOf("1", "2", "3")
     val sql = newQuery {

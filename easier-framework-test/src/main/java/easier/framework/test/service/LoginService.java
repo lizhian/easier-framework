@@ -1,17 +1,24 @@
 package easier.framework.test.service;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.captcha.CaptchaUtil;
+import cn.hutool.captcha.LineCaptcha;
+import cn.hutool.captcha.generator.MathGenerator;
 import easier.framework.core.plugin.auth.AuthContext;
 import easier.framework.core.plugin.auth.detail.BaseAuthDetail;
 import easier.framework.core.plugin.exception.biz.BizException;
 import easier.framework.core.util.ExtensionCore;
+import easier.framework.core.util.IdUtil;
+import easier.framework.core.util.StrUtil;
 import easier.framework.core.util.ValidUtil;
 import easier.framework.starter.mybatis.repo.Repo;
 import easier.framework.starter.mybatis.repo.Repos;
+import easier.framework.test.cache.UserCenterCaches;
 import easier.framework.test.enums.EnableStatus;
 import easier.framework.test.enums.MenuType;
 import easier.framework.test.eo.*;
-import easier.framework.test.qo.LoginQo;
+import easier.framework.test.qo.PasswordLoginQo;
+import easier.framework.test.vo.CaptchaDetail;
 import easier.framework.test.vo.LoginUserDetail;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.ExtensionMethod;
@@ -31,19 +38,46 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @ExtensionMethod(ExtensionCore.class)
 public class LoginService {
-    private final StringEncryptor encryptor;
+    private final MathGenerator generator = new MathGenerator(1);
 
     private final Repo<User> _user = Repos.of(User.class);
     private final Repo<RoleApp> _role_app = Repos.of(RoleApp.class);
     private final Repo<RoleMenu> _role_menu = Repos.of(RoleMenu.class);
     private final Repo<Menu> _menu = Repos.of(Menu.class);
+    private final StringEncryptor encryptor;
 
 
-    public LoginUserDetail login(LoginQo qo) {
+    public CaptchaDetail captcha(String oldCaptchaId) {
+        if (StrUtil.isNotBlank(oldCaptchaId)) {
+            UserCenterCaches.captcha.clean(oldCaptchaId);
+        }
+        LineCaptcha captcha = CaptchaUtil.createLineCaptcha(80, 32, 1, 32);
+        captcha.setGenerator(this.generator);
+        String captchaId = IdUtil.nextIdStr();
+        String code = captcha.getCode();
+        UserCenterCaches.captcha.update(captchaId, code);
+        return CaptchaDetail.builder()
+                .captchaId(captchaId)
+                .imageBase64Data(captcha.getImageBase64Data())
+                .build();
+    }
+
+    public LoginUserDetail login(PasswordLoginQo qo) {
         ValidUtil.valid(qo);
         String username = qo.getUsername();
         String password = qo.getPassword();
-        User user = this._user.withBind(User::getRoles, User::getDept)
+        String captchaId = qo.getCaptchaId();
+        String code = qo.getCode();
+        String srcCode = UserCenterCaches.captcha.get(captchaId);
+        if (StrUtil.isBlank(srcCode)) {
+            throw BizException.of("验证码已过期");
+        }
+        UserCenterCaches.captcha.clean(captchaId);
+        if (!generator.verify(srcCode, code)) {
+            throw BizException.of("验证码错误");
+        }
+        User user = this._user
+                .withBind(User::getRoles, User::getDept)
                 .getByCode(username);
         if (user == null) {
             throw BizException.of("账号或密码错误");
@@ -97,4 +131,6 @@ public class LoginService {
                 .perms(perms)
                 .build();
     }
+
+
 }

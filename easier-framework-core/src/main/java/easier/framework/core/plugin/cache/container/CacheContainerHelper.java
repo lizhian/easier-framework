@@ -3,12 +3,11 @@ package easier.framework.core.plugin.cache.container;
 import easier.framework.core.plugin.cache.enums.LocalCache;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.function.Supplier;
 
 public interface CacheContainerHelper {
     boolean has(String source, String key);
-
-    long size(String source, String pattern);
 
     Object get(String source, String key);
 
@@ -18,7 +17,13 @@ public interface CacheContainerHelper {
 
     void clean(String source, String key);
 
+    long size(String source, String pattern);
+
     void cleanAll(String source, String pattern);
+
+    List<String> keys(String source, String pattern);
+
+    <T> List<T> values(String source, String pattern);
 
     default boolean has(String source, Supplier<String> keySupplier, LocalCache localCache) {
         String key = keySupplier.get();

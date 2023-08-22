@@ -10,8 +10,6 @@ import lombok.experimental.FieldNameConstants;
 @FieldNameConstants
 @Builder(toBuilder = true)
 public class CaptchaDetail {
-
     private String captchaId;
-
     private String imageBase64Data;
 }

@@ -8,10 +8,12 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.extra.spring.EnableSpringUtil;
 import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourcePropertiesCustomizer;
 import com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer;
+import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.DynamicTableNameInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
-import com.github.yulichang.toolkit.TableHelper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tangzc.mpe.base.event.InitScanEntityEvent;
 import easier.framework.core.util.SpringUtil;
 import easier.framework.core.util.StrUtil;
@@ -114,7 +116,7 @@ public class EasierMybatisAutoConfiguration {
         if (sqlGroup == null) {
             return;
         }
-        String currentNamespace = TableHelper.get(event.getEntityClass()).getCurrentNamespace();
+        String currentNamespace = TableInfoHelper.getTableInfo(event.getEntityClass()).getCurrentNamespace();
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         ch.qos.logback.classic.Logger logbackLogger = loggerContext.getLogger(currentNamespace);
         if (logbackLogger.getLevel() != null) {
@@ -129,7 +131,7 @@ public class EasierMybatisAutoConfiguration {
         groups.putAll(namesAndMembers);
         groups.get(sql).configureLogLevel(configuredLevel, (a, b) -> {
         });
-
+        JacksonTypeHandler.setObjectMapper(SpringUtil.getBean(ObjectMapper.class));
     }
 
 }

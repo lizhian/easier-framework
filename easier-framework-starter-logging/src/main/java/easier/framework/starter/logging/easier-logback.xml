@@ -22,6 +22,7 @@
 
     <!--控制台输出-->
     <appender name="appender.console" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="easier.framework.starter.logging.filter.NormalTraceIdFilter"/>
         <encoder>
             <pattern>${logging.pattern.console}</pattern>
             <charset>${logging.charset}</charset>
@@ -29,6 +30,7 @@
     </appender>
     <!--控制台文件输出-->
     <appender name="appender.file.console" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="easier.framework.starter.logging.filter.NormalTraceIdFilter"/>
         <encoder>
             <pattern>${logging.pattern.file}</pattern>
             <charset>${logging.charset}</charset>

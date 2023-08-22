@@ -20,6 +20,11 @@ public class RedissonJacksonCodec extends BaseCodec {
         this.classLoader = classLoader;
     }
 
+    public RedissonJacksonCodec(ClassLoader classLoader, RedissonJacksonCodec codec) {
+        this(classLoader);
+    }
+
+
     @Override
     public ClassLoader getClassLoader() {
         if (this.classLoader != null) {

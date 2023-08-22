@@ -4,9 +4,13 @@
     <parent>
         <groupId>easier.framework</groupId>
         <artifactId>easier-framework-parent</artifactId>
-        <version>2023.07.03-2.7.12</version>
+        <version>2.7.2023.0812</version>
     </parent>
     <artifactId>user-center-interfaces</artifactId>
+    <version>${revision}</version>
+    <properties>
+        <revision>${parent.version}</revision>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>easier.framework</groupId>

@@ -10,7 +10,7 @@
     </parent>
     <groupId>easier.framework</groupId>
     <artifactId>easier-framework-parent</artifactId>
-    <version>2023.07.03-2.7.12</version>
+    <version>2.7.2023.0812</version>
     <packaging>pom</packaging>
     <modules>
         <module>easier-framework-core</module>
@@ -20,12 +20,12 @@
         <module>easier-framework-starter-job</module>
         <module>easier-framework-starter-logging</module>
         <module>easier-framework-starter-rpc</module>
-        <module>easier-framework-starter-inner-request</module>
-        <module>easier-framework-starter-gateway</module>
-        <module>easier-framework-starter-mock</module>
+        <!--<module>easier-framework-starter-inner-request</module>-->
+        <!--<module>easier-framework-starter-gateway</module>-->
+        <!--<module>easier-framework-starter-mock</module>-->
         <module>easier-framework-starter-mq</module>
         <module>easier-framework-starter-mybatis</module>
-        <module>easier-framework-starter-swagger</module>
+        <!--<module>easier-framework-starter-swagger</module>-->
         <module>easier-framework-starter-doc</module>
         <module>easier-framework-starter-auth</module>
         <module>easier-framework-starter-discovery</module>
@@ -34,9 +34,52 @@
         <module>easier-framework-application-web</module>
         <module>user-center-interfaces</module>
         <module>user-center-application</module>
+        <module>easier-framework-maven-plugin</module>
         <!--<module>easier-framework-test</module>-->
     </modules>
     <properties>
+        <!--构建.sh文件时候用到的参数-->
+        <jvm>-Xms64m -Xmx256m</jvm>
+        <env/>
+        <args/>
+        <!--构建jar.sh文件的参数-->
+        <jar.sh.application>${project.build.finalName}.jar</jar.sh.application>
+        <jar.sh.jvm>${jvm}</jar.sh.jvm>
+        <jar.sh.env>${env}</jar.sh.env>
+        <jar.sh.args>${args}</jar.sh.args>
+        <jar.sh.log_file>logs/console.log</jar.sh.log_file>
+        <jar.sh.output>/dev/null</jar.sh.output>
+        <!--构建Dockerfile文件的参数-->
+        <dockerfile.from>eclipse-temurin:8-jre-focal</dockerfile.from>
+        <dockerfile.workdir>/home</dockerfile.workdir>
+        <dockerfile.jar_file>${project.build.finalName}.jar</dockerfile.jar_file>
+        <!--多个时候使用空格间隔-->
+        <dockerfile.expose_ports>0</dockerfile.expose_ports>
+        <dockerfile.custom-command1/>
+        <dockerfile.custom-command2/>
+        <dockerfile.custom-command3/>
+        <dockerfile.custom-command4/>
+        <dockerfile.custom-command5/>
+        <!--执行docker build的参数-->
+        <docker-build.registry/>
+        <docker-build.image>${project.groupId}/${project.artifactId}</docker-build.image>
+        <!--suppress UnresolvedMavenProperty -->
+        <docker-build.tag>${yyyy}.${MM}${dd}.${HH}${mm}</docker-build.tag>
+        <docker-build.custom-command1/>
+        <docker-build.custom-command2/>
+        <docker-build.custom-command3/>
+        <docker-build.custom-command4/>
+        <docker-build.custom-command5/>
+        <!--构建docker.sh文件的参数-->
+        <docker.sh.application>${project.artifactId}</docker.sh.application>
+        <docker.sh.image>${docker-build.image}</docker.sh.image>
+        <docker.sh.tag>${docker-build.tag}</docker.sh.tag>
+        <docker.sh.jvm>${jvm}</docker.sh.jvm>
+        <docker.sh.env>${env}</docker.sh.env>
+        <docker.sh.args>${args}</docker.sh.args>
+        <docker.sh.expose_ports>${dockerfile.expose_ports}</docker.sh.expose_ports>
+        <docker.sh.workdir>${dockerfile.workdir}</docker.sh.workdir>
+        <!--项目配置-->
         <java.version>1.8</java.version>
         <kotlin.version>1.8.20</kotlin.version>
         <resource.delimiter>@</resource.delimiter>
@@ -47,7 +90,7 @@
         <spring-boot.version>2.7.12</spring-boot.version>
         <spring-boot-admin.version>2.7.10</spring-boot-admin.version>
         <spring-cloud.version>2021.0.7</spring-cloud.version>
-        <easier-framework.version>2023.07.03-2.7.12</easier-framework.version>
+        <easier-framework.version>2.7.2023.0812</easier-framework.version>
         <sa-token.version>1.34.0</sa-token.version>
         <hutool.version>5.8.19</hutool.version>
         <guava.version>32.0.1-jre</guava.version>
@@ -330,6 +373,8 @@
             <artifactId>guava</artifactId>
         </dependency>
     </dependencies>
+
+
     <build>
         <pluginManagement>
             <plugins>
@@ -345,19 +390,6 @@
                         </execution>
                     </executions>
                 </plugin>
-                <!--<plugin>
-                    <groupId>org.projectlombok</groupId>
-                    <artifactId>lombok-maven-plugin</artifactId>
-                    <version>1.18.20.0</version>
-                    <executions>
-                        <execution>
-                            <phase>generate-sources</phase>
-                            <goals>
-                                <goal>delombok</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>-->
                 <plugin>
                     <groupId>org.jetbrains.kotlin</groupId>
                     <artifactId>kotlin-maven-plugin</artifactId>
@@ -418,6 +450,543 @@
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-to-config-folder</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/config</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/src/main/resources</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                        <include>**/application*.yml</include>
+                                        <include>**/application*.yaml</include>
+                                        <include>**/application*.properties</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <env>dev</env>
+            </properties>
+        </profile>
+        <profile>
+            <id>test</id>
+            <properties>
+                <env>test</env>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <env>prod</env>
+            </properties>
+        </profile>
+        <profile>
+            <id>generate-jar-sh</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>easier.framework</groupId>
+                        <artifactId>easier-framework-maven-plugin</artifactId>
+                        <version>${easier-framework.version}</version>
+                        <executions>
+                            <execution>
+                                <id>generate-jar-sh</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>generate-file</goal>
+                                </goals>
+                                <configuration>
+                                    <conditionOnPlugin>spring-boot-maven-plugin</conditionOnPlugin>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                    <fileName>jar.sh</fileName>
+                                    <content><![CDATA[
+                                    #!/bin/bash
+
+                                    application=${jar.sh.application}
+                                    output=${jar.sh.output}
+                                    log_file=${jar.sh.log_file}
+                                    tail_f=false
+                                    tail_keyword=""
+                                    env="${jar.sh.env}"
+                                    jvm="${jar.sh.jvm}"
+                                    args="${jar.sh.args}"
+
+                                    #启动
+                                    start() {
+                                      PID=$(pgrep -f $application)
+                                      if [ -n "$PID" ]; then
+                                        status
+                                        echo "启动应用失败"
+                                        exit 1
+                                      fi
+                                      echo "开始启动应用 $application"
+                                      # 输出 JVM 参数设置
+                                      if [ -n "$jvm" ]; then
+                                        echo "jvm 参数: $jvm"
+                                      fi
+                                      # 设置 Spring Boot 的启动环境
+                                      if [ -n "$env" ]; then
+                                        echo "env 参数: $env"
+                                        args="--spring.profiles.active=$env $args"
+                                      fi
+                                      # 设置 Spring Boot 的启动参数
+                                      if [ -n "$args" ]; then
+                                        echo "启动参数: $args"
+                                      fi
+                                      echo "启动应用指令: nohup java $jvm -jar $application $args > $output 2>&1 &"
+                                      nohup java $jvm -jar $application $args > $output 2>&1 &
+                                      sleep 3
+                                      PID=$(pgrep -f $application)
+                                      if [ -n "$PID" ]; then
+                                        status
+                                        echo "启动应用成功"
+                                        if [ "$tail_f" = true ]; then
+                                          log
+                                        fi
+                                      else
+                                        echo "启动应用失败"
+                                        exit 1
+                                      fi
+                                    }
+
+                                    #查看状态
+                                    status() {
+                                      PID=$(pgrep -f $application)
+                                        if [ -n "$PID" ]; then
+                                          echo "已找到应用进程 $application -> $PID"
+                                          echo "USER       PID       %CPU       %MEM       VSZ       RSS       TTY       STAT       START       TIME       COMMAND"
+                                          ps aux | grep -v grep | grep " $PID "
+                                        else
+                                          echo "未找到应用进程 $application"
+                                        fi
+                                    }
+
+                                    #停止
+                                    stop() {
+                                      PID=$(pgrep -f $application)
+                                      if [ -n "$PID" ]; then
+                                        status
+                                        echo "开始停止应用..."
+                                        kill -TERM "$PID"
+                                        # 使用 while 循环等待进程停止
+                                        while ps -p "$PID" > /dev/null; do
+                                          echo "等待应用停止..."
+                                          sleep 0.2
+                                        done
+                                        sleep 1
+                                        echo "已停止应用进程 $application -> $PID"
+                                      else
+                                        echo "未找到应用进程 $application"
+                                      fi
+                                    }
+
+                                    #重启
+                                    restart() {
+                                      stop
+                                      start
+                                    }
+
+                                    #查看日志
+                                    log() {
+                                      if [ -n "$tail_keyword" ]; then
+                                        tail -10000 $log_file | grep $tail_keyword
+                                      else
+                                        tail -1000f $log_file
+                                      fi
+                                    }
+
+                                    case $1 in
+                                      "start")
+                                        if [ "$2" = "-f" ]; then
+                                          tail_f=true
+                                        fi
+                                        start
+                                        ;;
+                                      "restart")
+                                        if [ "$2" = "-f" ]; then
+                                            tail_f=true
+                                        fi
+                                        restart
+                                        ;;
+                                      "status")
+                                        status
+                                        ;;
+                                      "stop")
+                                        stop
+                                        ;;
+                                      "log")
+                                        tail_keyword=$2
+                                        log
+                                        ;;
+                                      *)
+                                        echo "使用方法: $0 {start [-f] | restart [-f] | stop | status | log [keyword]}"
+                                        exit 1
+                                        ;;
+                                    esac
+                                    ]]></content>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>docker-push</id>
+            <properties>
+                <docker-build.registry>127.0.0.1:5000</docker-build.registry>
+                <docker-build.image>${docker-build.registry}/${project.groupId}/${project.artifactId}
+                </docker-build.image>
+                <docker-build.custom-command1>--push</docker-build.custom-command1>
+            </properties>
+        </profile>
+        <profile>
+            <id>docker-build</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>easier.framework</groupId>
+                        <artifactId>easier-framework-maven-plugin</artifactId>
+                        <version>${easier-framework.version}</version>
+                        <executions>
+                            <execution>
+                                <id>docker-build</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>build-time-format</goal>
+                                    <goal>generate-file</goal>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <conditionOnPlugin>spring-boot-maven-plugin</conditionOnPlugin>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                    <fileName>Dockerfile</fileName>
+                                    <content><![CDATA[
+                                        FROM ${dockerfile.from}
+
+                                        #工作目录
+                                        WORKDIR ${dockerfile.workdir}
+
+                                        # 环境参数
+                                        ENV JVM="" \
+                                            ARGS="" \
+                                            TZ=Asia/Shanghai
+
+                                        RUN mkdir -p ${dockerfile.workdir}/logs \
+                                            && ln -fs /usr/share/zoneinfo/$TZ /etc/localtime \
+                                            && echo $TZ > /etc/timezone
+
+                                        #挂载宿主机/tmp
+                                        VOLUME /tmp
+
+                                        # 复制相关文件
+                                        COPY ${dockerfile.jar_file} ${dockerfile.workdir}/application.jar
+                                        COPY config/ ${dockerfile.workdir}/config/
+
+                                        # 暴露端口
+                                        EXPOSE ${dockerfile.expose_ports}
+
+                                        ${dockerfile.custom-command1}
+                                        ${dockerfile.custom-command2}
+                                        ${dockerfile.custom-command3}
+                                        ${dockerfile.custom-command4}
+                                        ${dockerfile.custom-command5}
+
+                                        #执行命令
+                                        ENTRYPOINT ["sh", "-c", "java $JVM -jar application.jar $ARGS"]
+                                    ]]></content>
+                                    <workingDirectory>${project.build.directory}</workingDirectory>
+                                    <commands>
+                                        <command>docker --version</command>
+                                        <command>
+                                            docker
+                                            build
+                                            ${docker-build.custom-command1}
+                                            ${docker-build.custom-command2}
+                                            ${docker-build.custom-command3}
+                                            ${docker-build.custom-command4}
+                                            ${docker-build.custom-command5}
+                                            -t ${docker-build.image}:${docker-build.tag}
+                                            .
+                                        </command>
+                                        <command>
+                                            docker save -o image.tar ${docker-build.image}:${docker-build.tag}
+                                        </command>
+                                    </commands>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>generate-docker-sh</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>easier.framework</groupId>
+                        <artifactId>easier-framework-maven-plugin</artifactId>
+                        <version>${easier-framework.version}</version>
+                        <executions>
+                            <execution>
+                                <id>generate-jar-sh</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>generate-file</goal>
+                                </goals>
+                                <configuration>
+                                    <conditionOnPlugin>spring-boot-maven-plugin</conditionOnPlugin>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                    <fileName>docker.sh</fileName>
+                                    <!--suppress UnresolvedMavenProperty -->
+                                    <content><![CDATA[
+                                        #!/bin/bash
+
+                                        application=${docker.sh.application}
+                                        image=${docker.sh.image}
+                                        tag=${docker.sh.tag}
+                                        env=${docker.sh.env}
+                                        jvm="${docker.sh.jvm}"
+                                        args="${docker.sh.args}"
+                                        expose_ports="${docker.sh.expose_ports}"
+                                        workdir=${docker.sh.workdir}
+
+                                        # 对端口参数进行处理
+                                        port_args=""
+                                        # expose_ports="-p 8080:8080 -p 9090:9090"
+                                        if [ "${expose_ports:0:2}" = "-p" ]; then
+                                          port_args=$expose_ports
+                                        # expose_ports="0"
+                                        elif [ "$expose_ports" = "0" ]; then
+                                          port_args=""
+                                        # expose_ports="8080 9090"
+                                        else
+                                          IFS=' ' read -ra ports_array <<< "$expose_ports"
+                                          for port in "${ports_array[@]}"; do
+                                            port_args="$port_args -p $port:$port"
+                                          done
+                                        fi
+
+                                        # 日志关键词
+                                        log_keyword=""
+
+                                        # 查找运行容器 ID
+                                        container_id=$(docker ps -aqf "name=$application")
+                                        running_container_id=$(docker ps -qf "name=$application")
+
+                                        reload_container_id() {
+                                          container_id=$(docker ps -aqf "name=$application")
+                                          running_container_id=$(docker ps -qf "name=$application")
+                                        }
+                                        #状态
+                                        status() {
+                                          # 重新获取运行容器主键
+                                          reload_container_id
+                                          # 检查容器是否运行中
+                                          if [ -z "$container_id" ]; then
+                                            echo "未找到应用容器: $application"
+                                            exit 1
+                                          fi
+                                          echo "找到应用容器: $application -> $container_id"
+                                          docker ps -af "id=$container_id"
+                                          if [ -n "$running_container_id" ]; then
+                                            echo "应用容器状态: 运行中"
+                                          else
+                                            echo "应用容器状态: 已停止"
+                                          fi
+                                        }
+                                        #详情
+                                        detail() {
+                                          status
+                                          echo && echo "使用镜像:"
+                                          docker image inspect --format='{{range .RepoTags}}{{println .}}{{end}}' $(docker inspect -f '{{.Image}}' $container_id)
+                                          echo "环境变量:"
+                                          docker inspect --format '{{range .Config.Env}}{{println .}}{{end}}' $container_id
+                                          echo "端口绑定: 主机 -> 容器"
+                                          docker inspect --format '{{range $p, $conf := .NetworkSettings.Ports}}{{(index $conf 0).HostPort}} -> {{$p}}{{"\n"}}{{end}}' $container_id
+                                          echo "文件绑定: 主机 -> 容器"
+                                          docker inspect --format '{{range .Mounts}}{{printf "%s -> %s\n" .Source .Destination}}{{end}}' $container_id
+                                          echo "工作目录: "
+                                          docker inspect --format '{{.Config.WorkingDir}}' $container_id
+                                          echo && echo "运行脚本: "
+                                          docker inspect --format '{{.Args}}' $container_id
+                                        }
+                                        #启动
+                                        start() {
+                                          reload_container_id
+                                          # 检查容器是否运行中
+                                          if [ -n "$running_container_id" ]; then
+                                            status
+                                            echo && echo "启动应用失败"
+                                            exit 1
+                                          fi
+                                          # 存在容器,但是容器已停止
+                                          if [ -n "$container_id" ]; then
+                                            status
+                                            echo && echo "启动应用指令: docker start $container_id"
+                                            docker start $container_id
+                                            sleep 5
+                                            reload_container_id
+                                            echo
+                                            status
+                                            if [ -n "$running_container_id" ]; then
+                                              echo && echo "启动应用成功"
+                                              exit 0
+                                            else
+                                              echo && echo "启动应用失败"
+                                              exit 1
+                                            fi
+                                          fi
+                                          # 不存在应用容器,初始化启动
+                                          echo "开始启动应用 $application"
+                                          if [ -n "$jvm" ]; then
+                                            echo "jvm 参数: $jvm"
+                                          fi
+                                          if [ -n "$env" ]; then
+                                            echo "env 参数: $env"
+                                            args="--spring.profiles.active=$env $args"
+                                          fi
+                                          if [ -n "$args" ]; then
+                                            echo "启动参数: $args"
+                                          fi
+                                          if [ -n "$port_args" ]; then
+                                            echo "端口参数: $port_args"
+                                          fi
+                                          echo && echo "启动应用指令: docker run -d --name $application $port_args -e JVM=\"$jvm\" -e ARGS=\"$args\" -v ./config/:$workdir/config/ -v ./logs/:$workdir/logs/ $image:$tag"
+                                          docker run -d --name $application $port_args -e JVM="$jvm" -e ARGS="$args" -v ./config/:$workdir/config/ -v ./logs/:$workdir/logs/ $image:$tag
+                                          sleep 5
+                                          echo ""
+                                          status
+                                          if [ -n "$running_container_id" ]; then
+                                            echo && echo "启动应用成功"
+                                            exit 0
+                                          else
+                                            echo && echo "启动应用失败"
+                                            exit 1
+                                          fi
+                                        }
+                                        #停止
+                                        stop(){
+                                          reload_container_id
+                                          if [ -z "$container_id" ]; then
+                                            echo "应用未启动: $application"
+                                            return 0
+                                          fi
+                                          status
+                                          # 容器已经停止
+                                          if [ -z "$running_container_id" ]; then
+                                            return 0
+                                          fi
+                                          # 停止容器
+                                          echo && echo "停止应用指令: docker stop $container_id"
+                                          docker stop "$container_id"
+                                          sleep 2
+                                          echo && status
+                                        }
+                                        #重启
+                                        restart(){
+                                          echo "执行操作: stop" && echo
+                                          stop
+                                          echo && echo "执行操作: start" && echo
+                                          start
+                                        }
+                                        #清除容器和镜像
+                                        clean(){
+                                          reload_container_id
+                                          if [ -z "$container_id" ]; then
+                                            echo "未找到应用容器: $application"
+                                            return 1
+                                          fi
+                                          stop
+                                          echo && echo "开始删除容器: docker rm $container_id"
+                                          docker rm $container_id
+                                          echo && echo "开始删除镜像: docker rmi $image:$tag"
+                                          docker rmi $image:$tag
+                                        }
+                                        #初始化
+                                        init(){
+                                          clean
+                                          if [ -f "image.tar" ]; then
+                                              echo && echo "导入镜像: docker load -i image.tar"
+                                              docker load -i image.tar
+                                          fi
+                                          echo ""
+                                          start
+                                        }
+                                        #查看日志
+                                        log(){
+                                          reload_container_id
+                                          if [ -z "$container_id" ]; then
+                                            echo "未找到应用容器: $application"
+                                            exit 1
+                                          fi
+                                          if [ -n "$log_keyword" ]; then
+                                            docker logs $container_id --tail 10000 | grep "$log_keyword"
+                                          else
+                                            docker logs $container_id -f --tail 1000
+                                          fi
+                                        }
+                                        case $1 in
+                                          "status")
+                                            status
+                                            ;;
+                                          "detail")
+                                            detail
+                                            ;;
+                                          "start")
+                                            start
+                                            ;;
+                                          "stop")
+                                            stop
+                                            ;;
+                                          "clean")
+                                            clean
+                                            ;;
+                                          "restart")
+                                            restart
+                                            ;;
+                                          "init")
+                                            init
+                                            ;;
+                                          "log")
+                                            log_keyword=$2
+                                            log
+                                            ;;
+                                          *)
+                                            echo "使用方法: $0 {status|detail|start|stop|restart|clean|log [keyword]}"
+                                            exit 1
+                                            ;;
+                                        esac
+                                    ]]></content>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

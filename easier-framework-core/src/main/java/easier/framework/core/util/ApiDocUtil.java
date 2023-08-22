@@ -17,6 +17,8 @@ public class ApiDocUtil {
             "不能为空"
             , "个数必须在"
             , "必须"
+            , "最小不能"
+            , "最大不能"
     );
 
     public String getDescription(Field field) {

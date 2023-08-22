@@ -6,6 +6,7 @@ import com.plumelog.core.constant.LogMessageConstant;
 import easier.framework.core.plugin.cache.RedisSources;
 import easier.framework.core.plugin.job.LoopJob;
 import easier.framework.core.util.JacksonUtil;
+import easier.framework.core.util.TraceIdUtil;
 import easier.framework.starter.cache.condition.ConditionalOnRedisSource;
 import easier.framework.starter.cache.redis.RedissonClients;
 import easier.framework.starter.mybatis.repo.Repo;
@@ -40,8 +41,11 @@ public class RunningLogListener {
     @LoopJob(delay = 100, timeUnit = TimeUnit.MILLISECONDS, concurrency = 3, lock = false)
     public void saveRunningLog() {
         try {
+            TraceIdUtil.disable();
             while (true) {
-                List<String> records = this.getRecords(100);
+                RedissonClient clientsClient = this.redissonClients.getClient(RedisSources.logging);
+                RQueue<String> queue = clientsClient.getQueue(LogMessageConstant.LOG_KEY, codec);
+                List<String> records = queue.poll(100);
                 if (CollUtil.isEmpty(records)) {
                     break;
                 }
@@ -55,11 +59,6 @@ public class RunningLogListener {
         }
     }
 
-    private List<String> getRecords(int size) {
-        RedissonClient clientsClient = this.redissonClients.getClient(RedisSources.logging);
-        RQueue<String> queue = clientsClient.getQueue(LogMessageConstant.LOG_KEY, codec);
-        return queue.poll(size);
-    }
 
     /**
      * 删除运行日志

@@ -20,6 +20,7 @@ public class EnumCodecTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E> 
     private final Class<E> type;
     private final EnumCodec<E> enumCodec;
 
+    @SuppressWarnings("unchecked")
     public EnumCodecTypeHandler(Class<E> type) {
         if (type == null) {
             throw new IllegalArgumentException("Type argument cannot be null");

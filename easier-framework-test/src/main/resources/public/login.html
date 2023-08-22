@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>登录页</title>
+    <title>用户中心-登录页</title>
     <script src="webjars/vue/3.3.4/dist/vue.global.prod.js"></script>
     <script src="webjars/axios/1.4.0/dist/axios.min.js"></script>
     <script src="webjars/dayjs/1.11.7/dayjs.min.js"></script>
@@ -17,6 +17,8 @@
     <script src="webjars/ant-design-vue/4.0.0/dist/antd.min.js"></script>
     <link href="webjars/ant-design-vue/4.0.0/dist/reset.css" rel="stylesheet"/>
     <link href="css/base.css" rel="stylesheet"/>
+    <script src="js/base.js"></script>
+
 </head>
 
 <body>
@@ -56,6 +58,17 @@
 </body>
 
 <script>
+    var redirect_uri = getQueryVariable("redirect_uri");
+    console.log("redirect_uri");
+    console.log(redirect_uri);
+    if (redirect_uri) {
+        redirect_uri = decodeURIComponent(redirect_uri)
+    }
+    if (!redirect_uri) {
+        redirect_uri = "index.html";
+    }
+    console.log("登录成功后重定向");
+    console.log(redirect_uri);
     const {createApp, reactive, toRaw} = Vue;
     /**
      * 全局参数
@@ -114,44 +127,61 @@
      * 刷新验证码
      */
     const refreshCaptcha = () => {
-        axios.get("login/captcha")
-            .then(response => {
-                if (response.status === 200 && response.data && response.data.code === 200) {
-                    captcha.imageBase64Data = response.data.data.imageBase64Data
-                    captcha.captchaId = response.data.data.captchaId
-                    console.log("captchaId", captcha.captchaId)
-                } else {
-                    if (response.data && response.data.code && response.data.message) {
-                        antd.message.error(response.data.message)
-                    } else {
-                        antd.message.error("请求异常")
-                    }
-                }
-            })
-            .catch(error => {
-                antd.message.error("请求异常")
-                console.error(error)
-            })
-    }
-
-
-    const onSubmit = () => {
-        validate()
-            .then(dologin)
-            .catch(err => {
-                console.log('error', err);
-            });
-    };
-
-    const doLogin = () => {
-        axios.post("login/password", {
-            data: {
-                username: form.username,
-                password: form.username,
+        apiGet({
+            url: "login/captcha?id=" + captcha.captchaId,
+            then: r => {
+                captcha.imageBase64Data = r.data.imageBase64Data
+                captcha.captchaId = r.data.captchaId
             }
         })
+        /*axios.get("login/captcha?id=" + captcha.captchaId)
+            .then(r => {
+                captcha.imageBase64Data = r.data.imageBase64Data
+                captcha.captchaId = r.data.captchaId
+            });*/
+    }
+
+
+    const doLogin = () => {
+        bind.loading = true;
+        apiPost({
+            url: "login/password",
+            body: {
+                username: form.username,
+                password: form.password,
+                code: form.code,
+                captchaId: captcha.captchaId,
+            },
+            then: r => {
+                antd.message.success(r.message)
+                setTimeout(function () {
+                    window.location.href = redirect_uri;
+                }, 1200);
+            },
+            finally: () => {
+                bind.loading = false
+                refreshCaptcha()
+            }
+        })
+        /*api().post("login/password", data)
+            .then(r => {
+                antd.message.success(r.message)
+                setTimeout(function () {
+                    window.location.href = redirect_uri;
+                }, 800);
+            })
+            .catch(showErrorMessage)
+            .finally(() => {
+                bind.loading = false
+                refreshCaptcha()
+            })*/
 
     }
+    const onSubmit = () => {
+        validate().then(doLogin);
+    };
+
+
     const onReset = () => {
         resetFields()
         refreshCaptcha()

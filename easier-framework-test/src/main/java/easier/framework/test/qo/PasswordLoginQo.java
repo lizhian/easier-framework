@@ -12,7 +12,7 @@ import javax.validation.constraints.NotBlank;
  * @date 2023年07月18日
  */
 @Data
-public class LoginQo {
+public class PasswordLoginQo {
 
     @Schema(description = "用户账号")
     @NotBlank
