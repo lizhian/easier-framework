@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/naive-ui"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/properties.min.js"></script>
+    <style>
+        html {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #app {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .wh100 {
+            width: 100%;
+            height: 100%;
+        }
+
+        /*.n-tabs-pane-wrapper {
+            width: 100%;
+            height: 100%;
+        }*/
+
+        .overflow-auto {
+            overflow: auto;
+        }
+
+        .p10 {
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <n-layout class="wh100">
+        <n-layout-header bordered style="height: 50px;padding: 5px">
+            <n-tabs :default-value="bind.group" @update:value="value=>bind.group = value" type="segment">
+                <n-tab-pane :name="profile" :tab="profile"
+                            v-for="profile in ['local','dev','test','prod']"></n-tab-pane>
+                <template #suffix>
+                    <n-button size="small" style="margin-right: 10px" type="primary">新增</n-button>
+                </template>
+            </n-tabs>
+        </n-layout-header>
+        <n-layout bordered has-sider position="absolute" style="top: 50px">
+            <n-layout-sider bordered width="150">
+                <n-menu :options="bind.menuOptions" @update:value="handleUpdateValue"></n-menu>
+            </n-layout-sider>
+            <n-layout bordered has-sider>
+                <n-layout-sider bordered width="150">
+                    <n-menu :options="bind.menuOptions" @update:value="handleUpdateValue"></n-menu>
+                </n-layout-sider>
+                <n-layout-content content-style="padding: 10px;">
+                    <n-card embedded hoverable>
+                        <n-grid :cols="5">
+                            <n-gi>
+                                <n-statistic :value="configuration" label="配置名称"></n-statistic>
+                            </n-gi>
+                            <n-gi>
+                                <n-statistic label="配置说明" value="这是一个配置">
+                                    <n-input></n-input>
+                                </n-statistic>
+                            </n-gi>
+                            <n-gi>
+                                <n-statistic :value="profile" label="所属环境"></n-statistic>
+                            </n-gi>
+                            <n-gi>
+                                <n-statistic :value="group" label="所属分组"></n-statistic>
+                            </n-gi>
+                            <n-gi>
+                                <n-statistic label="操作">
+                                    <n-space size="small">
+                                        <n-button @click="bind.show = !show" size="small" type="info">修改</n-button>
+                                        <n-button size="small" type="error">删除</n-button>
+                                        <n-button secondary size="small" type="primary">复制</n-button>
+
+                                        <n-button secondary size="small" type="info">克隆</n-button>
+
+                                    </n-space>
+                                </n-statistic>
+                            </n-gi>
+                        </n-grid>
+                    </n-card>
+                    <n-card embedded hoverable style="overflow: scroll;margin-top: 10px;">
+                        <n-config-provider :hljs="bind.hljs">
+                            <n-code :code="bind.code" language="properties" show-line-numbers></n-code>
+                        </n-config-provider>
+                    </n-card>
+
+                    <n-drawer v-model:show="bind.show" width="80%">
+                        <n-drawer-content :native-scrollbar="false" closable title="Stoner">
+                            <n-input
+                                    autosize
+                                    show-count
+                                    type="textarea"
+                                    v-model:value="bind.code"
+                            ></n-input>
+                            <template #header>
+                                Header
+                            </template>
+                            <template #footer>
+                                <n-button>Footer</n-button>
+                            </template>
+                        </n-drawer-content>
+
+                    </n-drawer>
+                </n-layout-content>
+            </n-layout>
+        </n-layout>
+
+    </n-layout>
+    <!--<n-card>
+        <n-tabs type="segment" animated>
+            <n-tab-pane :name="profile" :tab="profile" v-for="profile in ['local','dev','test','prod']">
+                <n-tabs type="line" placement="left">
+                    <n-tab-pane :name="group" :tab="group" v-for="group in ['default','lizhian','linyanyu']">
+                        <n-tabs type="line" placement="left">
+                            <n-tab-pane class=" overflow-auto"
+                                        :name="configuration" :tab="configuration"
+                                        v-for="configuration in ['redis','database','logging']">
+
+                                <n-card embedded hoverable>
+                                    <n-grid :cols="5">
+                                        <n-gi>
+                                            <n-statistic label="配置名称" :value="configuration"></n-statistic>
+                                        </n-gi>
+                                        <n-gi>
+                                            <n-statistic label="配置说明" value="这是一个配置">
+                                                <n-input></n-input>
+                                            </n-statistic>
+                                        </n-gi>
+                                        <n-gi>
+                                            <n-statistic label="所属环境" :value="profile"></n-statistic>
+                                        </n-gi>
+                                        <n-gi>
+                                            <n-statistic label="所属分组" :value="group"></n-statistic>
+                                        </n-gi>
+                                        <n-gi>
+                                            <n-statistic label="操作">
+                                                <n-space>
+                                                    <n-button type="primary">新增</n-button>
+                                                    <n-button type="info">修改</n-button>
+                                                </n-space>
+                                            </n-statistic>
+                                        </n-gi>
+                                    </n-grid>
+                                </n-card>
+                                &lt;!&ndash;<n-card class="wh100" embedded hoverable>
+                                    <n-code :code="bind.code" language="properties" show-line-numbers></n-code>
+                                </n-card>&ndash;&gt;
+
+                            </n-tab-pane>
+                        </n-tabs>
+                    </n-tab-pane>
+                </n-tabs>
+            </n-tab-pane>
+        </n-tabs>
+    </n-card>-->
+
+
+    <!--<n-tabs class=" " type="segment" animated>
+        <n-tab-pane class="" :name="profile" :tab="profile" v-for="profile in ['local','dev','test','prod']">
+                <n-tabs class="" type="line" placement="left">
+                    <n-tab-pane class="" :name="group" :tab="group"
+                                v-for="group in ['default','lizhian','linyanyu']">
+                        <n-tabs class="" type="line" placement="left">
+                            <n-tab-pane class=" overflow-auto"
+                                        :name="configuration" :tab="configuration"
+                                        v-for="configuration in ['redis','database','logging']">
+
+
+                                <n-card embedded hoverable>
+                                    <n-grid :cols="5">
+                                        <n-gi>
+                                            <n-statistic label="配置名称" :value="configuration"></n-statistic>
+                                        </n-gi>
+                                        <n-gi>
+                                            <n-statistic label="配置说明" value="这是一个配置"></n-statistic>
+                                        </n-gi>
+                                        <n-gi>
+                                            <n-statistic label="所属环境" :value="profile"></n-statistic>
+                                        </n-gi>
+                                        <n-gi>
+                                            <n-statistic label="所属分组" :value="group"></n-statistic>
+                                        </n-gi>
+                                        <n-gi>
+                                            <n-statistic label="操作">
+                                                <n-space>
+                                                    <n-button>催更</n-button>
+                                                    <n-button>催更</n-button>
+                                                </n-space>
+                                            </n-statistic>
+
+
+                                        </n-gi>
+                                    </n-grid>
+                                </n-card>
+                                <br/>
+                                <n-card class="wh100" embedded hoverable>
+                                    &lt;!&ndash;<n-input
+                                            v-model:value="bind.code"
+                                            type="textarea"
+                                            show-count
+                                            autosize
+                                    >
+                                    </n-input>&ndash;&gt;
+                                    <n-code :code="bind.code" language="properties" show-line-numbers></n-code>
+                                </n-card>
+                            </n-tab-pane>
+                        </n-tabs>
+                    </n-tab-pane>
+                </n-tabs>
+
+        </n-tab-pane>
+    </n-tabs>-->
+
+</div>
+
+
+<script>
+    const bind = Vue.reactive({
+        group: "",
+        hljs: hljs,
+        show: false,
+        loading: false,
+        message: 'naive',
+        code: `
+spring.datasource.dynamic.datasource.test.url=jdbc:mysql://192.168.2.181:3306/user_center?useAffectedRows=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+spring.datasource.dynamic.datasource.test.username=root
+spring.datasource.dynamic.datasource.test.password=Tydic@2023
+spring.datasource.dynamic.datasource.dataServer.url=jdbc:mysql://192.168.2.181:3306/data_server?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+spring.datasource.dynamic.datasource.dataServer.username=root
+spring.datasource.dynamic.datasource.dataServer.password=Tydic@2023
+spring.easier.cache.redis.primary.type=single
+spring.easier.cache.redis.primary.nodes=192.168.2.181:6379
+spring.easier.cache.redis.primary.database=0
+spring.datasource.dynamic.datasource.test.url=jdbc:mysql://192.168.2.181:3306/user_center?useAffectedRows=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+spring.datasource.dynamic.datasource.test.username=root
+spring.datasource.dynamic.datasource.test.password=Tydic@2023
+spring.datasource.dynamic.datasource.dataServer.url=jdbc:mysql://192.168.2.181:3306/data_server?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+spring.datasource.dynamic.datasource.dataServer.username=root
+spring.datasource.dynamic.datasource.dataServer.password=Tydic@2023
+spring.easier.cache.redis.primary.type=single
+spring.easier.cache.redis.primary.nodes=192.168.2.181:6379
+spring.easier.cache.redis.primary.database=0
+spring.datasource.dynamic.datasource.test.url=jdbc:mysql://192.168.2.181:3306/user_center?useAffectedRows=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+spring.datasource.dynamic.datasource.test.username=root
+spring.datasource.dynamic.datasource.test.password=Tydic@2023
+spring.datasource.dynamic.datasource.dataServer.url=jdbc:mysql://192.168.2.181:3306/data_server?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+spring.datasource.dynamic.datasource.dataServer.username=root
+spring.datasource.dynamic.datasource.dataServer.password=Tydic@2023
+spring.easier.cache.redis.primary.type=single
+spring.easier.cache.redis.primary.nodes=192.168.2.181:6379
+spring.easier.cache.redis.primary.database=0
+spring.datasource.dynamic.datasource.test.url=jdbc:mysql://192.168.2.181:3306/user_center?useAffectedRows=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+spring.datasource.dynamic.datasource.test.username=root
+spring.datasource.dynamic.datasource.test.password=Tydic@2023
+spring.datasource.dynamic.datasource.dataServer.url=jdbc:mysql://192.168.2.181:3306/data_server?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+spring.datasource.dynamic.datasource.dataServer.username=root
+spring.datasource.dynamic.datasource.dataServer.password=Tydic@2023
+spring.easier.cache.redis.primary.type=single
+spring.easier.cache.redis.primary.nodes=192.168.2.181:6379
+spring.easier.cache.redis.primary.database=0
+spring.datasource.dynamic.datasource.test.url=jdbc:mysql://192.168.2.181:3306/user_center?useAffectedRows=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+spring.datasource.dynamic.datasource.test.username=root
+spring.datasource.dynamic.datasource.test.password=Tydic@2023
+spring.datasource.dynamic.datasource.dataServer.url=jdbc:mysql://192.168.2.181:3306/data_server?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+spring.datasource.dynamic.datasource.dataServer.username=root
+spring.datasource.dynamic.datasource.dataServer.password=Tydic@2023
+spring.easier.cache.redis.primary.type=single
+spring.easier.cache.redis.primary.nodes=192.168.2.181:6379
+spring.easier.cache.redis.primary.database=0
+spring.datasource.dynamic.datasource.test.url=jdbc:mysql://192.168.2.181:3306/user_center?useAffectedRows=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+spring.datasource.dynamic.datasource.test.username=root
+spring.datasource.dynamic.datasource.test.password=Tydic@2023
+spring.datasource.dynamic.datasource.dataServer.url=jdbc:mysql://192.168.2.181:3306/data_server?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+spring.datasource.dynamic.datasource.dataServer.username=root
+spring.datasource.dynamic.datasource.dataServer.password=Tydic@2023
+spring.easier.cache.redis.primary.type=single
+spring.easier.cache.redis.primary.nodes=192.168.2.181:6379
+spring.easier.cache.redis.primary.database=0spring.datasource.dynamic.datasource.test.url=jdbc:mysql://192.168.2.181:3306/user_center?useAffectedRows=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+spring.datasource.dynamic.datasource.test.username=root
+spring.datasource.dynamic.datasource.test.password=Tydic@2023
+spring.datasource.dynamic.datasource.dataServer.url=jdbc:mysql://192.168.2.181:3306/data_server?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+spring.datasource.dynamic.datasource.dataServer.username=root
+spring.datasource.dynamic.datasource.dataServer.password=Tydic@2023
+spring.easier.cache.redis.primary.type=single
+spring.easier.cache.redis.primary.nodes=192.168.2.181:6379
+spring.easier.cache.redis.primary.database=0`,
+        menuOptions: [{
+            label: "local",
+            key: "local",
+        }, {
+            label: "dev",
+            key: "dev",
+        }, {
+            label: "test",
+            key: "test",
+        }, {
+            label: "asdasdasdasdasdasdasdasdasdas",
+            key: "prod",
+        }]
+    })
+    const handleUpdateValue = (value) => {
+        console.log(value);
+    }
+    Vue.createApp({
+        setup() {
+            return {
+                bind, handleUpdateValue
+            }
+        },
+        created() {
+            console.log("created")
+            bind.group = "local"
+        },
+    }).use(naive).mount("#app");
+</script>
+
+</body>
+</html>

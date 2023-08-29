@@ -23,7 +23,9 @@ public class OAuthAuthorizeQo {
     @NotBlank
     private String redirect_uri;
 
-    @Schema(description = "token模式下是否使用?符号返回token,默认重定向为[uri#token=xxx],true=[uri?token=xxx]")
+    @Schema(description = "token模式下是否使用?符号返回token,默认重定向为[uri#token=xxx],true=[uri?token=xxx]"
+            , allowableValues = {"true", "false"}
+    )
     @NotNull
     private boolean question_mark;
 

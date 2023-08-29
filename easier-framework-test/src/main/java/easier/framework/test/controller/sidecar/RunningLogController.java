@@ -1,4 +1,4 @@
-package easier.framework.test.controller;
+package easier.framework.test.controller.sidecar;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import easier.framework.core.domain.PageParam;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class RunningLogController {
     private final RunningLogService runningLogService;
 
-    @Operation(summary = "查询部门树")
+    @Operation(summary = "查询运行日志")
     @GetMapping("/running/log/page")
     public R<Page<RunningLog>> page(PageParam pageParam, RunningLogQo qo) {
         Page<RunningLog> page = this.runningLogService.page(pageParam, qo);

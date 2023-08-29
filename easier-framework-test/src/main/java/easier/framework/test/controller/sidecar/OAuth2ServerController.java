@@ -1,4 +1,4 @@
-package easier.framework.test.controller;
+package easier.framework.test.controller.sidecar;
 
 import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.oauth2.SaOAuth2Manager;
@@ -25,7 +25,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -53,7 +52,7 @@ public class OAuth2ServerController {
 
     @Operation(summary = "oauth2认证授权")
     @GetMapping("/oauth2/authorize")
-    public void authorize(@Validated OAuthAuthorizeQo qo) {
+    public void authorize(OAuthAuthorizeQo qo) {
         String client_id = qo.getClient_id();
         String redirect_uri = qo.getRedirect_uri();
         boolean question_mark = qo.isQuestion_mark();

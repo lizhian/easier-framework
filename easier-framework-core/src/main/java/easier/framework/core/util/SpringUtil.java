@@ -18,6 +18,7 @@ import java.util.Map;
  * spring工具类
  */
 public class SpringUtil extends cn.hutool.extra.spring.SpringUtil {
+    public static final String local = "local";
     public static final String dev = "dev";
     public static final String test = "test";
     public static final String prod = "prod";

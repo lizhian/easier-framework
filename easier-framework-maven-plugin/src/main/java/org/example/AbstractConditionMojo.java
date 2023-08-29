@@ -41,7 +41,13 @@ public abstract class AbstractConditionMojo extends AbstractMojo {
     @Parameter(property = "conditionOnPlugin")
     protected String conditionOnPlugin;
 
+    @Parameter(property = "skip", defaultValue = "false")
+    protected Boolean skip;
+
     protected boolean shouldExecute() {
+        if (skip != null && skip) {
+            return false;
+        }
         List<String> conditionOnFiles = StrUtil.splitTrim(this.conditionOnFile, ",");
         for (String onFile : conditionOnFiles) {
             if (!FileUtil.exist(onFile)) {

@@ -19,14 +19,12 @@ import easier.framework.starter.doc.EnableEasierDoc;
 import easier.framework.starter.job.EnableEasierJob;
 import easier.framework.starter.logging.EnableEasierLogging;
 import easier.framework.starter.mybatis.EnableEasierMybatis;
-import easier.framework.starter.mybatis.repo.Repo;
 import easier.framework.starter.mybatis.repo.Repos;
 import easier.framework.starter.rpc.EnableEasierRpc;
 import easier.framework.starter.web.EnableEasierWeb;
 import easier.framework.test.cache.UserCenterCaches;
 import easier.framework.test.enums.SexType;
 import easier.framework.test.eo.Dept;
-import easier.framework.test.eo.MetadataJcdManagerEntity;
 import easier.framework.test.eo.User;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -34,8 +32,6 @@ import org.apache.ibatis.annotations.Mapper;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.util.List;
 
 @Slf4j
 @MapperScan(annotationClass = Mapper.class)
@@ -46,7 +42,7 @@ import java.util.List;
 @EnableEasierLogging
 @EnableEasierAuth
 @EnableEasierDoc
-@EnableAutoTable(activeProfile = SpringUtil.dev)
+@EnableAutoTable(activeProfile = {SpringUtil.dev, SpringUtil.local})
 @EnableSpringUtil
 @EnableEasierDiscovery
 @EnableEasierRpc
@@ -58,9 +54,6 @@ public class EasierFrameworkTestApplication extends SaOAuth2Template implements
     @SneakyThrows
     public static void main(String[] args) {
         SpringApplication.run(EasierFrameworkTestApplication.class, args);
-        Repo<MetadataJcdManagerEntity> repo = Repos.of(MetadataJcdManagerEntity.class);
-        List<MetadataJcdManagerEntity> metadataJcdManagerEntities = repo.listAll();
-        log.info("");
     }
 
     @Override

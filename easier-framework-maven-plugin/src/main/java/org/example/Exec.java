@@ -136,6 +136,7 @@ public class Exec extends AbstractConditionMojo {
                     lastLine.set(line);
                 };
                 IoUtil.readUtf8Lines(in, lineHandler);
+                process.waitFor();
             } catch (Exception e) {
                 getLog().info("执行命令异常:" + e.getMessage());
                 throw new RuntimeException(e);
@@ -145,7 +146,11 @@ public class Exec extends AbstractConditionMojo {
                 }
                 if (process != null) {
                     process.destroy();
-                    exitValue = process.exitValue();
+                    try {
+                        exitValue = process.exitValue();
+                    } catch (Exception ignored) {
+
+                    }
                 }
             }
             if (exitValue != 0) {

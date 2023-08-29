@@ -27,7 +27,7 @@ public class EasierCacheProperties {
     public static class RedissonProperties {
         private String alias;
         private Type type = Type.single;
-        private String nodes;
+        private String nodes = "127.0.0.1:6379";
         private int database = 0;
         private String password;
         private boolean ssl = false;

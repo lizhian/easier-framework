@@ -50,6 +50,7 @@
         <jar.sh.log_file>logs/console.log</jar.sh.log_file>
         <jar.sh.output>/dev/null</jar.sh.output>
         <!--执行docker build的参数-->
+        <docker.skip>false</docker.skip>
         <docker.registry/>
         <!--暴露端口多个时候使用空格间隔-->
         <docker.expose_ports>0</docker.expose_ports>
@@ -481,22 +482,28 @@
 
     <profiles>
         <profile>
-            <id>dev</id>
+            <id>env.local</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <properties>
+                <env>local</env>
+            </properties>
+        </profile>
+        <profile>
+            <id>env.dev</id>
             <properties>
                 <env>dev</env>
             </properties>
         </profile>
         <profile>
-            <id>test</id>
+            <id>env.test</id>
             <properties>
                 <env>test</env>
             </properties>
         </profile>
         <profile>
-            <id>prod</id>
+            <id>env.prod</id>
             <properties>
                 <env>prod</env>
             </properties>
@@ -517,6 +524,7 @@
                                     <goal>generate-file</goal>
                                 </goals>
                                 <configuration>
+                                    <skip>${docker.skip}</skip>
                                     <conditionOnPlugin>spring-boot-maven-plugin</conditionOnPlugin>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
                                     <fileName>jar.sh</fileName>
@@ -679,6 +687,7 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
+                                    <skip>${docker.skip}</skip>
                                     <conditionOnPlugin>spring-boot-maven-plugin</conditionOnPlugin>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
                                     <fileName>Dockerfile</fileName>
@@ -772,6 +781,11 @@
                                         args="${docker.sh.args}"
                                         expose_ports="${docker.sh.expose_ports}"
                                         workdir=${docker.sh.workdir}
+
+                                        # 获取脚本所在的目录
+                                        script_dir=$(cd "$(dirname "$0")" && pwd)
+
+                                        echo "当前脚本文件的路径是: $script_dir"
 
                                         # 对端口参数进行处理
                                         port_args=""
@@ -975,7 +989,7 @@
                                             log
                                             ;;
                                           *)
-                                            echo "使用方法: $0 {status|detail|start|stop|restart|clean|log [keyword]}"
+                                            echo "使用方法: $0 {status|detail|start|stop|restart|clean|init|log [keyword]}"
                                             exit 1
                                             ;;
                                         esac
