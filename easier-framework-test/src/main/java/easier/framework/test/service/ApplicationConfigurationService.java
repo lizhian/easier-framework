@@ -28,7 +28,7 @@ public class ApplicationConfigurationService {
 
     public Map<String, Map<String, List<ApplicationConfiguration>>> all() {
         Map<String, Map<String, List<ApplicationConfiguration>>> result = new HashMap<>();
-        Map<String, List<ApplicationConfiguration>> profileMap = _application_configuration
+        Map<String, List<ApplicationConfiguration>> profileMap = this._application_configuration
                 .newQuery()
                 .eq(ApplicationConfiguration::getHistory, false)
                 .orderByDesc(ApplicationConfiguration::getUpdateTime)

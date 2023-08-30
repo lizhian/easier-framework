@@ -29,7 +29,8 @@ public class ObjectMapperHolder implements ApplicationContextAware {
         setObjectMapper(builder.build());
         ObjectMapper temp = builder.build();
         temp.registerModule(new SimpleModule().addSerializer(new NullValueSerializer(null)));
-        temp.activateDefaultTyping(temp.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
+        temp.activateDefaultTyping(temp.getPolymorphicTypeValidator());
+        // temp.activateDefaultTyping(temp.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.EXISTING_PROPERTY);
         setObjectMapperWithTyping(temp);
     }
 

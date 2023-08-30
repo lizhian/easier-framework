@@ -5,6 +5,7 @@ import easier.framework.core.plugin.cache.container.CacheContainerHelper;
 import easier.framework.starter.cache.redis.RedissonClients;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RedissonClient;
+import org.redisson.client.codec.ByteArrayCodec;
 
 import java.time.Duration;
 import java.util.List;
@@ -28,21 +29,25 @@ public class DefaultCacheContainerHelper implements CacheContainerHelper {
     }
 
     @Override
-    public Object get(String source, String key) {
+    public byte[] get(String source, String key) {
         RedissonClient client = this.redissonClients.getClient(source);
-        return client.getBucket(key).get();
+        return (byte[]) client.getBucket(key, ByteArrayCodec.INSTANCE).get();
     }
 
     @Override
-    public void update(String source, String key, Object value) {
+    public void update(String source, String key, byte[] value) {
         RedissonClient client = this.redissonClients.getClient(source);
-        client.getBucket(key).setAsync(value);
+        client.getBucket(key, ByteArrayCodec.INSTANCE).setAsync(value);
     }
 
     @Override
-    public void update(String source, String key, Object value, Duration timeToLive) {
+    public void update(String source, String key, byte[] value, Duration timeToLive) {
         RedissonClient client = this.redissonClients.getClient(source);
-        client.getBucket(key).setAsync(value, timeToLive.getSeconds(), TimeUnit.SECONDS);
+        if (timeToLive == null || timeToLive.toMillis() <= 0) {
+            client.getBucket(key, ByteArrayCodec.INSTANCE).setAsync(value);
+        } else {
+            client.getBucket(key, ByteArrayCodec.INSTANCE).setAsync(value, timeToLive.getSeconds(), TimeUnit.SECONDS);
+        }
     }
 
     @Override
@@ -71,13 +76,12 @@ public class DefaultCacheContainerHelper implements CacheContainerHelper {
         return CollUtil.newArrayList(keys);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T> List<T> values(String source, String pattern) {
+    public List<byte[]> values(String source, String pattern) {
         RedissonClient client = this.redissonClients.getClient(source);
         Iterable<String> keys = client.getKeys().getKeysByPattern(pattern);
         String[] array = CollUtil.newArrayList(keys).toArray(new String[]{});
-        Map<String, Object> stringObjectMap = client.getBuckets().get(array);
-        return (List<T>) CollUtil.newArrayList(stringObjectMap.values());
+        Map<String, byte[]> stringObjectMap = client.getBuckets(ByteArrayCodec.INSTANCE).get(array);
+        return CollUtil.newArrayList(stringObjectMap.values());
     }
 }

@@ -57,10 +57,10 @@ public class OAuth2ServerController {
         String redirect_uri = qo.getRedirect_uri();
         boolean question_mark = qo.isQuestion_mark();
         log.info("进入oauth2认证授权, client_id= {} question_mark= {} redirect_uri= {} ", client_id, question_mark, redirect_uri);
-        checkClient(qo);
+        this.checkClient(qo);
         // 如果用户尚未登录, 重定向登录页面进行登录
         if (!AuthContext.isLogin()) {
-            redirectToLoginHtml();
+            this.redirectToLoginHtml();
             return;
         }
         //当前用户的账号
@@ -68,7 +68,7 @@ public class OAuth2ServerController {
         // 校验重定向域名是否合法
         SaOAuth2Util.checkRightUrl(client_id, redirect_uri);
         //最终重定向页面
-        String finalRedirectUri = buildFinalRedirectUri(qo, account);
+        String finalRedirectUri = this.buildFinalRedirectUri(qo, account);
         if (question_mark) {
             finalRedirectUri = finalRedirectUri.replace("#token=", "?token=");
         }

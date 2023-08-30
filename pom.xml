@@ -10,7 +10,7 @@
     </parent>
     <groupId>easier.framework</groupId>
     <artifactId>easier-framework-parent</artifactId>
-    <version>2.7.2023.0822</version>
+    <version>2.7.2023.0829</version>
     <packaging>pom</packaging>
     <modules>
         <module>easier-framework-core</module>
@@ -70,6 +70,7 @@
         <docker.build-command3/>
         <docker.build-command4/>
         <docker.build-command5/>
+        <docker.push-command/>
         <!--构建docker.sh文件的参数-->
         <docker.sh.application>${project.artifactId}</docker.sh.application>
         <docker.sh.image>${docker.image}</docker.sh.image>
@@ -90,7 +91,7 @@
         <spring-boot.version>2.7.12</spring-boot.version>
         <spring-boot-admin.version>2.7.10</spring-boot-admin.version>
         <spring-cloud.version>2021.0.7</spring-cloud.version>
-        <easier-framework.version>2.7.2023.0822</easier-framework.version>
+        <easier-framework.version>2.7.2023.0829</easier-framework.version>
         <sa-token.version>1.34.0</sa-token.version>
         <hutool.version>5.8.19</hutool.version>
         <guava.version>32.0.1-jre</guava.version>
@@ -482,7 +483,7 @@
 
     <profiles>
         <profile>
-            <id>env.local</id>
+            <id>local</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
@@ -491,19 +492,19 @@
             </properties>
         </profile>
         <profile>
-            <id>env.dev</id>
+            <id>dev</id>
             <properties>
                 <env>dev</env>
             </properties>
         </profile>
         <profile>
-            <id>env.test</id>
+            <id>test</id>
             <properties>
                 <env>test</env>
             </properties>
         </profile>
         <profile>
-            <id>env.prod</id>
+            <id>prod</id>
             <properties>
                 <env>prod</env>
             </properties>
@@ -524,7 +525,6 @@
                                     <goal>generate-file</goal>
                                 </goals>
                                 <configuration>
-                                    <skip>${docker.skip}</skip>
                                     <conditionOnPlugin>spring-boot-maven-plugin</conditionOnPlugin>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
                                     <fileName>jar.sh</fileName>
@@ -532,13 +532,27 @@
                                     #!/bin/bash
 
                                     application=${jar.sh.application}
-                                    output=${jar.sh.output}
-                                    log_file=${jar.sh.log_file}
-                                    tail_f=false
-                                    tail_keyword=""
                                     env="${jar.sh.env}"
                                     jvm="${jar.sh.jvm}"
                                     args="${jar.sh.args}"
+
+                                    output=${jar.sh.output}
+                                    log_file=${jar.sh.log_file}
+
+                                    tail_f=false
+                                    tail_keyword=""
+
+                                    #查看状态
+                                    status() {
+                                      PID=$(pgrep -f $application)
+                                        if [ -n "$PID" ]; then
+                                          echo && echo "已找到应用进程 $application -> $PID"
+                                          echo "USER       PID       %CPU       %MEM       VSZ       RSS       TTY       STAT       START       TIME       COMMAND"
+                                          ps aux | grep -v grep | grep " $PID "
+                                        else
+                                          echo && echo "未找到应用进程 $application"
+                                        fi
+                                    }
 
                                     #启动
                                     start() {
@@ -548,7 +562,7 @@
                                         echo "启动应用失败"
                                         exit 1
                                       fi
-                                      echo "开始启动应用 $application"
+                                      echo && echo "开始启动应用 $application"
                                       # 输出 JVM 参数设置
                                       if [ -n "$jvm" ]; then
                                         echo "jvm 参数: $jvm"
@@ -562,32 +576,20 @@
                                       if [ -n "$args" ]; then
                                         echo "启动参数: $args"
                                       fi
-                                      echo "启动应用指令: nohup java $jvm -jar $application $args > $output 2>&1 &"
+                                      echo && echo "启动应用指令: nohup java $jvm -jar $application $args > $output 2>&1 &"
                                       nohup java $jvm -jar $application $args > $output 2>&1 &
                                       sleep 3
                                       PID=$(pgrep -f $application)
                                       if [ -n "$PID" ]; then
                                         status
-                                        echo "启动应用成功"
+                                        echo && echo "启动应用成功"
                                         if [ "$tail_f" = true ]; then
                                           log
                                         fi
                                       else
-                                        echo "启动应用失败"
+                                        echo && echo "启动应用失败"
                                         exit 1
                                       fi
-                                    }
-
-                                    #查看状态
-                                    status() {
-                                      PID=$(pgrep -f $application)
-                                        if [ -n "$PID" ]; then
-                                          echo "已找到应用进程 $application -> $PID"
-                                          echo "USER       PID       %CPU       %MEM       VSZ       RSS       TTY       STAT       START       TIME       COMMAND"
-                                          ps aux | grep -v grep | grep " $PID "
-                                        else
-                                          echo "未找到应用进程 $application"
-                                        fi
                                     }
 
                                     #停止
@@ -595,7 +597,7 @@
                                       PID=$(pgrep -f $application)
                                       if [ -n "$PID" ]; then
                                         status
-                                        echo "开始停止应用..."
+                                        echo && echo "开始停止应用..."
                                         kill -TERM "$PID"
                                         # 使用 while 循环等待进程停止
                                         while ps -p "$PID" > /dev/null; do
@@ -603,9 +605,9 @@
                                           sleep 0.2
                                         done
                                         sleep 1
-                                        echo "已停止应用进程 $application -> $PID"
+                                        echo && echo "已停止应用进程 $application -> $PID"
                                       else
-                                        echo "未找到应用进程 $application"
+                                        echo && echo "未找到应用进程 $application"
                                       fi
                                     }
 
@@ -648,7 +650,7 @@
                                         log
                                         ;;
                                       *)
-                                        echo "使用方法: $0 {start [-f] | restart [-f] | stop | status | log [keyword]}"
+                                        echo "使用方法: $0 {start [-f]|restart [-f]|stop|status|log [keyword]}"
                                         exit 1
                                         ;;
                                     esac
@@ -664,9 +666,8 @@
             <id>docker-push</id>
             <properties>
                 <docker.registry>127.0.0.1:5000</docker.registry>
-                <docker.image>${docker.registry}/${project.groupId}/${project.artifactId}
-                </docker.image>
-                <docker.build-command5>--push</docker.build-command5>
+                <docker.image>${docker.registry}/${project.groupId}/${project.artifactId}</docker.image>
+                <docker.push-command>docker image push ${docker.image}:${docker.tag}</docker.push-command>
             </properties>
         </profile>
         <profile>
@@ -742,6 +743,7 @@
                                         <command>
                                             docker save -o image.tar ${docker.image}:${docker.tag}
                                         </command>
+                                        <command>${docker.push-command}</command>
                                     </commands>
                                 </configuration>
                             </execution>
@@ -750,6 +752,7 @@
                 </plugins>
             </build>
         </profile>
+
         <profile>
             <id>generate-docker-sh</id>
             <build>
@@ -760,7 +763,7 @@
                         <version>${easier-framework.version}</version>
                         <executions>
                             <execution>
-                                <id>generate-jar-sh</id>
+                                <id>generate-docker-sh</id>
                                 <phase>install</phase>
                                 <goals>
                                     <goal>generate-file</goal>
@@ -783,9 +786,9 @@
                                         workdir=${docker.sh.workdir}
 
                                         # 获取脚本所在的目录
-                                        script_dir=$(cd "$(dirname "$0")" && pwd)
+                                        # script_dir=$(cd "$(dirname "$0")" && pwd)
 
-                                        echo "当前脚本文件的路径是: $script_dir"
+                                        # echo "当前脚本文件的路径是: $script_dir"
 
                                         # 对端口参数进行处理
                                         port_args=""
@@ -814,6 +817,7 @@
                                           container_id=$(docker ps -aqf "name=$application")
                                           running_container_id=$(docker ps -qf "name=$application")
                                         }
+
                                         #状态
                                         status() {
                                           # 重新获取运行容器主键
@@ -831,6 +835,7 @@
                                             echo "应用容器状态: 已停止"
                                           fi
                                         }
+
                                         #详情
                                         detail() {
                                           status
@@ -847,6 +852,7 @@
                                           echo && echo "运行脚本: "
                                           docker inspect --format '{{.Args}}' $container_id
                                         }
+
                                         #启动
                                         start() {
                                           reload_container_id
@@ -901,6 +907,7 @@
                                             exit 1
                                           fi
                                         }
+
                                         #停止
                                         stop(){
                                           reload_container_id
@@ -919,6 +926,7 @@
                                           sleep 2
                                           echo && status
                                         }
+
                                         #重启
                                         restart(){
                                           echo "执行操作: stop" && echo
@@ -926,6 +934,7 @@
                                           echo && echo "执行操作: start" && echo
                                           start
                                         }
+
                                         #清除容器和镜像
                                         clean(){
                                           reload_container_id
@@ -934,11 +943,23 @@
                                             return 1
                                           fi
                                           stop
-                                          echo && echo "开始删除容器: docker rm $container_id"
+
+                                          echo && echo "删除容器: docker rm $container_id"
                                           docker rm $container_id
-                                          echo && echo "开始删除镜像: docker rmi $image:$tag"
-                                          docker rmi $image:$tag
+
+                                          remove_images=$(docker images -q $image)
+                                          if [ -n "$remove_images" ]; then
+                                            echo && echo '删除镜像: docker rmi $(docker images -q '$image')'
+                                            docker rmi $(docker images -q $image)
+                                          fi
+
+                                          remove_images=$(docker images -f "dangling=true" -q)
+                                          if [ -n "$remove_images" ]; then
+                                            echo && echo '删除镜像: docker rmi $(docker images -f "dangling=true" -q)'
+                                            docker rmi $(docker images -f "dangling=true" -q)
+                                          fi
                                         }
+
                                         #初始化
                                         init(){
                                           clean
@@ -949,6 +970,7 @@
                                           echo ""
                                           start
                                         }
+
                                         #查看日志
                                         log(){
                                           reload_container_id

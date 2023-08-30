@@ -71,7 +71,7 @@ public class Exec extends AbstractConditionMojo {
                 case CharUtil.DOUBLE_QUOTES:
                     if (inWrap) {
                         if (c == stack.peek()) {
-                            //结束包装
+                            // 结束包装
                             stack.pop();
                             inWrap = false;
                         }
@@ -109,21 +109,28 @@ public class Exec extends AbstractConditionMojo {
         if (!super.shouldExecute()) {
             return;
         }
-        if (!workingDirectory.exists()) {
-            getLog().info("创建工作目录 '" + workingDirectory.getAbsolutePath() + "'.");
-            if (!workingDirectory.mkdirs()) {
-                throw new RuntimeException("无法创建工作目录: '" + workingDirectory.getAbsolutePath() + "'");
+        if (!this.workingDirectory.exists()) {
+            this.getLog().info("创建工作目录 '" + this.workingDirectory.getAbsolutePath() + "'.");
+            if (!this.workingDirectory.mkdirs()) {
+                throw new RuntimeException("无法创建工作目录: '" + this.workingDirectory.getAbsolutePath() + "'");
             }
         }
-        for (String command : commands) {
+        for (String command : this.commands) {
+            if (StrUtil.isBlank(command)) {
+                continue;
+            }
             String[] commandArgs = Arrays.stream(handleCmds(command))
                     .filter(StrUtil::isNotBlank)
                     .map(String::trim)
+                    .filter(StrUtil::isNotBlank)
                     .toArray(String[]::new);
+            if (commandArgs.length < 1) {
+                continue;
+            }
             ProcessBuilder processBuilder = new ProcessBuilder(commandArgs)
-                    .directory(workingDirectory)
+                    .directory(this.workingDirectory)
                     .redirectErrorStream(true);
-            getLog().info("开始执行命令: " + Arrays.toString(commandArgs));
+            this.getLog().info("开始执行命令: " + Arrays.toString(commandArgs));
             InputStream in = null;
             Process process = null;
             int exitValue = 0;
@@ -138,7 +145,7 @@ public class Exec extends AbstractConditionMojo {
                 IoUtil.readUtf8Lines(in, lineHandler);
                 process.waitFor();
             } catch (Exception e) {
-                getLog().info("执行命令异常:" + e.getMessage());
+                this.getLog().info("执行命令异常:" + e.getMessage());
                 throw new RuntimeException(e);
             } finally {
                 if (in != null) {
@@ -149,7 +156,7 @@ public class Exec extends AbstractConditionMojo {
                     try {
                         exitValue = process.exitValue();
                     } catch (Exception ignored) {
-
+                        exitValue = 1;
                     }
                 }
             }

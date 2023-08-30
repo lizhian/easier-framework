@@ -6,7 +6,7 @@
     <parent>
         <groupId>easier.framework</groupId>
         <artifactId>easier-framework-parent</artifactId>
-        <version>2.7.2023.0822</version>
+        <version>2.7.2023.0829</version>
     </parent>
     <artifactId>easier-framework-starter-mybatis</artifactId>
     <properties>

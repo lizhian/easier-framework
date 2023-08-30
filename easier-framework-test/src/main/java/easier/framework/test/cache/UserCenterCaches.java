@@ -10,7 +10,7 @@ public class UserCenterCaches {
             = Caches.ofContainer(DictDetail.class)
             .keyPrefix(DictDetail.class.getSimpleName())
             .timeToLiveMinutes(2)
-            .localCache2s()
+            .localLive2s()
             .build();
 
 
