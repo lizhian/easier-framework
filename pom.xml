@@ -784,10 +784,6 @@
                                         expose_ports="${docker.sh.expose_ports}"
                                         workdir=${docker.sh.workdir}
 
-                                        # 获取脚本所在的目录
-                                        # script_dir=$(cd "$(dirname "$0")" && pwd)
-
-                                        # echo "当前脚本文件的路径是: $script_dir"
 
                                         # 对端口参数进行处理
                                         port_args=""
@@ -880,6 +876,10 @@
                                           fi
                                           # 不存在应用容器,初始化启动
                                           echo "开始启动应用 $application"
+
+                                          # 获取脚本文件所在的目录
+                                          script_dir=$(cd "$(dirname "$0")" && pwd)
+                                          echo "当前路径: $script_dir"
                                           if [ -n "$jvm" ]; then
                                             echo "jvm 参数: $jvm"
                                           fi
@@ -893,8 +893,8 @@
                                           if [ -n "$port_args" ]; then
                                             echo "端口参数: $port_args"
                                           fi
-                                          echo && echo "启动应用指令: docker run -d --name $application $port_args -e JVM=\"$jvm\" -e ARGS=\"$args\" -v ./config/:$workdir/config/ -v ./logs/:$workdir/logs/ $image:$tag"
-                                          docker run -d --name $application $port_args -e JVM="$jvm" -e ARGS="$args" -v ./config/:$workdir/config/ -v ./logs/:$workdir/logs/ $image:$tag
+                                          echo && echo "启动应用指令: docker run -d --name $application $port_args -e JVM=\"$jvm\" -e ARGS=\"$args\" -v $script_dir/config/:$workdir/config/ -v $script_dir/logs/:$workdir/logs/ $image:$tag"
+                                          docker run -d --name $application $port_args -e JVM="$jvm" -e ARGS="$args" -v $script_dir/config/:$workdir/config/ -v $script_dir/logs/:$workdir/logs/ $image:$tag
                                           sleep 5
                                           echo ""
                                           status
