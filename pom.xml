@@ -547,8 +547,7 @@
                                       PID=$(pgrep -f $application)
                                         if [ -n "$PID" ]; then
                                           echo && echo "已找到应用进程 $application -> $PID"
-                                          echo "USER       PID       %CPU       %MEM       VSZ       RSS       TTY       STAT       START       TIME       COMMAND"
-                                          ps aux | grep -v grep | grep " $PID "
+                                          ps aux | grep -v grep | grep " PID \| $PID "
                                         else
                                           echo && echo "未找到应用进程 $application"
                                         fi
@@ -650,7 +649,7 @@
                                         log
                                         ;;
                                       *)
-                                        echo "使用方法: $0 {start [-f]|restart [-f]|stop|status|log [keyword]}"
+                                        echo "使用方法: $0 {status|start [-f]|stop|restart [-f]|log [keyword]}"
                                         exit 1
                                         ;;
                                     esac
