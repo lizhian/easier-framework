@@ -1,6 +1,6 @@
+/*
 package easier.framework.core.plugin.exception;
 
-import easier.framework.core.domain.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 
@@ -14,7 +14,9 @@ public class ExceptionHandlerRegister {
     private static final Map<Class<? extends Throwable>, HttpStatus> httpStatuses = new ConcurrentHashMap<>();
 
     static {
-        //空指针异常
+        */
+/*//*
+/空指针异常
         register(NullPointerException.class, exception -> {
             //自定义处理
             log.error("系统发生空指针异常", exception);
@@ -25,7 +27,8 @@ public class ExceptionHandlerRegister {
             //自定义处理
             log.error("系统发生内存溢出", exception);
             return R.failed("系统发生内存溢出,请联系管理员");
-        });
+        });*//*
+
     }
 
 
@@ -51,3 +54,4 @@ public class ExceptionHandlerRegister {
         return httpStatuses.get(throwableClass).value();
     }
 }
+*/

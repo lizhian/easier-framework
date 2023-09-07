@@ -47,8 +47,8 @@ public @interface BaseAuth {
 
         private String getMethodType(AuthExpandContext context) {
             HttpServletRequest request = context.getRequest();
-            if (context.hasAnnotation(GetPermission.class) || request.getMethod().equalsIgnoreCase("get")) {
-                return "get";
+            if (context.hasAnnotation(QueryPermission.class) || request.getMethod().equalsIgnoreCase("get")) {
+                return "query";
             }
             if (context.hasAnnotation(DeletePermission.class) || request.getMethod().equalsIgnoreCase("delete")) {
                 return "delete";

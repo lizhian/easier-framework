@@ -3,10 +3,8 @@ package easier.framework.starter.mybatis;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.collection.IterUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.extra.spring.EnableSpringUtil;
-import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourcePropertiesCustomizer;
 import com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
@@ -16,7 +14,6 @@ import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerIntercept
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tangzc.mpe.base.event.InitScanEntityEvent;
 import easier.framework.core.util.SpringUtil;
-import easier.framework.core.util.StrUtil;
 import easier.framework.starter.mybatis.interceptor.MybatisTimerInterceptor;
 import easier.framework.starter.mybatis.template.DefaultEasierMybatisTemplate;
 import easier.framework.starter.mybatis.template.EasierMybatisTemplate;
@@ -36,7 +33,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * 更简单mybatis自动配置
@@ -60,9 +56,9 @@ public class EasierMybatisAutoConfiguration {
     @Bean
     public ConfigurationCustomizer configurationCustomizer() {
         return configuration -> {
-            //重写枚举处理
+            // 重写枚举处理
             configuration.setDefaultEnumTypeHandler(EnumCodecTypeHandler.class);
-            //增加对DateTime类型的支持
+            // 增加对DateTime类型的支持
             configuration.getTypeHandlerRegistry().register(DateTimeTypeHandler.instance);
             configuration.getTypeHandlerRegistry().register(ListIntTypeHandler.instance);
             configuration.getTypeHandlerRegistry().register(ListLongTypeHandler.instance);
@@ -77,36 +73,16 @@ public class EasierMybatisAutoConfiguration {
 
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor(EasierMybatisTemplate mybatisTemplate) {
-        //分页插件
+        // 分页插件
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor());
-        //动态表名插件
+        // 动态表名插件
         DynamicTableNameInnerInterceptor dynamicTableNameInnerInterceptor = new DynamicTableNameInnerInterceptor();
         dynamicTableNameInnerInterceptor.setTableNameHandler(mybatisTemplate);
         interceptor.addInnerInterceptor(dynamicTableNameInnerInterceptor);
         return interceptor;
     }
 
-    @Bean
-    public DynamicDataSourcePropertiesCustomizer dynamicDataSourcePropertiesCustomizer(EasierMybatisProperties easierMybatisProperties) {
-        return properties -> {
-            List<String> enableDB = StrUtil.smartSplit(easierMybatisProperties.getEnableDb());
-            if (CollUtil.isEmpty(enableDB)) {
-                return;
-            }
-            String primary = IterUtil.getFirstNoneNull(enableDB);
-            properties.setPrimary(primary);
-            List<String> disableDB = properties.getDatasource()
-                    .keySet()
-                    .stream()
-                    .filter(key -> !enableDB.contains(key))
-                    .collect(Collectors.toList());
-            for (String db : disableDB) {
-                properties.getDatasource().remove(db);
-            }
-            log.info("当前启用的数据库为:{},默认数据库为:[{}]", enableDB, primary);
-        };
-    }
 
     @EventListener
     public void bindMapperLoggerGroups(InitScanEntityEvent event) {

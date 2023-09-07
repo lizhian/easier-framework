@@ -104,7 +104,7 @@ public class EasierOperationCustomizer implements OperationCustomizer {
         }
         String baseAuthValue = baseAuth.value();
 
-        if (AnnotationUtil.hasAnnotation(method, GetPermission.class)
+        if (AnnotationUtil.hasAnnotation(method, QueryPermission.class)
                 || AnnotationUtil.hasAnnotation(method, GetMapping.class)) {
             descriptions.add("接口需要基础查询权限编码【{}:{}】"._format(baseAuthValue, "Get"));
             return;

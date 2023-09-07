@@ -1,3 +1,4 @@
+/*
 package easier.framework.starter.web.handler;
 
 import cn.hutool.core.util.CharsetUtil;
@@ -5,7 +6,6 @@ import cn.hutool.extra.servlet.ServletUtil;
 import cn.hutool.http.ContentType;
 import easier.framework.core.domain.R;
 import easier.framework.core.plugin.exception.BaseException;
-import easier.framework.core.plugin.exception.ExceptionHandlerRegister;
 import easier.framework.core.util.JacksonUtil;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.servlet.api.ExceptionHandler;
@@ -85,3 +85,4 @@ public class GlobalExceptionHandler implements ExceptionHandler {
 
 
 }
+*/

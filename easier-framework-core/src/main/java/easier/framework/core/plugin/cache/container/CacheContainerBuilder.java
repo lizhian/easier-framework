@@ -81,6 +81,11 @@ public class CacheContainerBuilder<T> {
         return this;
     }
 
+    public CacheContainerBuilder<T> timeToLiveForever() {
+        this.timeToLive = null;
+        return this;
+    }
+
     public CacheContainerBuilder<T> local(@NonNull LocalCache local) {
         this.local = local;
         return this;

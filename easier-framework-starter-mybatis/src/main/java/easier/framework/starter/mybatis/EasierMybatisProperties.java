@@ -21,4 +21,6 @@ public class EasierMybatisProperties {
      * 使用的数据库,第一个为主库
      */
     private String enableDb;
+
+    private Boolean enabled;
 }

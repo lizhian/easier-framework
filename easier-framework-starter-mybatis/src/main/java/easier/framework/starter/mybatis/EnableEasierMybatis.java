@@ -14,6 +14,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Import(EasierMybatisAutoConfiguration.class)
+@Import({EasierMybatisAutoConfiguration.class, EasierDynamicDataSourceAutoConfiguration.class})
 public @interface EnableEasierMybatis {
 }

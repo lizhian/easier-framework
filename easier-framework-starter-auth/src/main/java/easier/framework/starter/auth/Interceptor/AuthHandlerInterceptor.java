@@ -36,20 +36,31 @@ public class AuthHandlerInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if (handler instanceof HandlerMethod) {
             HandlerMethod handlerMethod = (HandlerMethod) handler;
-            return this.preHandlerMethod(request, response, handlerMethod);
+            this.preHandlerMethod(request, response, handlerMethod);
+            return true;
         }
+        log.info("handler {}", handler);
         return true;
     }
 
-    private boolean preHandlerMethod(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod) {
+    private void preHandlerMethod(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod) {
         Method method = handlerMethod.getMethod();
+        this.beforeAuth();
         Annotation[] annotations = ArrayUtil.append(method.getAnnotations(), method.getDeclaringClass().getAnnotations());
+        if (annotations == null) {
+            return;
+        }
         List<Annotation> allAuthAnnotations = Arrays.stream(annotations)
                 .filter(annotation -> AnnotationUtil.hasAnnotation(annotation.annotationType(), AuthExpand.class))
                 .collect(Collectors.toList());
-        this.beforeAuth();
+        if (CollUtil.isEmpty(allAuthAnnotations)) {
+            return;
+        }
         for (Annotation authAnnotation : allAuthAnnotations) {
-            List<Annotation> otherAuthAnnotations = CollUtil.removeAny(allAuthAnnotations, authAnnotation);
+            List<Annotation> otherAuthAnnotations = Arrays.stream(annotations)
+                    .filter(annotation -> AnnotationUtil.hasAnnotation(annotation.annotationType(), AuthExpand.class))
+                    .filter(it -> !it.equals(authAnnotation))
+                    .collect(Collectors.toList());
             AuthExpandContext context = AuthExpandContext.builder()
                     .request(request)
                     .response(response)
@@ -58,9 +69,8 @@ public class AuthHandlerInterceptor implements HandlerInterceptor {
                     .authAnnotation(authAnnotation)
                     .otherAuthAnnotations(otherAuthAnnotations)
                     .build();
-            doAuth(context);
+            this.doAuth(context);
         }
-        return true;
     }
 
     private void doAuth(AuthExpandContext context) {

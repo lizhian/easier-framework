@@ -2,6 +2,7 @@ package easier.framework.test;
 
 import cn.dev33.satoken.oauth2.logic.SaOAuth2Template;
 import cn.dev33.satoken.oauth2.model.SaClientModel;
+import cn.hutool.core.lang.Console;
 import cn.hutool.extra.spring.EnableSpringUtil;
 import com.fasterxml.jackson.databind.JavaType;
 import com.tangzc.mpe.autotable.EnableAutoTable;
@@ -54,6 +55,7 @@ public class EasierFrameworkTestApplication extends SaOAuth2Template implements
     @SneakyThrows
     public static void main(String[] args) {
         SpringApplication.run(EasierFrameworkTestApplication.class, args);
+        Console.log(SpringUtil.getProperty("test.value"));
     }
 
     @Override

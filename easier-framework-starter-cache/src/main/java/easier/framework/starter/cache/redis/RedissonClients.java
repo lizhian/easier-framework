@@ -16,6 +16,7 @@ import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -81,7 +82,12 @@ public class RedissonClients implements InitializingBean, DisposableBean {
 
     @Override
     public void afterPropertiesSet() {
-        SpringUtil.getExecutor().submit(this::resetWorkerID);
+        ThreadPoolTaskExecutor executor = SpringUtil.getExecutor();
+        if (executor != null) {
+            executor.submit(this::resetWorkerID);
+            return;
+        }
+        this.resetWorkerID();
     }
 
     @SneakyThrows
@@ -135,7 +141,7 @@ public class RedissonClients implements InitializingBean, DisposableBean {
         int connectTimeoutMillis = properties.getConnectTimeoutMillis();
         String[] address = this.convert(nodes, ssl);
         Config config = new Config();
-        //single
+        // single
         if (single.equals(type)) {
             config.useSingleServer()
                     .setAddress(address[0])
@@ -143,7 +149,7 @@ public class RedissonClients implements InitializingBean, DisposableBean {
                     .setPassword(password)
                     .setConnectTimeout(connectTimeoutMillis);
         }
-        //sentinel
+        // sentinel
         if (sentinel.equals(type)) {
             config.useSentinelServers()
                     .setMasterName(properties.getSentinel().getMasterName())
@@ -152,7 +158,7 @@ public class RedissonClients implements InitializingBean, DisposableBean {
                     .setPassword(password)
                     .setConnectTimeout(connectTimeoutMillis);
         }
-        //cluster
+        // cluster
         if (cluster.equals(type)) {
             config.useClusterServers()
                     .addNodeAddress(address)

@@ -3,6 +3,7 @@ package easier.framework.starter.auth.dao;
 import cn.dev33.satoken.dao.SaTokenDao;
 import cn.dev33.satoken.util.SaFoxUtil;
 import easier.framework.core.plugin.cache.RedisSources;
+import easier.framework.starter.cache.condition.ConditionalOnRedisSource;
 import easier.framework.starter.cache.redis.RedissonClients;
 import org.redisson.api.RBatch;
 import org.redisson.api.RBucket;
@@ -15,13 +16,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
+@ConditionalOnRedisSource(RedisSources.auth)
 public class SaTokenDaoForRedissonClients implements SaTokenDao {
 
 
     public final RedissonClient redissonClient;
 
     public SaTokenDaoForRedissonClients(RedissonClients redissonClients) {
-        redissonClient = redissonClients.getClient(RedisSources.auth);
+        this.redissonClient = redissonClients.getClient(RedisSources.auth);
     }
 
 
@@ -30,7 +32,7 @@ public class SaTokenDaoForRedissonClients implements SaTokenDao {
      */
     @Override
     public String get(String key) {
-        RBucket<String> rBucket = redissonClient.getBucket(key);
+        RBucket<String> rBucket = this.redissonClient.getBucket(key);
         return rBucket.get();
     }
 
@@ -44,10 +46,10 @@ public class SaTokenDaoForRedissonClients implements SaTokenDao {
         }
         // 判断是否为永不过期
         if (timeout == SaTokenDao.NEVER_EXPIRE) {
-            RBucket<String> bucket = redissonClient.getBucket(key);
+            RBucket<String> bucket = this.redissonClient.getBucket(key);
             bucket.set(value);
         } else {
-            RBatch batch = redissonClient.createBatch();
+            RBatch batch = this.redissonClient.createBatch();
             RBucketAsync<String> bucket = batch.getBucket(key);
             bucket.setAsync(value);
             bucket.expireAsync(Duration.ofSeconds(timeout));
@@ -60,7 +62,7 @@ public class SaTokenDaoForRedissonClients implements SaTokenDao {
      */
     @Override
     public void update(String key, String value) {
-        long expire = getTimeout(key);
+        long expire = this.getTimeout(key);
         // -2 = 无此键
         if (expire == SaTokenDao.NOT_VALUE_EXPIRE) {
             return;
@@ -73,7 +75,7 @@ public class SaTokenDaoForRedissonClients implements SaTokenDao {
      */
     @Override
     public void delete(String key) {
-        redissonClient.getBucket(key).delete();
+        this.redissonClient.getBucket(key).delete();
     }
 
     /**
@@ -81,7 +83,7 @@ public class SaTokenDaoForRedissonClients implements SaTokenDao {
      */
     @Override
     public long getTimeout(String key) {
-        RBucket<String> rBucket = redissonClient.getBucket(key);
+        RBucket<String> rBucket = this.redissonClient.getBucket(key);
         long timeout = rBucket.remainTimeToLive();
         return timeout < 0 ? timeout : timeout / 1000;
     }
@@ -93,7 +95,7 @@ public class SaTokenDaoForRedissonClients implements SaTokenDao {
     public void updateTimeout(String key, long timeout) {
         // 判断是否想要设置为永久
         if (timeout == SaTokenDao.NEVER_EXPIRE) {
-            long expire = getTimeout(key);
+            long expire = this.getTimeout(key);
             if (expire == SaTokenDao.NEVER_EXPIRE) {
                 // 如果其已经被设置为永久，则不作任何处理
             } else {
@@ -102,7 +104,7 @@ public class SaTokenDaoForRedissonClients implements SaTokenDao {
             }
             return;
         }
-        RBucket<String> rBucket = redissonClient.getBucket(key);
+        RBucket<String> rBucket = this.redissonClient.getBucket(key);
         rBucket.expire(Duration.ofSeconds(timeout));
     }
 
@@ -112,7 +114,7 @@ public class SaTokenDaoForRedissonClients implements SaTokenDao {
      */
     @Override
     public Object getObject(String key) {
-        RBucket<Object> rBucket = redissonClient.getBucket(key);
+        RBucket<Object> rBucket = this.redissonClient.getBucket(key);
         return rBucket.get();
     }
 
@@ -126,10 +128,10 @@ public class SaTokenDaoForRedissonClients implements SaTokenDao {
         }
         // 判断是否为永不过期
         if (timeout == SaTokenDao.NEVER_EXPIRE) {
-            RBucket<Object> bucket = redissonClient.getBucket(key);
+            RBucket<Object> bucket = this.redissonClient.getBucket(key);
             bucket.set(object);
         } else {
-            RBatch batch = redissonClient.createBatch();
+            RBatch batch = this.redissonClient.createBatch();
             RBucketAsync<Object> bucket = batch.getBucket(key);
             bucket.setAsync(object);
             bucket.expireAsync(Duration.ofSeconds(timeout));
@@ -143,7 +145,7 @@ public class SaTokenDaoForRedissonClients implements SaTokenDao {
      */
     @Override
     public void updateObject(String key, Object object) {
-        long expire = getObjectTimeout(key);
+        long expire = this.getObjectTimeout(key);
         // -2 = 无此键
         if (expire == SaTokenDao.NOT_VALUE_EXPIRE) {
             return;
@@ -156,7 +158,7 @@ public class SaTokenDaoForRedissonClients implements SaTokenDao {
      */
     @Override
     public void deleteObject(String key) {
-        redissonClient.getBucket(key).delete();
+        this.redissonClient.getBucket(key).delete();
     }
 
     /**
@@ -164,7 +166,7 @@ public class SaTokenDaoForRedissonClients implements SaTokenDao {
      */
     @Override
     public long getObjectTimeout(String key) {
-        RBucket<String> rBucket = redissonClient.getBucket(key);
+        RBucket<String> rBucket = this.redissonClient.getBucket(key);
         long timeout = rBucket.remainTimeToLive();
         return timeout < 0 ? timeout : timeout / 1000;
     }
@@ -176,7 +178,7 @@ public class SaTokenDaoForRedissonClients implements SaTokenDao {
     public void updateObjectTimeout(String key, long timeout) {
         // 判断是否想要设置为永久
         if (timeout == SaTokenDao.NEVER_EXPIRE) {
-            long expire = getObjectTimeout(key);
+            long expire = this.getObjectTimeout(key);
             if (expire == SaTokenDao.NEVER_EXPIRE) {
                 // 如果其已经被设置为永久，则不作任何处理
             } else {
@@ -185,7 +187,7 @@ public class SaTokenDaoForRedissonClients implements SaTokenDao {
             }
             return;
         }
-        RBucket<Object> rBucket = redissonClient.getBucket(key);
+        RBucket<Object> rBucket = this.redissonClient.getBucket(key);
         rBucket.expire(Duration.ofSeconds(timeout));
     }
 
@@ -195,7 +197,7 @@ public class SaTokenDaoForRedissonClients implements SaTokenDao {
      */
     @Override
     public List<String> searchData(String prefix, String keyword, int start, int size, boolean sortType) {
-        Stream<String> stream = redissonClient.getKeys().getKeysStreamByPattern(prefix + "*" + keyword + "*");
+        Stream<String> stream = this.redissonClient.getKeys().getKeysStreamByPattern(prefix + "*" + keyword + "*");
         List<String> list = stream.collect(Collectors.toList());
         return SaFoxUtil.searchList(list, start, size, sortType);
     }

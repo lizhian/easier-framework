@@ -10,7 +10,7 @@
     </parent>
     <groupId>easier.framework</groupId>
     <artifactId>easier-framework-parent</artifactId>
-    <version>2.7.2023.0829</version>
+    <version>2.7.2023.0901</version>
     <packaging>pom</packaging>
     <modules>
         <module>easier-framework-core</module>
@@ -91,7 +91,7 @@
         <spring-boot.version>2.7.12</spring-boot.version>
         <spring-boot-admin.version>2.7.10</spring-boot-admin.version>
         <spring-cloud.version>2021.0.7</spring-cloud.version>
-        <easier-framework.version>2.7.2023.0829</easier-framework.version>
+        <easier-framework.version>2.7.2023.0901</easier-framework.version>
         <sa-token.version>1.34.0</sa-token.version>
         <hutool.version>5.8.19</hutool.version>
         <guava.version>32.0.1-jre</guava.version>
@@ -102,10 +102,12 @@
         <mybatis-plus-ext.version>${mybatis-plus.version}-EXT420</mybatis-plus-ext.version>
         <mybatis-plus-join.version>1.4.5</mybatis-plus-join.version>
         <dynamic-datasource.version>3.6.1</dynamic-datasource.version>
-        <redisson.version>3.22.0</redisson.version>
+        <redisson.version>3.23.4</redisson.version>
         <okhttps.version>4.0.1</okhttps.version>
         <okio.version>2.8.0</okio.version>
         <jasypt.version>3.0.5</jasypt.version>
+        <reactor.version>3.5.3</reactor.version>
+        <reactor-core.version>${reactor.version}</reactor-core.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -217,13 +219,13 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <dependency>
+            <!--<dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-dependencies</artifactId>
                 <version>${sa-token.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
+            </dependency>-->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
@@ -244,6 +246,21 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-core</artifactId>
+                <version>${sa-token.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-spring-boot-starter</artifactId>
+                <version>${sa-token.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-oauth2</artifactId>
+                <version>${sa-token.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.oshi</groupId>
@@ -879,7 +896,7 @@
 
                                           # 获取脚本文件所在的目录
                                           script_dir=$(cd "$(dirname "$0")" && pwd)
-                                          echo "当前路径: $script_dir"
+                                          echo && echo "当前路径: $script_dir"
                                           if [ -n "$jvm" ]; then
                                             echo "jvm 参数: $jvm"
                                           fi

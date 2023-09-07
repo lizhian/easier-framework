@@ -14,9 +14,11 @@ import easier.framework.starter.cache.redis.RedissonTemplate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -28,7 +30,10 @@ public class EasierCacheAutoConfiguration {
     @Bean
     public RedissonConfigCustomizer defaultRedissonConfigCustomizer() {
         return configuration -> {
-            configuration.setExecutor(SpringUtil.getExecutor().getThreadPoolExecutor());
+            ThreadPoolTaskExecutor executor = SpringUtil.getExecutor();
+            if (executor != null) {
+                configuration.setExecutor(executor.getThreadPoolExecutor());
+            }
             configuration.setCodec(new RedissonJacksonCodec());
         };
     }
@@ -42,11 +47,13 @@ public class EasierCacheAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnProperty("spring.easier.cache.enable-redis")
     public RedissonTemplate redissonTemplate(RedissonClients redissonClients) {
         return redissonClients.getTemplate();
     }
 
     @Bean
+    @ConditionalOnProperty("spring.easier.cache.enable-redis")
     public RedissonClient redissonClient(RedissonClients redissonClients) {
         return redissonClients.getClient();
     }

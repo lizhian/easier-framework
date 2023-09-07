@@ -69,11 +69,11 @@ public class EasierEnvironmentPostProcessor implements EnvironmentPostProcessor,
         for (DefaultProperty defaultProperty : loadedDefaultProperties) {
             String comment = defaultProperty.getComment();
             if (StrUtil.isNotBlank(comment)) {
-                System.out.println("# " + comment);
+                System.out.println("\n# " + comment);
             }
             String key = defaultProperty.getKey();
             String value = defaultProperty.getValue();
-            if (key.contains("password")) {
+            if (key.contains("password") && !value.startsWith("${") && !value.startsWith("ENC(")) {
                 value = DesensitizedUtil.password(value);
             }
             System.out.println(key + "=" + value);
@@ -81,6 +81,7 @@ public class EasierEnvironmentPostProcessor implements EnvironmentPostProcessor,
         for (DefaultProperty defaultProperty : loadedDefaultProperties) {
             String comment = defaultProperty.getComment();
             if (StrUtil.isNotBlank(comment)) {
+                log.info("");
                 log.info("# {}", comment);
             }
             String key = defaultProperty.getKey();

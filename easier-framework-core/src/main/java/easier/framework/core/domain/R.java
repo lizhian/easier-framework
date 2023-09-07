@@ -89,6 +89,12 @@ public class R<T> implements Serializable {
         return of(RCode.failed, null, message);
     }
 
+    public static <T> R<T> failed(int code, String message) {
+        R<T> r = of(RCode.failed, null, message);
+        r.setCode(code);
+        return r;
+    }
+
     public static <T> R<T> failed(T data, String message) {
         return of(RCode.failed, data, message);
     }
