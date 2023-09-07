@@ -30,7 +30,7 @@ public class DictDetail implements Serializable {
     private String name;
 
     @Schema(description = "是否启用")
-    @BoolReverse("disable")
+    @BoolReverse("disabled")
     private Boolean enable;
 
     @Column(comment = "样式")

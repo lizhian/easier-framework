@@ -232,7 +232,7 @@ public class DictService {
         //枚举字典只能更新
         //字典样式/备注
         if (DictType.isEnumDict(entity.getDictType())) {
-            if (EnableStatus.isDisable(entity.getStatus())) {
+            if (EnableStatus.isDisabled(entity.getStatus())) {
                 throw BizException.of("不允许禁用枚举字典");
             }
             this._dict.newUpdate()
@@ -329,7 +329,7 @@ public class DictService {
         }
         //枚举字典的字典项只能更新字典项样式和备注
         if (DictType.isEnumDict(dict.getDictType())) {
-            if (EnableStatus.isDisable(entity.getStatus())) {
+            if (EnableStatus.isDisabled(entity.getStatus())) {
                 throw BizException.of("不允许禁用枚举字典的字典项");
             }
             this._dict_item.newUpdate()

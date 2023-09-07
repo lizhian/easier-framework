@@ -34,7 +34,7 @@ public class TreeNode<T> implements Serializable {
     @Schema(description = "是否有子节点")
     private Boolean hasChildren;
 
-    @BoolReverse("disable")
+    @BoolReverse("disabled")
     @Schema(description = "是否启用")
     private Boolean enable;
 

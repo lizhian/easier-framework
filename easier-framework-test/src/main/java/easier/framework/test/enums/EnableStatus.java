@@ -19,7 +19,7 @@ import lombok.experimental.FieldNameConstants;
 @Dict(code = "enable_status", name = "通用启用状态")
 public enum EnableStatus {
     enable("enable", "启用"),
-    disable("disable", "停用");
+    disabled("disabled", "停用");
     public static final String defaultValue = "enable";
     @EnumValue
     private final String value;
@@ -30,7 +30,7 @@ public enum EnableStatus {
         return EnableStatus.enable.equals(status);
     }
 
-    public static boolean isDisable(EnableStatus status) {
+    public static boolean isDisabled(EnableStatus status) {
         return !EnableStatus.enable.equals(status);
     }
 

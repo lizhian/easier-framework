@@ -79,7 +79,7 @@ public class DeptService {
         }
         Dept parent = this._dept.getById(entity.getParentId());
         // 如果父节点不为正常状态,则不允许新增子节点
-        if (parent != null && EnableStatus.isDisable(parent.getStatus())) {
+        if (parent != null && EnableStatus.isDisabled(parent.getStatus())) {
             throw BizException.of("部门停用，不允许新增");
         }
         String ancestors;
@@ -150,7 +150,7 @@ public class DeptService {
         if (entity.getParentId().equals(deptId)) {
             throw BizException.of("修改部门'{}'失败，上级部门不能是自己", entity.getDeptName());
         }
-        if (entity.getStatus().equals(EnableStatus.disable)) {
+        if (entity.getStatus().equals(EnableStatus.disabled)) {
             boolean existsEnableChildren = this._dept.newQuery()
                     .eq(Dept::getStatus, EnableStatus.enable)
                     .likeLeft(Dept::getAncestors, deptId)

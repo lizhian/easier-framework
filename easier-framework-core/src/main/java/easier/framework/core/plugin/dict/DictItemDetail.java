@@ -27,7 +27,7 @@ public class DictItemDetail implements Serializable {
     private String style;
 
     @Schema(description = "是否启用")
-    @BoolReverse("disable")
+    @BoolReverse("disabled")
     private Boolean enable;
 
     @Schema(description = "备注")

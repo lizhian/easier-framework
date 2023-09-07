@@ -73,7 +73,7 @@ public class LoginService {
             throw BizException.of("验证码已过期");
         }
         UserCenterCaches.captcha.clean(captchaId);
-        if (!generator.verify(srcCode, code)) {
+        if (!this.generator.verify(srcCode, code)) {
             throw BizException.of("验证码错误");
         }
         User user = this._user
@@ -82,7 +82,7 @@ public class LoginService {
         if (user == null) {
             throw BizException.of("账号或密码错误");
         }
-        if (EnableStatus.isDisable(user.getStatus())) {
+        if (EnableStatus.isDisabled(user.getStatus())) {
             throw BizException.of("账号已被禁用,请联系管理员");
         }
         if (!this.encryptor.decrypt(user.getPassword()).equals(password)) {
