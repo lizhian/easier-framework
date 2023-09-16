@@ -1,11 +1,4 @@
-# 核心模块
-
-## `easier-framework-core`
-
-1. 基础依赖
-2. 定义注解
-3. 定义接口
-4. 相关工具类
+基于springboot2.7的多个starter组件,包括多源redis,基于redis的服务注册,基于redis的分布式任务等
 
 ## `easier-framework-starter-env`
 
@@ -16,3 +9,5 @@
 
 1. 自定义枚举处理
 2. 基础注解的序列化增强,详见`JsonFieldExpandSerializer`
+
+待补充
