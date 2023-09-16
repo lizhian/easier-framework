@@ -4,7 +4,6 @@ import cn.hutool.core.annotation.AnnotationUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ReflectUtil;
-import cn.hutool.core.util.StrUtil;
 import easier.framework.core.plugin.auth.AuthContext;
 import easier.framework.core.plugin.auth.expand.AuthExpand;
 import easier.framework.core.plugin.auth.expand.AuthExpandContext;
@@ -88,14 +87,9 @@ public class AuthHandlerInterceptor implements HandlerInterceptor {
                 return;
             }
             String tokenValue = AuthContext.getTokenValue();
-            if (StrUtil.isBlank(tokenValue)) {
-                return;
-            }
-            String account = this.authTemplate.tokenToAccount(tokenValue);
-            if (StrUtil.isBlank(account)) {
-                return;
-            }
-            AuthContext.login(account);
+
+            this.authTemplate.tryLogin(tokenValue);
+
         } catch (Exception ignored) {
         }
     }

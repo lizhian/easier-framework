@@ -21,6 +21,7 @@
             <groupId>easier.framework</groupId>
             <artifactId>easier-framework-starter-mybatis</artifactId>
         </dependency>
+        
     </dependencies>
 
 </project>

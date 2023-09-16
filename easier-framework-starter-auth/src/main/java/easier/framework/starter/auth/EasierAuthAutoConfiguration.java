@@ -8,10 +8,8 @@ import easier.framework.starter.auth.template.DefaultEasierAuthTemplate;
 import easier.framework.starter.auth.template.EasierAuthTemplate;
 import easier.framework.starter.cache.EnableEasierCache;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -22,37 +20,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @EnableSpringUtil
 @EnableEasierCache
-@Import(SaTokenDaoForRedissonClients.class)
-public class EasierAuthAutoConfiguration implements WebMvcConfigurer, InitializingBean {
+@Import({SaTokenDaoForRedissonClients.class})
+public class EasierAuthAutoConfiguration implements WebMvcConfigurer {
 
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        EasierAuthTemplate authTemplate = SpringUtil.getBean(EasierAuthTemplate.class);
+    public void addInterceptors(@NotNull InterceptorRegistry registry) {
+        EasierAuthTemplate authTemplate = SpringUtil.getBeanDefaultNull(EasierAuthTemplate.class);
+        if (authTemplate == null) {
+            authTemplate = new DefaultEasierAuthTemplate();
+        }
         AuthHandlerInterceptor interceptor = new AuthHandlerInterceptor(authTemplate);
-        //打开鉴权功能
+        // 打开鉴权功能
         registry.addInterceptor(interceptor).addPathPatterns("/**");
     }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public EasierAuthTemplate easierAuthTemplate() {
-        return new DefaultEasierAuthTemplate();
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-
-        /*//没权限异常
-        ExceptionHandlerRegister.register(NotPermissionException.class, HttpStatus.FORBIDDEN, exception -> {
-            R<Object> failed = R.failed(exception.getMessage());
-            failed.setCode(RCode.not_permission.getValue());
-            return failed;
-        });
-        //没角色异常
-        ExceptionHandlerRegister.register(NotRoleException.class, HttpStatus.FORBIDDEN, exception -> {
-            R<Object> failed = R.failed(exception.getMessage());
-            failed.setCode(RCode.not_permission.getValue());
-            return failed;
-        });*/
-    }
 }

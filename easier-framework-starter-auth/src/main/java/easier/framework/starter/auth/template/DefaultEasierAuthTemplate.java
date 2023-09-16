@@ -5,6 +5,7 @@ import cn.dev33.satoken.listener.SaTokenListenerForLog;
 import cn.dev33.satoken.stp.StpUtil;
 import easier.framework.core.plugin.auth.AuthContext;
 import easier.framework.core.plugin.auth.detail.BaseAuthDetail;
+import easier.framework.core.util.StrUtil;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,10 +36,15 @@ public class DefaultEasierAuthTemplate implements EasierAuthTemplate {
     }
 
     @Override
-    public String tokenToAccount(String tokenValue) {
-        Object loginId = StpUtil.getLoginIdByToken(tokenValue);
-        return Optional.ofNullable(loginId)
-                .map(Object::toString)
-                .orElse(null);
+    public void tryLogin(String token) {
+        if (StrUtil.isBlank(token)) {
+            return;
+        }
+        Object loginId = StpUtil.getLoginIdByToken(token);
+        if (loginId == null) {
+            return;
+        }
+        AuthContext.login(loginId.toString());
+        AuthContext.setDetail(BaseAuthDetail.builder().build());
     }
 }
