@@ -2,23 +2,23 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>easier.framework</groupId>
+        <groupId>io.github.lizhian</groupId>
         <artifactId>easier-framework-parent</artifactId>
-        <version>2.7.2023.0901</version>
+        <version>2.7.2023.1</version>
     </parent>
     <artifactId>easier-framework-application-web</artifactId>
     <dependencies>
         <dependency>
-            <groupId>easier.framework</groupId>
+            <groupId>io.github.lizhian</groupId>
             <artifactId>easier-framework-application</artifactId>
-            <version>2023.07.03-2.7.12</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>easier.framework</groupId>
+            <groupId>io.github.lizhian</groupId>
             <artifactId>easier-framework-starter-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>easier.framework</groupId>
+            <groupId>io.github.lizhian</groupId>
             <artifactId>easier-framework-starter-doc</artifactId>
         </dependency>
     </dependencies>
