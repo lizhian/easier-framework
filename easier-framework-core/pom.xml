@@ -14,7 +14,7 @@
     </properties>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/net.dreamlu/mica-mqtt-client -->
-        <dependency>
+        <!--<dependency>
             <groupId>net.dreamlu</groupId>
             <artifactId>mica-mqtt-client</artifactId>
             <version>2.2.4</version>
@@ -23,6 +23,23 @@
             <groupId>net.dreamlu</groupId>
             <artifactId>mica-net-http</artifactId>
             <version>0.1.5</version>
+        </dependency>-->
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.oshi</groupId>
+            <artifactId>oshi-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
         </dependency>
 
 

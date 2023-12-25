@@ -1,6 +1,7 @@
 package easier.framework.core.plugin.codec;
 
-import org.tio.utils.hutool.FastByteBuffer;
+
+import cn.hutool.core.io.FastByteBuffer;
 
 /**
  * 快速字节缓冲编解码器
@@ -19,7 +20,7 @@ public class FastByteBufferCodec implements Codec<FastByteBuffer> {
     @Override
     public FastByteBuffer deserialize(byte[] bytes) {
         FastByteBuffer fastByteBuffer = new FastByteBuffer(bytes.length);
-        fastByteBuffer.writeBytes(bytes);
+        fastByteBuffer.append(bytes);
         return fastByteBuffer;
     }
 

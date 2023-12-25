@@ -35,19 +35,17 @@
         </developer>
     </developers>
     <modules>
+        <module>easier-framework-maven-plugin</module>
         <module>easier-framework-core</module>
+        <module>easier-framework-core-kotlin</module>
         <module>easier-framework-starter-env</module>
         <module>easier-framework-starter-jackson</module>
         <module>easier-framework-starter-cache</module>
         <module>easier-framework-starter-job</module>
         <module>easier-framework-starter-logging</module>
         <module>easier-framework-starter-rpc</module>
-        <!--<module>easier-framework-starter-inner-request</module>-->
-        <!--<module>easier-framework-starter-gateway</module>-->
-        <!--<module>easier-framework-starter-mock</module>-->
         <module>easier-framework-starter-mq</module>
         <module>easier-framework-starter-mybatis</module>
-        <!--<module>easier-framework-starter-swagger</module>-->
         <module>easier-framework-starter-doc</module>
         <module>easier-framework-starter-auth</module>
         <module>easier-framework-starter-discovery</module>
@@ -56,8 +54,12 @@
         <module>easier-framework-application-web</module>
         <module>user-center-interfaces</module>
         <module>user-center-application</module>
-        <module>easier-framework-maven-plugin</module>
+        <!--<module>easier-framework-starter-inner-request</module>-->
+        <!--<module>easier-framework-starter-gateway</module>-->
+        <!--<module>easier-framework-starter-mock</module>-->
         <!--<module>easier-framework-test</module>-->
+        <!--<module>easier-framework-starter-swagger</module>-->
+
     </modules>
     <properties>
         <!--构建.sh文件时候用到的参数-->
@@ -392,26 +394,7 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-reflect</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-all</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.oshi</groupId>
-            <artifactId>oshi-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
+
     </dependencies>
 
 
@@ -486,10 +469,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
             </plugin>
-            <plugin>
+            <!--<plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
-            </plugin>
+            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>

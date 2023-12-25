@@ -1,4 +1,4 @@
-/*
+package easier.framework.core.kt/*
 package easier.framework.core.kt
 
 import easier.framework.core.Easier
