@@ -54,6 +54,7 @@
         <module>easier-framework-application-web</module>
         <module>user-center-interfaces</module>
         <module>user-center-application</module>
+        <module>easier-framework-starter-mqtt</module>
         <!--<module>easier-framework-starter-inner-request</module>-->
         <!--<module>easier-framework-starter-gateway</module>-->
         <!--<module>easier-framework-starter-mock</module>-->
