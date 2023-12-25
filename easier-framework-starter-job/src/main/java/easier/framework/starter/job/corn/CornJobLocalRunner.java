@@ -2,8 +2,8 @@ package easier.framework.starter.job.corn;
 
 import cn.hutool.core.lang.Dict;
 import cn.hutool.core.util.StrUtil;
+import easier.framework.core.Easier;
 import easier.framework.core.plugin.job.CornJob;
-import easier.framework.core.util.TraceIdUtil;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -45,7 +45,7 @@ public class CornJobLocalRunner implements Runnable {
                                                .concurrent(this.concurrent)
                                                .build();
         CornJobContext.threadLocal.set(context);
-        TraceIdUtil.create();
+        Easier.TraceId.reset();
         try {
             this.method.invoke(this.bean);
         } finally {

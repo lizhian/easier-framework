@@ -1,7 +1,7 @@
 package easier.framework.starter.mq.kafka;
 
 import cn.hutool.core.collection.CollUtil;
-import easier.framework.core.plugin.cache.CacheBuilderException;
+import easier.framework.core.plugin.exception.biz.FrameworkException;
 import easier.framework.core.util.StrUtil;
 import easier.framework.starter.mq.EasierMQProperties;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ public class KafkaConsumers implements DisposableBean {
     @Nonnull
     public synchronized KafkaConsumer<String, byte[]> create() {
         if (StrUtil.isBlank(this.primary)) {
-            throw CacheBuilderException.of("未配置主kafka消费者");
+            throw FrameworkException.of("未配置主kafka消费者");
         }
         KafkaConsumer<String, byte[]> consumer = this.create(this.primary);
         if (this.consumers.containsKey(this.primary)) {
@@ -48,7 +48,7 @@ public class KafkaConsumers implements DisposableBean {
         }
         EasierMQProperties.ConsumerProperties consumerProperties = this.consumerProperties.get(source);
         if (consumerProperties == null) {
-            throw CacheBuilderException.of("无法获取kafka消费者配置:{}", source);
+            throw FrameworkException.of("无法获取kafka消费者配置:{}", source);
         }
         KafkaConsumer<String, byte[]> consumer = this.createConsumer(consumerProperties);
         if (this.consumers.containsKey(source)) {
@@ -79,7 +79,7 @@ public class KafkaConsumers implements DisposableBean {
         for (String source : enable) {
             EasierMQProperties.ConsumerProperties consumerProperties = properties.getKafkaConsumer().get(source);
             if (consumerProperties == null) {
-                throw CacheBuilderException.of("无法获取kafka消费者配置:{}", source);
+                throw FrameworkException.of("无法获取kafka消费者配置:{}", source);
             }
             this.consumerProperties.put(source, consumerProperties);
             log.info("已加载kafka消费者配置【{}】", source);

@@ -3,6 +3,7 @@ package easier.framework.starter.web.converter;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.core.convert.converter.Converter;
 
 import java.time.LocalDate;
@@ -20,7 +21,7 @@ public class TimeConverters {
 
     static class StringToDateConverter implements Converter<String, Date> {
         @Override
-        public Date convert(String source) {
+        public Date convert(@NotNull String source) {
             if (StrUtil.isBlank(source)) {
                 return null;
             }
@@ -31,7 +32,7 @@ public class TimeConverters {
 
     static class StringToDateTimeConverter implements Converter<String, DateTime> {
         @Override
-        public DateTime convert(String source) {
+        public DateTime convert(@NotNull String source) {
             if (StrUtil.isBlank(source)) {
                 return null;
             }
@@ -41,7 +42,7 @@ public class TimeConverters {
 
     static class StringToLocalTimeConverter implements Converter<String, LocalTime> {
         @Override
-        public LocalTime convert(String source) {
+        public LocalTime convert(@NotNull String source) {
             if (StrUtil.isBlank(source)) {
                 return null;
             }
@@ -52,7 +53,7 @@ public class TimeConverters {
 
     static class StringToLocalDateConverter implements Converter<String, LocalDate> {
         @Override
-        public LocalDate convert(String source) {
+        public LocalDate convert(@NotNull String source) {
             if (StrUtil.isBlank(source)) {
                 return null;
             }

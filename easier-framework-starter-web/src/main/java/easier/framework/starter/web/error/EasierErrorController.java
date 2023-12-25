@@ -111,7 +111,11 @@ public class EasierErrorController extends AbstractErrorController {
     private Throwable getRealThrowable(Throwable throwable) {
         if (throwable instanceof NestedServletException) {
             NestedServletException nestedServletException = (NestedServletException) throwable;
-            return this.getRealThrowable(nestedServletException.getCause());
+            Throwable cause = nestedServletException.getCause();
+            if (cause == null) {
+                return throwable;
+            }
+            return this.getRealThrowable(cause);
         }
         return throwable;
     }

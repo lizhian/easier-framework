@@ -2,9 +2,9 @@ package easier.framework.starter.job.corn;
 
 import cn.hutool.core.lang.Dict;
 import cn.hutool.core.util.StrUtil;
+import easier.framework.core.Easier;
 import easier.framework.core.plugin.job.CornJob;
 import easier.framework.core.util.ClassUtil;
-import easier.framework.core.util.TraceIdUtil;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -30,14 +30,14 @@ public class CornJobLockRunner implements Runnable {
     private CronTrigger cronTrigger;
 
     public CornJobLockRunner init() {
-        String prefix = "CornJob:" + ClassUtil.shortClassName(this.method.getDeclaringClass()) + ":" + this.method.getName();
+        String prefix = "Easier:CornJob:" + ClassUtil.shortClassName(this.method.getDeclaringClass()) + ":" + this.method.getName();
         if (this.cornJob.concurrency() > 1) {
             prefix = prefix + ":" + this.concurrent;
         }
         Dict params = new Dict().set("second", this.cornJob.second())
-                                .set("minute", this.cornJob.minute())
-                                .set("hour", this.cornJob.hour())
-                                .set("day", this.cornJob.day());
+                .set("minute", this.cornJob.minute())
+                .set("hour", this.cornJob.hour())
+                .set("day", this.cornJob.day());
         String expression = StrUtil.format(this.cornJob.corn(), params);
         this.lockKey = prefix + ":Lock";
         this.cronTrigger = new CronTrigger(expression);
@@ -54,13 +54,13 @@ public class CornJobLockRunner implements Runnable {
         }
         try {
             CornJobContext context = CornJobContext.builder()
-                                                   .bean(this.bean)
-                                                   .method(this.method)
-                                                   .cornJob(this.cornJob)
-                                                   .concurrent(this.concurrent)
-                                                   .build();
+                    .bean(this.bean)
+                    .method(this.method)
+                    .cornJob(this.cornJob)
+                    .concurrent(this.concurrent)
+                    .build();
             CornJobContext.threadLocal.set(context);
-            TraceIdUtil.create();
+            Easier.TraceId.reset();
             this.method.invoke(this.bean);
         } finally {
             lock.unlockAsync();

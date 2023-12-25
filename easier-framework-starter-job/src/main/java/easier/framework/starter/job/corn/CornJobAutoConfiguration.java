@@ -1,6 +1,7 @@
 package easier.framework.starter.job.corn;
 
 import cn.hutool.extra.spring.EnableSpringUtil;
+import easier.framework.core.plugin.exception.biz.FrameworkException;
 import easier.framework.core.plugin.job.CornJob;
 import easier.framework.core.util.SpringUtil;
 import easier.framework.starter.job.center.JobManager;
@@ -17,6 +18,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @FieldNameConstants
@@ -33,10 +35,22 @@ public class CornJobAutoConfiguration implements ApplicationListener<Application
     }
 
     private void initCornJob(Object bean, Map<Method, CornJob> cornJobMap) {
+        Map<String, List<Method>> groupingBy = cornJobMap.keySet()
+                .stream()
+                .collect(Collectors.groupingBy(Method::getName));
+        for (String methodName : groupingBy.keySet()) {
+            if (groupingBy.get(methodName).size() > 1) {
+                Class<?> clazz = groupingBy.get(methodName).get(0).getDeclaringClass();
+                throw FrameworkException.of("{} 包含多个相同名称的 CornJob 方法 {}", clazz, groupingBy.get(methodName));
+            }
+        }
         cornJobMap.forEach((method, cornJob) -> this.initCornJob(bean, method, cornJob));
     }
 
     private void initCornJob(Object bean, Method method, CornJob cornJob) {
+        if (method.getParameterTypes().length > 0 || !method.getReturnType().getName().equals("void")) {
+            throw FrameworkException.of("CornJob方法必须为无参无返回类型:{}", method);
+        }
         JobManager jobManager = SpringUtil.getAndCache(JobManager.class);
         RunningJob submit = jobManager.submit(bean, method, cornJob);
         this.jobs.add(submit);

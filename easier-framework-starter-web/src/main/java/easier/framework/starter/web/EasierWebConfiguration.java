@@ -43,6 +43,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
@@ -152,6 +153,12 @@ public class EasierWebConfiguration implements WebMvcConfigurer {
                     .responseBody(error -> this.bindingResultResponseBody.apply(error.getBindingResult()));
             registry.of(BindException.class)
                     .responseBody(error -> this.bindingResultResponseBody.apply(error.getBindingResult()));
+            registry.of(MissingServletRequestParameterException.class)
+                    .responseBody(error -> {
+                        String parameterName = error.getParameterName();
+                        return R.failed("缺少参数[" + parameterName + "]");
+                    });
+
             // 越权异常
             registry.of(NotPermissionException.class)
                     .httpStatus(HttpStatus.FORBIDDEN)

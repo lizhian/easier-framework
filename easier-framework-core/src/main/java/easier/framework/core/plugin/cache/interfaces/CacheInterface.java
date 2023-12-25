@@ -1,7 +1,5 @@
 package easier.framework.core.plugin.cache.interfaces;
 
-import easier.framework.core.plugin.cache.annotation.EasierCache;
-import easier.framework.core.plugin.cache.annotation.EasierCacheUtil;
 import easier.framework.core.plugin.cache.container.CacheContainer;
 import easier.framework.core.plugin.exception.biz.FrameworkException;
 
@@ -85,7 +83,8 @@ public interface CacheInterface<T> {
     }
 
     default CacheContainer<T> asCacheContainer() {
-        EasierCache easierCache = EasierCacheUtil.findEasierCache(this);
-        return EasierCacheUtil.buildCacheContainer(easierCache, this);
+        // EasierCache easierCache = EasierCacheUtil.findEasierCache(this);
+        // return EasierCacheUtil.buildCacheContainer(easierCache, this);
+        return null;
     }
 }

@@ -1,8 +1,8 @@
 package easier.framework.starter.job.loop;
 
-import easier.framework.core.plugin.job.JobException;
+import easier.framework.core.Easier;
+import easier.framework.core.plugin.exception.biz.FrameworkException;
 import easier.framework.core.plugin.job.LoopJob;
-import easier.framework.core.util.TraceIdUtil;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -23,7 +23,7 @@ public class LoopJobLocalRunner implements Runnable {
 
     public LoopJobLocalRunner init() {
         if (this.loopJob.delay() < 1) {
-            throw JobException.of("LoopJob.delay()不可小于1 method:{}", this.method);
+            throw FrameworkException.of("LoopJob.delay()不可小于1 method:{}", this.method);
         }
         this.trigger = new DynamicDelayTrigger(this.loopJob.delay());
         return this;
@@ -40,7 +40,7 @@ public class LoopJobLocalRunner implements Runnable {
                     .concurrent(this.concurrent)
                     .build();
             LoopJobContext.threadLocal.set(context);
-            TraceIdUtil.create();
+            Easier.TraceId.reset();
             this.method.invoke(this.bean);
         } catch (Exception e) {
             if (this.loopJob.delayOnException() > 0) {

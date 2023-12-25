@@ -97,7 +97,6 @@ public final class LambdaUpdate<T> extends AbstractChainWrapper<T, SFunction<T, 
     public boolean remove() {
         TableInfo tableInfo = this.repo().getTableInfo();
         if (tableInfo.isWithLogicDelete()) {
-            MybatisPlusUtil.tryUpdateSets(this);
             String logicDeleteSql = tableInfo.getLogicDeleteSql(false, false);
             return this.self()
                     .setSql(logicDeleteSql)

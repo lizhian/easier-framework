@@ -1,7 +1,7 @@
 package easier.framework.starter.web.filter;
 
 import cn.hutool.core.util.StrUtil;
-import easier.framework.core.util.TraceIdUtil;
+import easier.framework.core.Easier;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -20,14 +20,14 @@ public class TraceIdServletFilter extends OncePerRequestFilter implements Ordere
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
-        String traceId = request.getHeader(TraceIdUtil.key_trace_id);
+        String traceId = request.getHeader(Easier.TraceId.x_trace_id);
         if (StrUtil.isBlank(traceId)) {
-            traceId = request.getParameter(TraceIdUtil.key_trace_id);
+            traceId = request.getParameter(Easier.TraceId.x_trace_id);
         }
         if (StrUtil.isBlank(traceId)) {
-            TraceIdUtil.create();
+            Easier.TraceId.reset();
         } else {
-            TraceIdUtil.set(traceId);
+            Easier.TraceId.set(traceId);
             if (log.isDebugEnabled()) {
                 log.debug("接收 traceId={}, path={}", traceId, path);
             }

@@ -1,7 +1,7 @@
 package easier.framework.starter.mq.kafka;
 
 import cn.hutool.core.collection.CollUtil;
-import easier.framework.core.plugin.cache.CacheBuilderException;
+import easier.framework.core.plugin.exception.biz.FrameworkException;
 import easier.framework.core.plugin.mq.MQBuilderException;
 import easier.framework.core.util.StrUtil;
 import easier.framework.starter.mq.EasierMQProperties;
@@ -37,11 +37,11 @@ public class KafkaProducers implements DisposableBean {
     @Nonnull
     public KafkaProducer<String, byte[]> get() {
         if (StrUtil.isBlank(this.primary)) {
-            throw CacheBuilderException.of("未配置主kafka生产者");
+            throw FrameworkException.of("未配置主kafka生产者");
         }
         KafkaProducer<String, byte[]> producer = this.producers.get(this.primary);
         if (producer == null) {
-            throw CacheBuilderException.of("未找到kafka生产者:{}", this.primary);
+            throw FrameworkException.of("未找到kafka生产者:{}", this.primary);
         }
         return producer;
     }
@@ -73,7 +73,7 @@ public class KafkaProducers implements DisposableBean {
         for (String key : enable) {
             EasierMQProperties.ProducerProperties producerProperties = properties.getKafkaProducer().get(key);
             if (producerProperties == null) {
-                throw CacheBuilderException.of("无法获取kafka生产者配置:{}", key);
+                throw FrameworkException.of("无法获取kafka生产者配置:{}", key);
             }
             KafkaProducer<String, byte[]> producer = this.createProducer(producerProperties);
             this.producers.put(key, producer);

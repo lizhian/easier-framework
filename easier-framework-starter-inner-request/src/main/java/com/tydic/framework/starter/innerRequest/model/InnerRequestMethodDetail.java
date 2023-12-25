@@ -2,8 +2,8 @@ package com.easier.framework.starter.innerRequest.model;
 
 import easier.framework.core.plugin.innerRequest.ServiceDetail;
 import easier.framework.core.util.InstanceUtil;
-import easier.framework.starter.cache.builder.CacheBuilderInvoker;
-import easier.framework.starter.cache.builder.CacheMethodDetail;
+import easier.framework.starter.cache.helper.CacheBuilderInvoker;
+import easier.framework.starter.cache.helper.CacheMethodDetail;
 import lombok.Data;
 
 import java.lang.reflect.Method;

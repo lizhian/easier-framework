@@ -56,13 +56,16 @@ public class RedissonServiceRegistry implements DisposableBean, ApplicationListe
     }
 
 
+    /**
+     * 注册表服务实例
+     */
     @LoopJob(delay = 5, timeUnit = TimeUnit.SECONDS, lock = false)
     public void registryServiceInstance() {
         if (!this.registry) {
             return;
         }
         String instanceId = this.serviceInstance.getInstanceId();
-        long ttl = LoopJobContext.get().getLoopJob().delay() + 1;
+        long ttl = LoopJobContext.get().getLoopJob().delay() * 2;
         TimeUnit timeUnit = LoopJobContext.get().getLoopJob().timeUnit();
         this.instanceCache.putAsync(instanceId, this.serviceInstance, ttl, timeUnit);
         this.instanceCache.clearExpireAsync();

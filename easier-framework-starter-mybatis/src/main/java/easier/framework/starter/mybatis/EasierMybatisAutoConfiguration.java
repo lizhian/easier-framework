@@ -19,6 +19,7 @@ import easier.framework.starter.mybatis.template.DefaultEasierMybatisTemplate;
 import easier.framework.starter.mybatis.template.EasierMybatisTemplate;
 import easier.framework.starter.mybatis.types.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.type.JdbcType;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.logging.LoggingApplicationListener;
@@ -56,6 +57,8 @@ public class EasierMybatisAutoConfiguration {
     @Bean
     public ConfigurationCustomizer configurationCustomizer() {
         return configuration -> {
+            // null配置
+            configuration.setJdbcTypeForNull(JdbcType.NULL);
             // 重写枚举处理
             configuration.setDefaultEnumTypeHandler(EnumCodecTypeHandler.class);
             // 增加对DateTime类型的支持

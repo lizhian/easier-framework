@@ -3,8 +3,8 @@ package easier.framework.starter.auth.template;
 import cn.dev33.satoken.listener.SaTokenListener;
 import cn.dev33.satoken.listener.SaTokenListenerForLog;
 import cn.dev33.satoken.stp.StpUtil;
-import easier.framework.core.plugin.auth.AuthContext;
-import easier.framework.core.plugin.auth.detail.BaseAuthDetail;
+import easier.framework.core.Easier;
+import easier.framework.core.plugin.auth.detail.SimpleAuthDetail;
 import easier.framework.core.util.StrUtil;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
@@ -21,17 +21,17 @@ public class DefaultEasierAuthTemplate implements EasierAuthTemplate {
 
     @Override
     public List<String> getPermissionList(Object loginId, String loginType) {
-        BaseAuthDetail detail = AuthContext.getDetail(BaseAuthDetail.class);
+        SimpleAuthDetail detail = Easier.Auth.getDetail(SimpleAuthDetail.class);
         return Optional.ofNullable(detail)
-                .map(BaseAuthDetail::getPermissions)
+                .map(SimpleAuthDetail::getPermissions)
                 .orElseGet(ArrayList::new);
     }
 
     @Override
     public List<String> getRoleList(Object loginId, String loginType) {
-        BaseAuthDetail detail = AuthContext.getDetail(BaseAuthDetail.class);
+        SimpleAuthDetail detail = Easier.Auth.getDetail(SimpleAuthDetail.class);
         return Optional.ofNullable(detail)
-                .map(BaseAuthDetail::getRoles)
+                .map(SimpleAuthDetail::getRoles)
                 .orElseGet(ArrayList::new);
     }
 
@@ -44,7 +44,7 @@ public class DefaultEasierAuthTemplate implements EasierAuthTemplate {
         if (loginId == null) {
             return;
         }
-        AuthContext.login(loginId.toString());
-        AuthContext.setDetail(BaseAuthDetail.builder().build());
+        Easier.Auth.login(loginId.toString());
+        Easier.Auth.setDetail(SimpleAuthDetail.builder().build());
     }
 }

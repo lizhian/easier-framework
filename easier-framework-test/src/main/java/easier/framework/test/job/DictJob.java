@@ -4,7 +4,6 @@ import easier.framework.core.plugin.dict.DictDetail;
 import easier.framework.core.plugin.job.LoopJob;
 import easier.framework.starter.mybatis.repo.Repo;
 import easier.framework.starter.mybatis.repo.Repos;
-import easier.framework.test.cache.UserCenterCaches;
 import easier.framework.test.eo.Dict;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -33,7 +32,7 @@ public class DictJob {
                 .collect(Collectors.toList());
         for (DictDetail detail : details) {
             String dictCode = detail.getCode();
-            UserCenterCaches.DICT_DETAIL.update(dictCode, detail);
+            // UserCenterCaches.DICT_DETAIL.update(dictCode, detail);
         }
         log.info("已更新字典缓存:{}", details.size());
     }

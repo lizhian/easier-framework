@@ -2,6 +2,11 @@ package easier.framework.core.util;
 
 
 import cn.hutool.core.collection.CollUtil;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
+import easier.framework.core.plugin.exception.biz.FrameworkException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -23,12 +28,35 @@ public class SpringUtil extends cn.hutool.extra.spring.SpringUtil {
     public static final String test = "test";
     public static final String prod = "prod";
 
+    private final static Cache<Object, Object> _cache = Caffeine.newBuilder().build();
+
     /**
      * 获取实例并缓存
      */
+    @SuppressWarnings("unchecked")
     public static <T> T getAndCache(Class<T> clazz) {
-        return InstanceUtil.in(SpringUtil.class)
-                .getInstance(clazz, SpringUtil::getBeanDefaultNull);
+        return (T) _cache.get(clazz, key -> getBean(clazz));
+    }
+
+    /**
+     * 懒获取实例
+     */
+    public static <T> Supplier<T> lazyBean(Class<T> clazz) {
+        return lazyBean(clazz, false);
+    }
+
+
+    /**
+     * 懒获取实例
+     */
+    public static <T> Supplier<T> lazyBean(Class<T> clazz, boolean nullable) {
+        return Suppliers.memoize(() -> {
+            T bean = SpringUtil.getBeanDefaultNull(clazz);
+            if (bean != null || nullable) {
+                return bean;
+            }
+            throw FrameworkException.of("未找到[{}]实例", clazz.getSimpleName());
+        });
     }
 
     public static <T> T getBeanDefaultNull(Class<T> clazz) {

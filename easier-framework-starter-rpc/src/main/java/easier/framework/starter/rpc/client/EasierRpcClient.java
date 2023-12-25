@@ -19,8 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class EasierRpcClient implements EasierRPC.Client {
     private final Map<Method, RpcClient> CACHE = new ConcurrentHashMap<>();
-
-
     private final EasierRpcProperties properties;
     private final List<EasierRpcClientFilter> filters;
 
@@ -40,11 +38,7 @@ public class EasierRpcClient implements EasierRPC.Client {
                 .readTimeout(this.properties.getReadTimeout())
                 .connectionTimeout(this.properties.getConnectionTimeout())
                 .build();
-        FilterChain.builder()
-                .filters(this.filters)
-                .next(this::execute)
-                .build()
-                .doFilter(request);
+        FilterChain.of(this.filters, this::execute).doFilter(request);
         return request.getResult();
     }
 

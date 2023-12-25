@@ -2,7 +2,7 @@ package easier.framework.core.plugin.auth.annotation;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollUtil;
-import easier.framework.core.plugin.auth.AuthContext;
+import easier.framework.core.Easier;
 import easier.framework.core.plugin.auth.expand.AuthExpand;
 import easier.framework.core.plugin.auth.expand.AuthExpandContext;
 import easier.framework.core.plugin.auth.expand.AuthExpander;
@@ -30,15 +30,15 @@ public @interface BaseAuth {
             if (context.hasAnnotation(IgnoreAuth.class)) {
                 return;
             }
-            if (AuthContext.isInnerRequest()) {
+            if (Easier.Auth.isSafeRequest()) {
                 return;
             }
             List<Annotation> otherAuthAnnotation = context.getOtherAuthAnnotations();
             if (CollUtil.isNotEmpty(otherAuthAnnotation)) {
                 return;
             }
-            AuthContext.mustLogin();
-            if (AuthContext.isAdmin()) {
+            Easier.Auth.mustLogin();
+            if (Easier.Auth.isAdmin()) {
                 return;
             }
             String permission = baseAuth.value() + ":" + this.getMethodType(context);

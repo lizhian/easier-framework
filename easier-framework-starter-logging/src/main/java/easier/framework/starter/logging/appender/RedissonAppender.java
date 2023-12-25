@@ -7,10 +7,10 @@ import com.plumelog.core.dto.BaseLogMessage;
 import com.plumelog.core.dto.RunLogMessage;
 import com.plumelog.core.util.GfJsonUtil;
 import com.plumelog.logback.util.LogMessageUtil;
+import easier.framework.core.Easier;
 import easier.framework.core.plugin.cache.RedisSources;
 import easier.framework.core.util.SpringUtil;
 import easier.framework.core.util.StrUtil;
-import easier.framework.core.util.TraceIdUtil;
 import easier.framework.starter.cache.condition.ConditionalOnRedisSource;
 import easier.framework.starter.cache.redis.RedissonClients;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +62,7 @@ public class RedissonAppender extends AppenderBase<ILoggingEvent> implements Ini
     @Override
     protected void append(ILoggingEvent event) {
         if (event != null && RedissonAppender.running) {
-            if (TraceIdUtil.isDisable()) {
+            if (Easier.TraceId.isDisable()) {
                 return;
             }
             final BaseLogMessage logMessage = LogMessageUtil.getLogMessage(RedissonAppender.applicationName, RedissonAppender.env, event, "2");

@@ -1,9 +1,9 @@
 package easier.framework.core.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import easier.framework.core.Easier;
 import easier.framework.core.plugin.jackson.annotation.Alias;
 import easier.framework.core.util.StrUtil;
-import easier.framework.core.util.TraceIdUtil;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -44,7 +44,7 @@ public class R<T> implements Serializable {
         r.setCode(code);
         r.setMessage(message);
         r.setData(data);
-        r.setTraceId(TraceIdUtil.get());
+        r.setTraceId(Easier.TraceId.get());
         return r;
     }
 

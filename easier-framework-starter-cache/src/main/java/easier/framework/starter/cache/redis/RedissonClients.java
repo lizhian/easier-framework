@@ -2,9 +2,11 @@ package easier.framework.starter.cache.redis;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.CharUtil;
+import cn.hutool.core.util.NumberUtil;
+import easier.framework.core.Easier;
 import easier.framework.core.plugin.cache.RedisSources;
 import easier.framework.core.plugin.exception.biz.FrameworkException;
-import easier.framework.core.util.IdUtil;
 import easier.framework.core.util.SpringUtil;
 import easier.framework.core.util.StrUtil;
 import easier.framework.starter.cache.EasierCacheProperties;
@@ -13,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.Redisson;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.redisson.api.redisnode.RedisNode;
+import org.redisson.api.redisnode.RedisNodes;
 import org.redisson.config.Config;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -34,6 +38,7 @@ public class RedissonClients implements InitializingBean, DisposableBean {
     private static final String REDIS_PROTOCOL_PREFIX = "redis://";
     private static final String REDISS_PROTOCOL_PREFIX = "rediss://";
     private final Map<String, RedissonClient> clients = new HashMap<>();
+    private final Map<String, Integer> versions = new HashMap<>();
     private String primary;
 
     public boolean contains(String source) {
@@ -65,18 +70,76 @@ public class RedissonClients implements InitializingBean, DisposableBean {
         return redissonClient;
     }
 
-    public RedissonTemplate getTemplate() {
-        return new RedissonTemplate(this.getClient());
+    @Nonnull
+    public Integer geServerVersion() {
+        if (StrUtil.isBlank(this.primary)) {
+            throw FrameworkException.of("未配置主缓存源");
+        }
+        return this.geServerVersion(this.primary);
     }
 
-    public RedissonTemplate getTemplate(String source) {
-        return new RedissonTemplate(this.getClient(source));
 
+    @Nonnull
+    public Integer geServerVersion(String source) {
+        if (StrUtil.isBlank(source)) {
+            source = this.primary;
+        }
+        if (this.versions.containsKey(source)) {
+            return this.versions.get(source);
+        }
+        synchronized (this.versions) {
+            if (this.versions.containsKey(source)) {
+                return this.versions.get(source);
+            }
+            RedissonClient redissonClient = this.clients.get(source);
+            String versionKey = "redis_version";
+            if (redissonClient == null) {
+                throw FrameworkException.of("未找到缓存源:{}", source);
+            }
+            int mainVersion = -1;
+            String version = "-1";
+            if (redissonClient.getConfig().isSingleConfig()) {
+                version = redissonClient.getRedisNodes(RedisNodes.SINGLE)
+                        .getInstance()
+                        .info(RedisNode.InfoSection.SERVER)
+                        .get(versionKey);
+
+            }
+            if (redissonClient.getConfig().isSentinelConfig()) {
+                version = redissonClient.getRedisNodes(RedisNodes.SENTINEL_MASTER_SLAVE)
+                        .getMaster()
+                        .info(RedisNode.InfoSection.SERVER)
+                        .get(versionKey);
+
+            }
+            if (redissonClient.getConfig().isClusterConfig()) {
+                version = redissonClient.getRedisNodes(RedisNodes.CLUSTER)
+                        .getMasters()
+                        .stream()
+                        .findAny()
+                        .map(node -> node.info(RedisNode.InfoSection.SERVER).get(versionKey))
+                        .orElse(version);
+            }
+            List<String> split = StrUtil.split(version, CharUtil.DOT);
+            if (!split.isEmpty() && NumberUtil.isInteger(split.get(0))) {
+                mainVersion = NumberUtil.parseInt(split.get(0));
+            }
+            this.versions.put(source, mainVersion);
+            return mainVersion;
+        }
     }
 
     @Override
     public void destroy() {
-        this.clients.values().forEach(RedissonClient::shutdown);
+        this.clients.values().forEach(redissonClient -> {
+            if (redissonClient.isShutdown()) {
+                return;
+            }
+            if (redissonClient.isShuttingDown()) {
+                return;
+            }
+            redissonClient.shutdown();
+        });
         log.info("已关闭RedissonClients");
     }
 
@@ -102,7 +165,7 @@ public class RedissonClients implements InitializingBean, DisposableBean {
                 String snowflakeId = "Easier:Snowflake:" + dataCenterId + "_" + workerId;
                 RLock snowflakeIdLock = client.getLock(snowflakeId);
                 if (snowflakeIdLock.tryLock()) {
-                    IdUtil.reset(workerId, dataCenterId);
+                    Easier.Id.reset(workerId, dataCenterId);
                     log.info("【IdUtil】全局唯一主键初始化完成, workerId= {}, dataCenterId= {}", workerId, dataCenterId);
                     return;
                 }

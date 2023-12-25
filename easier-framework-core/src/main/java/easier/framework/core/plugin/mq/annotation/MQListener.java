@@ -1,6 +1,5 @@
 package easier.framework.core.plugin.mq.annotation;
 
-import easier.framework.core.plugin.mq.fallback.LoggingFallback;
 import easier.framework.core.plugin.mq.fallback.MQListenerFallback;
 
 import java.lang.annotation.*;
@@ -23,5 +22,5 @@ public @interface MQListener {
 
     int poll() default 10;
 
-    Class<? extends MQListenerFallback> fallback() default LoggingFallback.class;
+    Class<? extends MQListenerFallback> fallback();
 }

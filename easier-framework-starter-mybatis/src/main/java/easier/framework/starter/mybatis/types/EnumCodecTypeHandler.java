@@ -1,5 +1,6 @@
 package easier.framework.starter.mybatis.types;
 
+import easier.framework.core.Easier;
 import easier.framework.core.plugin.enums.EnumCodec;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +21,12 @@ public class EnumCodecTypeHandler<E extends Enum<E>> extends BaseTypeHandler<E> 
     private final Class<E> type;
     private final EnumCodec<E> enumCodec;
 
-    @SuppressWarnings("unchecked")
     public EnumCodecTypeHandler(Class<E> type) {
         if (type == null) {
             throw new IllegalArgumentException("Type argument cannot be null");
         }
         this.type = type;
-        this.enumCodec = (EnumCodec<E>) EnumCodec.of(type);
+        this.enumCodec = Easier.Enum.of(type);
     }
 
     @Override

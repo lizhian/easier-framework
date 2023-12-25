@@ -6,9 +6,7 @@ import easier.framework.core.plugin.mq.MQBuilder;
 import easier.framework.core.plugin.mq.MQBuilderException;
 import easier.framework.core.plugin.mq.annotation.Topic;
 import easier.framework.core.util.DefaultMethodUtil;
-import easier.framework.core.util.InstanceUtil;
 import easier.framework.core.util.SpringUtil;
-import easier.framework.starter.cache.builder.CacheBuilderInvoker;
 import easier.framework.starter.cache.redis.RedissonClients;
 import easier.framework.starter.mq.kafka.KafkaProducers;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +28,9 @@ public class MQBuilderInvoker implements MQBuilder.Invoker {
     @SneakyThrows
     public Object invoke(Object proxy, Method method, Object[] args) {
 
-        MQMethodDetail methodDetail = InstanceUtil.in(CacheBuilderInvoker.class)
-                                                  .getInstance(method, MQMethodDetail::new);
+        // MQMethodDetail methodDetail = InstanceUtil.in(CacheBuilderInvoker.class)
+        //                                           .getInstance(method, MQMethodDetail::new);
+        MQMethodDetail methodDetail = new MQMethodDetail(method);
         if (methodDetail.isRedis() && methodDetail.isQueue()) {
             this.sendRedisQueue(methodDetail, args);
         }

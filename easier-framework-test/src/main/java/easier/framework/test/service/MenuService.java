@@ -1,9 +1,13 @@
 package easier.framework.test.service;
 
 import cn.hutool.core.map.MapUtil;
+import easier.framework.core.Easier;
 import easier.framework.core.plugin.exception.biz.BizException;
 import easier.framework.core.plugin.tree.TreeNode;
-import easier.framework.core.util.*;
+import easier.framework.core.util.ExtensionCore;
+import easier.framework.core.util.StrUtil;
+import easier.framework.core.util.TreeUtil;
+import easier.framework.core.util.ValidUtil;
 import easier.framework.starter.mybatis.repo.Repo;
 import easier.framework.starter.mybatis.repo.Repos;
 import easier.framework.test.enums.EnableStatus;
@@ -67,17 +71,17 @@ public class MenuService {
     @Transactional
     public void add(Menu entity) {
         ValidUtil.valid(entity);
-        //新增目录
+        // 新增目录
         if (MenuType.isDir(entity.getMenuType())) {
             this.addDir(entity);
             return;
         }
-        //新增菜单
+        // 新增菜单
         if (MenuType.isMenu(entity.getMenuType())) {
             this.addMenu(entity);
             return;
         }
-        //新增按钮
+        // 新增按钮
         if (MenuType.isButton(entity.getMenuType())) {
             this.addButton(entity);
         }
@@ -147,10 +151,10 @@ public class MenuService {
         this._menu.newQuery()
                 .eq(Menu::getPerms, entity.getPerms())
                 .existsThenThrow("重复的权限标识 {}", entity.getPerms());
-        entity.setMenuId(IdUtil.nextIdStr());
+        entity.setMenuId(Easier.Id.nextIdStr());
         this._menu.add(entity);
 
-        //给菜单添加基础权限
+        // 给菜单添加基础权限
         AtomicInteger sort = new AtomicInteger();
         List<Menu> baseButtons = BASE_PERMS.entrySet()
                 .stream()

@@ -1,22 +1,32 @@
 package easier.framework.core.plugin.codec;
 
-import cn.hutool.core.io.IoUtil;
+
 import cn.hutool.core.util.ObjectUtil;
-import lombok.SneakyThrows;
+import lombok.RequiredArgsConstructor;
 
-import java.io.ByteArrayInputStream;
+/**
+ * jdk编解码器
+ *
+ * @author lizhian
+ * @date 2023年10月24日
+ */
+@RequiredArgsConstructor
+public class JdkCodec<T> implements Codec<T> {
+    private final Class<T> clazz;
 
-public class JdkCodec implements Codec {
-
-    @SneakyThrows
     @Override
-    public byte[] serialize(Object object) {
-        return ObjectUtil.serialize(object);
+    public byte[] serialize(Object value) {
+        if (value == null) {
+            return new byte[0];
+        }
+        return ObjectUtil.serialize(value);
     }
 
-    @SneakyThrows
     @Override
-    public Object deserialize(byte[] bytes) {
-        return IoUtil.readObj(new ByteArrayInputStream(bytes));
+    public T deserialize(byte[] bytes) {
+        if (bytes == null || bytes.length == 0) {
+            return null;
+        }
+        return ObjectUtil.deserialize(bytes, this.clazz);
     }
 }

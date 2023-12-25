@@ -23,16 +23,13 @@ import java.util.stream.Collectors;
 /**
  * 枚举编解码器
  */
+@Getter
 @Slf4j
 public class EnumCodec<E extends Enum<E>> {
 
-    @Getter
     private final Class<E> enumClass;
-    @Getter
     private final boolean isIntValue;
-    @Getter
     private final Dict dict;
-    @Getter
     private final List<EnumDetail<E>> enumDetails;
 
     /**
@@ -64,13 +61,13 @@ public class EnumCodec<E extends Enum<E>> {
                     .index(index)
                     .instance(instance)
                     .value(value)
-                    .isIntValue(isIntValue)
+                    .isIntValue(this.isIntValue)
                     .description(description.toString())
-                    .dictCode(dict == null ? null : dict.code())
-                    .dictName(dict == null ? null : dict.name())
-                    .dictProperty1(dict == null ? null : dict.property1())
-                    .dictProperty2(dict == null ? null : dict.property2())
-                    .dictProperty3(dict == null ? null : dict.property3())
+                    .dictCode(this.dict == null ? null : this.dict.code())
+                    .dictName(this.dict == null ? null : this.dict.name())
+                    .dictProperty1(this.dict == null ? null : this.dict.property1())
+                    .dictProperty2(this.dict == null ? null : this.dict.property2())
+                    .dictProperty3(this.dict == null ? null : this.dict.property3())
                     .build();
             enumDetails.add(enumDetail);
         }
@@ -89,28 +86,28 @@ public class EnumCodec<E extends Enum<E>> {
         if (input == null) {
             return null;
         }
-        EnumDetail<E> enumDetail = enumDetails.stream()
+        EnumDetail<E> enumDetail = this.enumDetails.stream()
                 .filter(it -> it.getInstance().equals(input))
                 .findAny()
                 .orElse(null);
         if (enumDetail != null) {
             return enumDetail;
         }
-        enumDetail = enumDetails.stream()
+        enumDetail = this.enumDetails.stream()
                 .filter(it -> it.getValue().equals(input))
                 .findAny()
                 .orElse(null);
         if (enumDetail != null) {
             return enumDetail;
         }
-        enumDetail = enumDetails.stream()
+        enumDetail = this.enumDetails.stream()
                 .filter(it -> it.getInstance().name().equals(input))
                 .findAny()
                 .orElse(null);
         if (enumDetail != null) {
             return enumDetail;
         }
-        enumDetail = enumDetails.stream()
+        enumDetail = this.enumDetails.stream()
                 .filter(it -> it.getIndex().toString().equals(input.toString()))
                 .findAny()
                 .orElse(null);
@@ -121,7 +118,7 @@ public class EnumCodec<E extends Enum<E>> {
      * 获取枚举实例
      */
     public E getEnumInstance(Object input) {
-        EnumDetail<E> enumDetail = getEnumDetail(input);
+        EnumDetail<E> enumDetail = this.getEnumDetail(input);
         if (enumDetail == null) {
             return null;
         }
@@ -132,7 +129,7 @@ public class EnumCodec<E extends Enum<E>> {
      * 获取枚举值
      */
     public Object getEnumValue(Object input) {
-        EnumDetail<E> enumDetail = getEnumDetail(input);
+        EnumDetail<E> enumDetail = this.getEnumDetail(input);
         if (enumDetail == null) {
             return null;
         }
@@ -144,7 +141,7 @@ public class EnumCodec<E extends Enum<E>> {
      */
     @NotNull
     public String getEnumDesc(Object input) {
-        EnumDetail<E> enumDetail = getEnumDetail(input);
+        EnumDetail<E> enumDetail = this.getEnumDetail(input);
         if (enumDetail == null) {
             return "";
         }
@@ -152,7 +149,7 @@ public class EnumCodec<E extends Enum<E>> {
     }
 
     public Integer getEnumValueAsInt(Object input) {
-        EnumDetail<E> enumDetail = getEnumDetail(input);
+        EnumDetail<E> enumDetail = this.getEnumDetail(input);
         if (enumDetail != null) {
             return enumDetail.getValueAsInt();
         }
@@ -160,7 +157,7 @@ public class EnumCodec<E extends Enum<E>> {
     }
 
     public String getEnumValueAsStr(Object input) {
-        EnumDetail<E> enumDetail = getEnumDetail(input);
+        EnumDetail<E> enumDetail = this.getEnumDetail(input);
 
         if (enumDetail != null) {
             return enumDetail.getValueAsStr();
@@ -169,15 +166,15 @@ public class EnumCodec<E extends Enum<E>> {
     }
 
     public String getEnumFullDescription() {
-        String str = enumDetails.stream()
+        String str = this.enumDetails.stream()
                 .map(it -> it.getValue() + "=" + it.getDescription())
                 .collect(Collectors.joining(", "));
-        if (dict == null) {
+        if (this.dict == null) {
             return StrUtil.format("枚举值说明:【{}】", str);
         }
         return StrUtil.format("枚举字典【{}】【{}】【{}】"
-                , dict.name()
-                , dict.code()
+                , this.dict.name()
+                , this.dict.code()
                 , str
         );
     }

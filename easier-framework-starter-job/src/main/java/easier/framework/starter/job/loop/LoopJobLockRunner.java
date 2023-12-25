@@ -1,16 +1,17 @@
 package easier.framework.starter.job.loop;
 
 import cn.hutool.core.date.DateTime;
-import easier.framework.core.plugin.job.JobException;
+import easier.framework.core.Easier;
+import easier.framework.core.plugin.exception.biz.FrameworkException;
 import easier.framework.core.plugin.job.LoopJob;
 import easier.framework.core.util.ClassUtil;
-import easier.framework.core.util.TraceIdUtil;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.redisson.client.codec.StringCodec;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
@@ -32,9 +33,9 @@ public class LoopJobLockRunner implements Runnable {
 
     public LoopJobLockRunner init() {
         if (this.loopJob.delay() < 1) {
-            throw JobException.of("LoopJob.delay()不可小于1 method:{}", this.method);
+            throw FrameworkException.of("LoopJob.delay()不可小于1 method:{}", this.method);
         }
-        String prefix = "LoopJob:" + ClassUtil.shortClassName(this.method.getDeclaringClass()) + ":" + this.method.getName();
+        String prefix = "Easier:LoopJob:" + ClassUtil.shortClassName(this.method.getDeclaringClass()) + ":" + this.method.getName();
         if (this.loopJob.concurrency() > 1) {
             prefix = prefix + ":" + this.concurrent;
         }
@@ -66,7 +67,7 @@ public class LoopJobLockRunner implements Runnable {
                     .concurrent(this.concurrent)
                     .build();
             LoopJobContext.threadLocal.set(context);
-            TraceIdUtil.create();
+            Easier.TraceId.reset();
             this.method.invoke(this.bean);
         } catch (Exception e) {
             if (this.loopJob.delayOnException() > 0) {
@@ -85,7 +86,7 @@ public class LoopJobLockRunner implements Runnable {
         long nextDelay = LoopJobContext.getNextDelay();
         TimeUnit timeUnit = this.loopJob.timeUnit();
         long nextTime = DateTime.now().getTime() + timeUnit.toMillis(nextDelay);
-        this.redissonClient.getBucket(this.nextKey)
+        this.redissonClient.getBucket(this.nextKey, StringCodec.INSTANCE)
                 .setAsync(nextTime, nextDelay, timeUnit);
     }
 

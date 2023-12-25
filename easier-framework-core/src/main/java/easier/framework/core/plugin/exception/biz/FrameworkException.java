@@ -5,19 +5,29 @@ import easier.framework.core.plugin.exception.BaseException;
 import easier.framework.core.util.StrUtil;
 import lombok.Setter;
 import lombok.experimental.StandardException;
+import org.springframework.http.HttpStatus;
 
 
 /**
- * 业务异常 不打印异常信息
+ * 框架异常
  */
+@Setter
 @StandardException
 public class FrameworkException extends BaseException {
 
-    @Setter
     private Object expandData;
+
+    public static FrameworkException of(Throwable cause, String message, Object... params) {
+        return new FrameworkException(StrUtil.format(message, params), cause);
+    }
 
     public static FrameworkException of(String message, Object... params) {
         return new FrameworkException(StrUtil.format(message, params));
+    }
+
+    @Override
+    public HttpStatus getHttpStatus() {
+        return HttpStatus.INTERNAL_SERVER_ERROR;
     }
 
     @Override

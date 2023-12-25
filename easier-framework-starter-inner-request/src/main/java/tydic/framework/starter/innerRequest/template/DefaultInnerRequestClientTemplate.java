@@ -11,7 +11,7 @@ import com.easier.framework.starter.innerRequest.model.InnerRequestBody;
 import com.easier.framework.starter.innerRequest.model.InnerRequestResult;
 import easier.framework.core.plugin.innerRequest.InnerRequestException;
 import easier.framework.core.util.SpringUtil;
-import easier.framework.core.util.TraceIdUtil;
+import easier.framework.core.util.Easier.TraceId;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -36,8 +36,8 @@ public class DefaultInnerRequestClientTemplate implements easier.framework.start
         }
 
         //设置追踪码
-        String traceId = TraceIdUtil.getOrCreate();
-        httpRequest.header(TraceIdUtil.key_trace_id, traceId);
+        String traceId = Easier.TraceId.getOrCreate();
+        httpRequest.header(Easier.TraceId.key_trace_id, traceId);
     }
 
     private String tryGetTokenValue() {

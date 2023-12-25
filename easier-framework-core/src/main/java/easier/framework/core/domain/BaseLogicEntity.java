@@ -23,25 +23,6 @@ public abstract class BaseLogicEntity extends BaseEntity {
     @TableLogic
     private Boolean deleted;
 
-    /*@JsonSetter
-    public BaseLogicEntity setDeleted(Integer deleted) {
-        if (deleted == null) {
-            this.deleted = null;
-            return this;
-        }
-        this.deleted = deleted <= 0 ? 0 : 1;
-        return this;
-    }
-
-    public BaseLogicEntity setDeleted(Boolean deleted) {
-        if (deleted == null) {
-            this.deleted = null;
-            return this;
-        }
-        this.deleted = deleted ? 1 : 0;
-        return this;
-    }*/
-
     @JsonIgnore
     public boolean isLogicDeleted() {
         return this.deleted != null && this.deleted;
@@ -55,5 +36,13 @@ public abstract class BaseLogicEntity extends BaseEntity {
             this.setDeleted(otherBaseLogicEntity.getDeleted());
         }
         return this;
+    }
+
+    @Override
+    public void preInsert() {
+        super.preInsert();
+        if (this.deleted == null) {
+            this.deleted = false;
+        }
     }
 }

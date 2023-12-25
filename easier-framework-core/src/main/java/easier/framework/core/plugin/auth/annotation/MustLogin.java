@@ -1,6 +1,6 @@
 package easier.framework.core.plugin.auth.annotation;
 
-import easier.framework.core.plugin.auth.AuthContext;
+import easier.framework.core.Easier;
 import easier.framework.core.plugin.auth.expand.AuthExpand;
 import easier.framework.core.plugin.auth.expand.AuthExpandContext;
 import easier.framework.core.plugin.auth.expand.AuthExpander;
@@ -22,10 +22,10 @@ public @interface MustLogin {
             if (context.hasAnnotation(IgnoreAuth.class)) {
                 return;
             }
-            if (AuthContext.isInnerRequest()) {
+            if (Easier.Auth.isSafeRequest()) {
                 return;
             }
-            AuthContext.mustLogin();
+            Easier.Auth.mustLogin();
         }
     }
 }

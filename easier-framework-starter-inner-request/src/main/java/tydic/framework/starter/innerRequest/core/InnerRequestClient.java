@@ -12,7 +12,7 @@ import easier.framework.core.plugin.innerRequest.InnerRequestBuilder;
 import easier.framework.core.util.HessianUtil;
 import easier.framework.core.util.InstanceUtil;
 import easier.framework.core.util.SpringUtil;
-import easier.framework.starter.cache.builder.CacheMethodDetail;
+import easier.framework.starter.cache.helper.CacheMethodDetail;
 import easier.framework.starter.innerRequest.InnerRequestProperties;
 import easier.framework.starter.innerRequest.template.InnerRequestClientTemplate;
 import lombok.Cleanup;

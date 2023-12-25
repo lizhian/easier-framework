@@ -48,6 +48,13 @@ public class ValidErrorDetail {
         return builder.build();
     }
 
+    /**
+     * 从ObjectError对象中获取ValidErrorDetail对象
+     *
+     * @param error ObjectError对象
+     * @return ValidErrorDetail对象
+     */
+    @SuppressWarnings("unchecked")
     public static ValidErrorDetail from(ObjectError error) {
         Object violation = ReflectUtil.getFieldValue(error, "violation");
         if (violation instanceof ConstraintViolation) {
@@ -60,4 +67,5 @@ public class ValidErrorDetail {
                 .mergeMessage(message)
                 .build();
     }
+
 }

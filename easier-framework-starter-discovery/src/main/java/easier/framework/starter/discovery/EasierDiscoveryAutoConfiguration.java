@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.discovery.composite.CompositeDiscoveryClientAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -35,6 +36,7 @@ public class EasierDiscoveryAutoConfiguration {
     @ConditionalOnBean(RedissonClients.class)
     @ConditionalOnRedisSource(RedisSources.discovery)
     @ConditionalOnProperty(prefix = "spring.easier.discovery", name = "registry", havingValue = "true", matchIfMissing = true)
+    @ConditionalOnWebApplication
     public RedissonServiceRegistry redissonServiceRegistry(EasierDiscoveryProperties properties, RedissonClients redissonClients) {
         return new RedissonServiceRegistry(properties, redissonClients);
     }

@@ -2,10 +2,10 @@ package easier.framework.starter.rpc.server;
 
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.ZipUtil;
+import easier.framework.core.Easier;
 import easier.framework.core.plugin.innerRequest.InnerRequestException;
 import easier.framework.core.plugin.rpc.RpcClient;
 import easier.framework.core.plugin.rpc.RpcInterface;
-import easier.framework.core.util.JacksonUtil;
 import easier.framework.core.util.SpringUtil;
 import easier.framework.starter.rpc.model.RpcRequestBody;
 import easier.framework.starter.rpc.model.RpcResponseBody;
@@ -32,7 +32,7 @@ public class EasierRpcServer {
     @PostMapping(RpcClient.PATH)
     public byte[] req(@RequestBody byte[] bytes) {
         try {
-            RpcRequestBody body = JacksonUtil.deserialize(ZipUtil.unGzip(bytes));
+            RpcRequestBody body = Easier.JsonTyped.toObject(ZipUtil.unGzip(bytes));
             String className = body.getClassName();
             String methodName = body.getMethodName();
             Object[] args = body.getArgs();
@@ -46,7 +46,7 @@ public class EasierRpcServer {
                     .success(true)
                     .result(result)
                     .build();
-            return ZipUtil.gzip(JacksonUtil.serialize(responseBody));
+            return ZipUtil.gzip(Easier.JsonTyped.toJsonBytes(responseBody));
         } catch (Exception e) {
             Throwable error = e;
             if (e instanceof InvocationTargetException) {
@@ -57,7 +57,7 @@ public class EasierRpcServer {
                     .success(false)
                     .errorMessage(error.getMessage())
                     .build();
-            return ZipUtil.gzip(JacksonUtil.serialize(responseBody));
+            return ZipUtil.gzip(Easier.JsonTyped.toJsonBytes(responseBody));
         }
     }
 

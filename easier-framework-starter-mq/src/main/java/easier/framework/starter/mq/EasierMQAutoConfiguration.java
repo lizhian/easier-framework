@@ -17,6 +17,7 @@ import easier.framework.starter.mq.listener.RedisQueueListener;
 import easier.framework.starter.mq.listener.RedisTopicListener;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.jetbrains.annotations.NotNull;
 import org.redisson.api.RQueue;
 import org.redisson.api.RedissonClient;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -56,9 +57,9 @@ public class EasierMQAutoConfiguration implements ApplicationListener<Applicatio
 
 
     @Override
-    public void onApplicationEvent(ApplicationReadyEvent event) {
+    public void onApplicationEvent(@NotNull ApplicationReadyEvent event) {
         SpringUtil.getMethodByAnnotation(MQListener.class)
-                  .forEach(this::initMQListener);
+                .forEach(this::initMQListener);
     }
 
     private void initMQListener(Object bean, Map<Method, MQListener> mqListenerMap) {
@@ -87,17 +88,17 @@ public class EasierMQAutoConfiguration implements ApplicationListener<Applicatio
 
         RQueue<Object> queue = SpringUtil.getAndCache(RedissonClients.class)
                 .getClient(methodDetail.getQueue().source())
-                                         .getQueue(queueName);
+                .getQueue(queueName);
         ThreadPoolTaskScheduler scheduler = SpringUtil.getScheduler();
         for (int concurrent = 0; concurrent < mqListener.concurrency(); concurrent++) {
             RedisQueueListener listener = RedisQueueListener.builder()
-                                                            .bean(bean)
-                                                            .method(method)
-                                                            .mqListener(mqListener)
-                                                            .methodDetail(methodDetail)
-                                                            .queue(queue)
-                                                            .build()
-                                                            .init();
+                    .bean(bean)
+                    .method(method)
+                    .mqListener(mqListener)
+                    .methodDetail(methodDetail)
+                    .queue(queue)
+                    .build()
+                    .init();
             long delay = mqListener.timeUnit().toMillis(mqListener.delay());
             scheduler.scheduleWithFixedDelay(listener, delay);
         }
@@ -121,15 +122,15 @@ public class EasierMQAutoConfiguration implements ApplicationListener<Applicatio
         ThreadPoolTaskScheduler scheduler = SpringUtil.getScheduler();
         for (int concurrent = 0; concurrent < mqListener.concurrency(); concurrent++) {
             KafkaConsumer<String, byte[]> consumer = SpringUtil.getAndCache(KafkaConsumers.class)
-                                                               .create(methodDetail.getTopic().source());
+                    .create(methodDetail.getTopic().source());
             KafkaTopicListener listener = KafkaTopicListener.builder()
-                                                            .bean(bean)
-                                                            .method(method)
-                                                            .mqListener(mqListener)
-                                                            .methodDetail(methodDetail)
-                                                            .consumer(consumer)
-                                                            .build()
-                                                            .init();
+                    .bean(bean)
+                    .method(method)
+                    .mqListener(mqListener)
+                    .methodDetail(methodDetail)
+                    .consumer(consumer)
+                    .build()
+                    .init();
             long delay = mqListener.timeUnit().toMillis(mqListener.delay());
             scheduler.scheduleWithFixedDelay(listener, delay);
         }
@@ -137,9 +138,9 @@ public class EasierMQAutoConfiguration implements ApplicationListener<Applicatio
 
     private MQMethodDetail getMQMethodDetail(Method method) {
         Class<?> mqInterface = Arrays.stream(method.getDeclaringClass().getInterfaces())
-                                     .filter(it -> ArrayUtil.contains(it.getInterfaces(), MQ.class))
-                                     .findAny()
-                                     .orElse(null);
+                .filter(it -> ArrayUtil.contains(it.getInterfaces(), MQ.class))
+                .findAny()
+                .orElse(null);
         if (mqInterface == null) {
             return null;
         }

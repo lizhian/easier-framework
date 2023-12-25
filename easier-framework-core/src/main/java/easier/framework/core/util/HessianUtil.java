@@ -22,6 +22,7 @@ public class HessianUtil {
     }
 
     @SneakyThrows
+    @SuppressWarnings("unchecked")
     public static <T> T deserialize(byte[] bytes) {
         if (bytes == null || bytes.length == 0) {
             return null;

@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Builder
+// @AllArgsConstructor
 @RequiredArgsConstructor
 public class TreeBuilder<T> {
     /**
@@ -126,7 +127,7 @@ public class TreeBuilder<T> {
                     if (data == null) {
                         return null;
                     }
-                    //当前节点匹配,返回整条数据
+                    // 当前节点匹配,返回整条数据
                     boolean isMatched = match.test(data);
                     if (isMatched) {
                         return it;
@@ -163,7 +164,7 @@ public class TreeBuilder<T> {
                     if (data == null) {
                         return null;
                     }
-                    //当前节点匹配,返回整条数据
+                    // 当前节点匹配,返回整条数据
                     boolean isExclude = exclude.test(data);
                     if (isExclude) {
                         return null;

@@ -168,6 +168,7 @@ public class LambdaUtil {
 
 
     //-----实现方法
+    @SuppressWarnings("unchecked")
     private static <T> Class<T> getEntityClass(Serializable serializableFunc) {
         return (Class<T>) LambdaUtil.extract(serializableFunc).getInstantiatedClass();
     }

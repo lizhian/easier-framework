@@ -1,7 +1,7 @@
 package easier.framework.starter.cache.redis;
 
 import cn.hutool.core.io.IoUtil;
-import easier.framework.core.util.JacksonUtil;
+import easier.framework.core.Easier;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
 import org.redisson.client.codec.BaseCodec;
@@ -37,14 +37,14 @@ public class RedissonJacksonCodec extends BaseCodec {
     public Decoder<Object> getValueDecoder() {
         return (buf, state) -> {
             byte[] bytes = IoUtil.readBytes(new ByteBufInputStream(buf));
-            return JacksonUtil.toObject(bytes);
+            return Easier.JsonTyped.toObject(bytes);
         };
     }
 
     @Override
     public Encoder getValueEncoder() {
         return in -> {
-            byte[] bytes = JacksonUtil.toTypingBytes(in);
+            byte[] bytes = Easier.JsonTyped.toJsonBytes(in);
             return ByteBufAllocator.DEFAULT.buffer().writeBytes(bytes);
         };
     }

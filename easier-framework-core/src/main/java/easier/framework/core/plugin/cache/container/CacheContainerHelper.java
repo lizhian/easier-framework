@@ -2,6 +2,7 @@ package easier.framework.core.plugin.cache.container;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.function.Supplier;
 
 public interface CacheContainerHelper {
     boolean has(String source, String key);
@@ -22,4 +23,7 @@ public interface CacheContainerHelper {
 
     void cleanAll(String source, String pattern);
 
+    <T> T lock(String source, String lockKey, Supplier<T> supplier);
+
+    void lock(String source, String lockKey, Runnable runnable);
 }

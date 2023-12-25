@@ -1,20 +1,16 @@
 package easier.framework.starter.rpc.client;
 
 import easier.framework.starter.rpc.model.RpcRequest;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.function.Consumer;
 
-@Builder
-@AllArgsConstructor
-@RequiredArgsConstructor
+@RequiredArgsConstructor(staticName = "of")
 public class FilterChain {
     private final List<EasierRpcClientFilter> filters;
     private final Consumer<RpcRequest> next;
-    @Builder.Default
+    //@Builder.Default
     private int location = 0;
 
     public void doFilter(RpcRequest request) {

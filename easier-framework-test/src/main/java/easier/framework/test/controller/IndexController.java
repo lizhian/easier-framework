@@ -1,7 +1,7 @@
 package easier.framework.test.controller;
 
+import easier.framework.core.Easier;
 import easier.framework.core.domain.R;
-import easier.framework.core.plugin.auth.AuthContext;
 import easier.framework.starter.mybatis.repo.Repos;
 import easier.framework.test.eo.App;
 import easier.framework.test.eo.User;
@@ -32,8 +32,14 @@ public class IndexController {
     @Operation(summary = "用户详情")
     @GetMapping("/index/user")
     public R<User> login() {
-        String account = AuthContext.getAccount();
+        String account = Easier.Auth.getAccount();
         return R.success(Repos.of(User.class).getByCode(account));
+    }
+
+    @Operation(summary = "test")
+    @GetMapping("/index/test")
+    public R<String[]> test(String[] list, String aa) {
+        return R.success(list);
     }
 
 

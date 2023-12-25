@@ -1,7 +1,5 @@
 package easier.framework.core.kt
 
-import easier.framework.core.plugin.cache.Cache
-import easier.framework.core.plugin.cache.CacheBuilder
 import easier.framework.core.plugin.innerRequest.InnerRequest
 import easier.framework.core.plugin.innerRequest.InnerRequestBuilder
 import easier.framework.core.plugin.mq.MQ
@@ -26,9 +24,10 @@ infix fun <A, B, C> Pair<A, B>.and(third: C): Triple<A, B, C> = Triple(this.firs
 fun emptyByteArray(): ByteArray = ByteArray(0)
 fun emptyCharArray(): CharArray = CharArray(0)
 fun emptyString(): String = String()
-fun <T : Cache> Class<T>.build(): T = CacheBuilder.build(this)
-fun <T : Cache> KClass<T>.build(): T = CacheBuilder.build(this.java)
-inline fun <reified T : Cache> buildCache(): T = CacheBuilder.build(T::class.java)
+
+//fun <T : Cache> Class<T>.build(): T = CacheBuilder.build(this)
+//fun <T : Cache> KClass<T>.build(): T = CacheBuilder.build(this.java)
+//inline fun <reified T : Cache> buildCache(): T = CacheBuilder.build(T::class.java)
 fun <T : MQ> Class<T>.build(): T = MQBuilder.build(this)
 fun <T : MQ> KClass<T>.build(): T = MQBuilder.build(this.java)
 inline fun <reified T : MQ> buildMQ(): T = MQBuilder.build(T::class.java)

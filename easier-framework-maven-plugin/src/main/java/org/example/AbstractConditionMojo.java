@@ -4,12 +4,14 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
+import org.apache.maven.model.Profile;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 public abstract class AbstractConditionMojo extends AbstractMojo {
     @Parameter(readonly = true, defaultValue = "${project}")
@@ -45,7 +47,7 @@ public abstract class AbstractConditionMojo extends AbstractMojo {
     protected Boolean skip;
 
     protected boolean shouldExecute() {
-        if (skip != null && skip) {
+        if (this.skip != null && this.skip) {
             return false;
         }
         List<String> conditionOnFiles = StrUtil.splitTrim(this.conditionOnFile, ",");
@@ -55,7 +57,7 @@ public abstract class AbstractConditionMojo extends AbstractMojo {
             }
         }
         List<String> conditionOnProperties = StrUtil.splitTrim(this.conditionOnProperty, ",");
-        Properties properties = project.getProperties();
+        Properties properties = this.project.getProperties();
         for (String property : conditionOnProperties) {
             String value = properties.getProperty(property);
             if (StrUtil.isBlank(value)) {
@@ -63,20 +65,23 @@ public abstract class AbstractConditionMojo extends AbstractMojo {
             }
         }
         List<String> conditionOnProfiles = StrUtil.splitTrim(this.conditionOnProfile, ",");
+        List<String> activeProfiles = this.project.getActiveProfiles()
+                .stream()
+                .map(Profile::getId)
+                .collect(Collectors.toList());
         for (String profile : conditionOnProfiles) {
-            if (!project.getActiveProfiles().contains(profile)) {
+            if (!activeProfiles.contains(profile)) {
                 return false;
             }
         }
-        List<Plugin> buildPlugins = project.getBuild().getPlugins();
-        /*for (Plugin buildPlugin : buildPlugins) {
-             System.out.println("buildPlugin "+buildPlugin.toString());
-        }*/
+        List<String> plugins = this.project.getBuild()
+                .getPlugins()
+                .stream()
+                .map(Plugin::getArtifactId)
+                .collect(Collectors.toList());
         List<String> conditionOnPlugins = StrUtil.splitTrim(this.conditionOnPlugin, ",");
-        //System.out.println("conditionOnPlugins " + conditionOnPlugins.toString());
-
         for (String plugin : conditionOnPlugins) {
-            if (buildPlugins.stream().noneMatch(it -> it.getArtifactId().equals(plugin))) {
+            if (!plugins.contains(plugin)) {
                 return false;
             }
         }

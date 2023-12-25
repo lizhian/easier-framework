@@ -33,7 +33,6 @@ public class RedisSourceCondition extends SpringBootCondition {
                     match.add(ConditionMessage.of("已找到缓存源:" + value));
                 } else {
                     noMatch.add(ConditionMessage.of("未找到缓存源:" + value));
-
                 }
             }
         }

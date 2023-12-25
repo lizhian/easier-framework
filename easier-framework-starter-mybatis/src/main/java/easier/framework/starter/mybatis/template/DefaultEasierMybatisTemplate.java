@@ -1,7 +1,6 @@
 package easier.framework.starter.mybatis.template;
 
-import easier.framework.core.plugin.auth.AuthContext;
-import easier.framework.core.util.IdUtil;
+import easier.framework.core.Easier;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -9,7 +8,7 @@ public class DefaultEasierMybatisTemplate implements EasierMybatisTemplate {
 
     @Override
     public String currentHandler() {
-        return AuthContext.getAccountOr("unknown");
+        return Easier.Auth.getAccountOr("unknown");
     }
 
     @Override
@@ -19,6 +18,6 @@ public class DefaultEasierMybatisTemplate implements EasierMybatisTemplate {
 
     @Override
     public Number nextId(Object entity) {
-        return IdUtil.nextId();
+        return Easier.Id.nextId();
     }
 }

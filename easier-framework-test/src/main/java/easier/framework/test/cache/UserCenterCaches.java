@@ -1,12 +1,7 @@
 package easier.framework.test.cache;
 
-import easier.framework.core.plugin.cache.Caches;
-import easier.framework.core.plugin.cache.container.CacheContainer;
-import easier.framework.core.plugin.dict.DictDetail;
-import easier.framework.test.qo.LoginRedirectQo;
-
 public class UserCenterCaches {
-    public static final CacheContainer<DictDetail> DICT_DETAIL
+    /*public static final CacheContainer<DictDetail> DICT_DETAIL
             = Caches.ofContainer(DictDetail.class)
             .keyPrefix(DictDetail.class.getSimpleName())
             .timeToLiveMinutes(2)
@@ -24,5 +19,5 @@ public class UserCenterCaches {
             = Caches.ofContainer(LoginRedirectQo.class)
             .keyPrefix("LoginRedirect")
             .timeToLiveMinutes(2)
-            .build();
+            .build();*/
 }

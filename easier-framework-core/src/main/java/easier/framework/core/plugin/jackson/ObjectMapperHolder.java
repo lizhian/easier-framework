@@ -22,34 +22,38 @@ public class ObjectMapperHolder implements ApplicationContextAware {
     @Setter(AccessLevel.PRIVATE)
     private volatile static ObjectMapper objectMapper;
     @Setter(AccessLevel.PRIVATE)
-    private volatile static ObjectMapper objectMapperWithTyping;
+    private volatile static ObjectMapper typedObjectMapper;
 
     static {
         Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
-        setObjectMapper(builder.build());
-        ObjectMapper temp = builder.build();
-        temp.registerModule(new SimpleModule().addSerializer(new NullValueSerializer(null)));
-        temp.activateDefaultTyping(temp.getPolymorphicTypeValidator());
-        // temp.activateDefaultTyping(temp.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.EXISTING_PROPERTY);
-        setObjectMapperWithTyping(temp);
+        ObjectMapper init = builder.createXmlMapper(false).build();
+        setObjectMapper(init);
+        copyAndTyped();
+    }
+
+    private static void copyAndTyped() {
+        typedObjectMapper = objectMapper.copy();
+        typedObjectMapper.registerModule(new SimpleModule().addSerializer(new NullValueSerializer(null)));
+        typedObjectMapper.activateDefaultTyping(typedObjectMapper.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
+    }
+
+
+    public static ObjectMapper get(boolean autoType) {
+        return autoType ? typedObjectMapper : objectMapper;
     }
 
     public static ObjectMapper get() {
         return objectMapper;
     }
 
-    public static ObjectMapper withTyping() {
-        return objectMapperWithTyping;
+    public static ObjectMapper getTyped() {
+        return typedObjectMapper;
     }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         setObjectMapper(applicationContext.getBean(ObjectMapper.class));
-        Jackson2ObjectMapperBuilder builder = applicationContext.getBean(Jackson2ObjectMapperBuilder.class);
-        ObjectMapper objectMapper = builder.build();
-        objectMapper.registerModule(new SimpleModule().addSerializer(new NullValueSerializer(null)));
-        objectMapper.activateDefaultTyping(objectMapper.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
-        setObjectMapperWithTyping(objectMapper);
+        copyAndTyped();
     }
 
 

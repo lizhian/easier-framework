@@ -43,18 +43,17 @@ public class EasierAnnotationIntrospector extends AnnotationIntrospector {
                     .map(JsonFieldExpandDetail::from)
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
-            if (CollUtil.isEmpty(details)) {
-                return null;
+            if (CollUtil.isNotEmpty(details)) {
+                return new JsonFieldExpandSerializer(annotated.getType(), details);
             }
-            return new JsonFieldExpandSerializer(annotated.getType(), details);
         }
         return null;
     }
 
     @Override
     public List<PropertyName> findPropertyAliases(Annotated annotated) {
-        Alias alias = _findAnnotation(annotated, Alias.class);
-        AliasId aliasId = _findAnnotation(annotated, AliasId.class);
+        Alias alias = this._findAnnotation(annotated, Alias.class);
+        AliasId aliasId = this._findAnnotation(annotated, AliasId.class);
         if (alias == null && aliasId == null) {
             return null;
         }

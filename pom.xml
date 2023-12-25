@@ -10,8 +10,30 @@
     </parent>
     <groupId>io.github.lizhian</groupId>
     <artifactId>easier-framework-parent</artifactId>
-    <version>2.7.2023.1</version>
+    <version>2.7.2023.2</version>
     <packaging>pom</packaging>
+    <url>https://github.com/lizhian/easier-framework</url>
+    <licenses>
+        <license>
+            <name>GNU General Public License version 3</name>
+            <url>https://opensource.org/licenses/GPL-3.0</url>
+        </license>
+    </licenses>
+    <scm>
+        <url>https://github.com/lizhian/easier-framework</url>
+        <connection>https://github.com/lizhian/easier-framework.git</connection>
+    </scm>
+    <developers>
+        <developer>
+            <id>lizhian</id>
+            <name>lizhian</name>
+            <email>503457938@qq.com</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>+8</timezone>
+        </developer>
+    </developers>
     <modules>
         <module>easier-framework-core</module>
         <module>easier-framework-starter-env</module>
@@ -91,7 +113,7 @@
         <spring-boot.version>2.7.12</spring-boot.version>
         <spring-boot-admin.version>2.7.10</spring-boot-admin.version>
         <spring-cloud.version>2021.0.7</spring-cloud.version>
-        <easier-framework.version>2.7.2023.1</easier-framework.version>
+        <easier-framework.version>2.7.2023.2</easier-framework.version>
         <sa-token.version>1.34.0</sa-token.version>
         <hutool.version>5.8.19</hutool.version>
         <guava.version>32.0.1-jre</guava.version>
@@ -768,7 +790,6 @@
                 </plugins>
             </build>
         </profile>
-
         <profile>
             <id>generate-docker-sh</id>
             <build>
@@ -1038,6 +1059,77 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>ossrh</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <doclint>none</doclint>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <configuration>
+                            <useAgent>false</useAgent>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.13</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+                </snapshotRepository>
+                <repository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+            </distributionManagement>
         </profile>
     </profiles>
 </project>

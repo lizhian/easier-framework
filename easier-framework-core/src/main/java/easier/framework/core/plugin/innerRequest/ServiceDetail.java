@@ -1,7 +1,7 @@
 package easier.framework.core.plugin.innerRequest;
 
 import easier.framework.core.plugin.codec.Codec;
-import easier.framework.core.plugin.codec.JacksonCodec;
+import easier.framework.core.plugin.codec.JsonTypedCodec;
 import easier.framework.core.plugin.innerRequest.enums.ServiceType;
 
 import java.lang.annotation.*;
@@ -22,6 +22,6 @@ public @interface ServiceDetail {
 
     String path() default InnerRequest.PATH;
 
-    Class<? extends Codec> codec() default JacksonCodec.class;
+    Class<? extends Codec> codec() default JsonTypedCodec.class;
 
 }

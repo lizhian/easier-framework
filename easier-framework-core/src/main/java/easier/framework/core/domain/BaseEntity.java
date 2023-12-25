@@ -5,7 +5,7 @@ import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tangzc.mpe.autotable.annotation.Column;
-import easier.framework.core.plugin.auth.AuthContext;
+import easier.framework.core.Easier;
 import easier.framework.core.plugin.jackson.annotation.ShowUserDetail;
 import easier.framework.core.plugin.mybatis.MybatisPlusEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -60,6 +60,7 @@ public abstract class BaseEntity implements Serializable, MybatisPlusEntity {
     public DateTime getCreateDateTime() {
         return this.createTime == null ? null : DateTime.of(this.createTime);
     }
+
     @JsonIgnore
     public DateTime getUpdateDateTime() {
         return this.updateTime == null ? null : DateTime.of(this.updateTime);
@@ -78,7 +79,7 @@ public abstract class BaseEntity implements Serializable, MybatisPlusEntity {
 
     @Override
     public void preInsert() {
-        String account = AuthContext.getAccountOr("unknown");
+        String account = Easier.Auth.getAccountOr("unknown");
         Date now = DateTime.now().setField(DateField.MILLISECOND, 0);
         this.createBy = account;
         this.updateBy = account;
@@ -88,7 +89,7 @@ public abstract class BaseEntity implements Serializable, MybatisPlusEntity {
 
     @Override
     public void preUpdate() {
-        String account = AuthContext.getAccountOr("unknown");
+        String account = Easier.Auth.getAccountOr("unknown");
         Date now = DateTime.now().setField(DateField.MILLISECOND, 0);
         this.updateBy = account;
         this.updateTime = now;
@@ -96,7 +97,7 @@ public abstract class BaseEntity implements Serializable, MybatisPlusEntity {
 
     @Override
     public void preLambdaUpdate(Map<SFunction, Object> updateSets) {
-        String account = AuthContext.getAccountOr("unknown");
+        String account = Easier.Auth.getAccountOr("unknown");
         Date now = DateTime.now().setField(DateField.MILLISECOND, 0);
         SFunction<BaseEntity, String> getUpdateBy = BaseEntity::getUpdateBy;
         SFunction<BaseEntity, Date> getUpdateTime = BaseEntity::getUpdateTime;

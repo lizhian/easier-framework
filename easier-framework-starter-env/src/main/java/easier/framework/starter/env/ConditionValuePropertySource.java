@@ -27,7 +27,7 @@ public class ConditionValuePropertySource extends PropertySource<Map<String, Str
         this.logger.trace(LogMessage.format("Generating condition property for '%s'", name));
         Object conditionValue = this.getConditionValue(name.substring(PREFIX.length()));
         if (conditionValue != null) {
-            log.info("配置转换 {} -> {}", name, conditionValue);
+            log.info("配置转换【{}】结果【{}】", name, conditionValue);
         }
         return conditionValue;
     }

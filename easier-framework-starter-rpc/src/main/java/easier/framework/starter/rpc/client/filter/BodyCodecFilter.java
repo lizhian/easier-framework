@@ -2,8 +2,8 @@ package easier.framework.starter.rpc.client.filter;
 
 import cn.hutool.core.io.unit.DataSizeUtil;
 import cn.hutool.core.util.ZipUtil;
+import easier.framework.core.Easier;
 import easier.framework.core.plugin.exception.biz.FrameworkException;
-import easier.framework.core.util.JacksonUtil;
 import easier.framework.starter.rpc.client.EasierRpcClientFilter;
 import easier.framework.starter.rpc.client.FilterChain;
 import easier.framework.starter.rpc.model.RpcRequest;
@@ -34,7 +34,7 @@ public class BodyCodecFilter implements EasierRpcClientFilter {
                 .methodName(method.getName())
                 .args(request.getArgs())
                 .build();
-        byte[] requestBodyBytes = ZipUtil.gzip(JacksonUtil.serialize(body));
+        byte[] requestBodyBytes = ZipUtil.gzip(Easier.JsonTyped.toJsonBytes(body));
         request.debug("请求对象大小: {}", DataSizeUtil.format(requestBodyBytes.length));
         request.setRequestBodyBytes(requestBodyBytes);
         filterChain.doFilter(request);
@@ -43,7 +43,7 @@ public class BodyCodecFilter implements EasierRpcClientFilter {
             throw FrameworkException.of("远程服务调用,服务端异常,响应体为空,状态码: {}", request.getResponseStatus());
         }
         request.debug("响应对象大小: {}", DataSizeUtil.format(responseBodyBytes.length));
-        RpcResponseBody rpcResponseBody = JacksonUtil.deserialize(ZipUtil.unGzip(responseBodyBytes));
+        RpcResponseBody rpcResponseBody = Easier.JsonTyped.toObject(ZipUtil.unGzip(responseBodyBytes));
         if (rpcResponseBody.isSuccess()) {
             request.setResult(rpcResponseBody.getResult());
             return;

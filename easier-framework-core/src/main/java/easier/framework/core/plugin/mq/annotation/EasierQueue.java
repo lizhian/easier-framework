@@ -1,7 +1,7 @@
 package easier.framework.core.plugin.mq.annotation;
 
 import easier.framework.core.plugin.codec.Codec;
-import easier.framework.core.plugin.codec.JacksonCodec;
+import easier.framework.core.plugin.codec.JsonTypedCodec;
 import easier.framework.core.plugin.mq.enums.MQType;
 
 import java.lang.annotation.*;
@@ -31,7 +31,7 @@ public @interface EasierQueue {
     /**
      * 编码器
      */
-    Class<? extends Codec> codec() default JacksonCodec.class;
+    Class<? extends Codec> codec() default JsonTypedCodec.class;
 
     /**
      * 消息队列源
