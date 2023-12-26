@@ -35,6 +35,7 @@ public class EnumCodec<E extends Enum<E>> {
     /**
      * 构建方法
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public static EnumCodec<?> of(Class<?> enumClass) {
         return InstanceUtil.in(EnumCodec.class)
                 .getInstance(enumClass, () -> new EnumCodec(enumClass));

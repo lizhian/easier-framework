@@ -54,7 +54,7 @@ public class MybatisPlusUtil {
     /**
      * 更新数据前的操作,针对LambdaUpdate
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static <T> Map<SFunction, Object> tryUpdateSets(LambdaUpdate<T> lambdaUpdate) {
         try {
             Class<T> entityClass = lambdaUpdate.getEntityClass();

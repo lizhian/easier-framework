@@ -78,6 +78,7 @@ public final class LambdaUpdate<T> extends AbstractChainWrapper<T, SFunction<T, 
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     public boolean update() {
         Map<SFunction, Object> updateSets = MybatisPlusUtil.tryUpdateSets(this);
         boolean update = this.execute(mapper -> SqlHelper.retBool(mapper.update(null, this.getWrapper())));

@@ -1,4 +1,4 @@
-package easier.framework.starter.env;
+package easier.framework.starter.env.starter;
 
 import lombok.Builder;
 import lombok.Data;

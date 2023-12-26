@@ -1,5 +1,5 @@
 org.springframework.boot.env.EnvironmentPostProcessor=\
-easier.framework.starter.env.EasierEnvironmentPostProcessor,\
-easier.framework.starter.env.ConditionValueEnvironmentPostProcessor
+easier.framework.starter.env.starter.EasierEnvironmentPostProcessor,\
+easier.framework.starter.env.condition.ConditionValueEnvironmentPostProcessor
 org.springframework.context.ApplicationListener=\
-easier.framework.starter.env.EasierEnvironmentPostProcessor
+easier.framework.starter.env.starter.EasierEnvironmentPostProcessor

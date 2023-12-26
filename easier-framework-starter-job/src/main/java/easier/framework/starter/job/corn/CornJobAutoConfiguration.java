@@ -9,6 +9,7 @@ import easier.framework.starter.job.center.RunningJob;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -29,7 +30,7 @@ public class CornJobAutoConfiguration implements ApplicationListener<Application
     private final List<RunningJob> jobs = new ArrayList<>();
 
     @Override
-    public void onApplicationEvent(ApplicationReadyEvent event) {
+    public void onApplicationEvent(@NotNull ApplicationReadyEvent event) {
         SpringUtil.getMethodByAnnotation(CornJob.class)
                 .forEach(this::initCornJob);
     }
@@ -41,7 +42,7 @@ public class CornJobAutoConfiguration implements ApplicationListener<Application
         for (String methodName : groupingBy.keySet()) {
             if (groupingBy.get(methodName).size() > 1) {
                 Class<?> clazz = groupingBy.get(methodName).get(0).getDeclaringClass();
-                throw FrameworkException.of("{} 包含多个相同名称的 CornJob 方法 {}", clazz, groupingBy.get(methodName));
+                throw FrameworkException.of("【{}】包含多个相同名称的 @CornJob 方法【{}】", clazz, groupingBy.get(methodName));
             }
         }
         cornJobMap.forEach((method, cornJob) -> this.initCornJob(bean, method, cornJob));

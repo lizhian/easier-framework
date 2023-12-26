@@ -35,7 +35,7 @@ public class EasierJobAutoConfiguration {
             int poolSize = 2 * cpuNum + 1;
             if (taskExecutor.getPoolSize() < poolSize) {
                 taskExecutor.setCorePoolSize(poolSize);
-                log.info("修改【TaskExecutor】核心线程数为:{}", poolSize);
+                log.info("修改【TaskExecutor】核心线程数为:【{}】", poolSize);
             }
         };
     }
@@ -47,7 +47,7 @@ public class EasierJobAutoConfiguration {
             int poolSize = 2 * cpuNum + 1;
             if (taskScheduler.getPoolSize() < poolSize) {
                 taskScheduler.setPoolSize(poolSize);
-                log.info("修改【TaskScheduler】线程数为:{}", poolSize);
+                log.info("修改【TaskScheduler】线程数为:【{}】", poolSize);
             }
         };
     }

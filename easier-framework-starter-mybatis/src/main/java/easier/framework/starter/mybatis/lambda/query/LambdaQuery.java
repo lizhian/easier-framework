@@ -47,7 +47,7 @@ public class LambdaQuery<T> extends AbstractChainWrapper<T, SFunction<T, ?>, Lam
             @Override
             protected String columnToString(SFunction<T, ?> column, boolean onlyColumn) {
                 if (column instanceof ColumnSFunction) {
-                    ColumnSFunction columnSFunction = (ColumnSFunction) column;
+                    ColumnSFunction<T, ?> columnSFunction = (ColumnSFunction<T, ?>) column;
                     ColumnCache cache = columnSFunction.toColumnCache();
                     return onlyColumn ? cache.getColumn() : cache.getColumnSelect();
                 }
@@ -59,14 +59,14 @@ public class LambdaQuery<T> extends AbstractChainWrapper<T, SFunction<T, ?>, Lam
     @SafeVarargs
     @Override
     public final LambdaQuery<T> select(SFunction<T, ?>... columns) {
-        wrapperChildren.select(columns);
-        return typedThis;
+        this.wrapperChildren.select(columns);
+        return this.typedThis;
     }
 
     @Override
     public LambdaQuery<T> select(Class<T> entityClass, Predicate<TableFieldInfo> predicate) {
-        wrapperChildren.select(entityClass, predicate);
-        return typedThis;
+        this.wrapperChildren.select(entityClass, predicate);
+        return this.typedThis;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class LambdaQuery<T> extends AbstractChainWrapper<T, SFunction<T, ?>, Lam
 
     @Override
     public BaseMapper<T> getBaseMapper() {
-        return baseMapper;
+        return this.baseMapper;
     }
 
     @Override

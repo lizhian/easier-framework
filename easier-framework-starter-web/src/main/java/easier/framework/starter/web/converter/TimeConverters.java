@@ -64,7 +64,7 @@ public class TimeConverters {
 
     static class StringToLocalDateTimeConverter implements Converter<String, LocalDateTime> {
         @Override
-        public LocalDateTime convert(String source) {
+        public LocalDateTime convert(@NotNull String source) {
             if (StrUtil.isBlank(source)) {
                 return null;
             }
