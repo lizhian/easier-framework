@@ -27,19 +27,16 @@ import org.apache.ibatis.session.RowBounds;
 public class MybatisTimerInterceptor implements Interceptor {
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
-        TimeInterval timer = DateUtil.timer();
-        Object proceed = invocation.proceed();
-        this.logTimer(invocation, timer.intervalPretty());
-        return proceed;
-    }
-
-    private void logTimer(Invocation invocation, String intervalPretty) {
         MappedStatement mappedStatement = (MappedStatement) invocation.getArgs()[0];
         Log statementLog = mappedStatement.getStatementLog();
-        if (statementLog.isDebugEnabled()) {
-            statementLog.debug("<==      Timer: " + intervalPretty);
+        if (!statementLog.isDebugEnabled()) {
+            return invocation.proceed();
         }
+        TimeInterval timer = DateUtil.timer();
+        Object proceed = invocation.proceed();
+        if (statementLog.isDebugEnabled()) {
+            statementLog.debug("<==      Timer: " + timer.intervalPretty());
+        }
+        return proceed;
     }
-
-
 }

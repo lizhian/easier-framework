@@ -32,6 +32,8 @@ import easier.framework.core.util.SpringUtil;
 import easier.framework.core.util.StrUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.system.ApplicationHome;
+import org.springframework.boot.system.ApplicationPid;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -43,6 +45,26 @@ import java.util.function.Consumer;
 public class Easier {
     @SneakyThrows
     public static void main(String[] args) {
+        Properties properties = System.getProperties();
+        properties.list(System.out);
+
+        String ideMode = System.getProperty("intellij.debug.agent");
+        ApplicationHome applicationHome = new ApplicationHome(Easier.class);
+        ApplicationPid applicationPid = new ApplicationPid();
+
+
+        if (ideMode != null) {
+            System.out.println("Running in IDEA");
+        } else {
+            System.out.println("Running from JAR");
+        }
+
+    }
+
+    /**
+     * 全局主键,默认使用雪花算法
+     */
+    public static class Instance {
 
     }
 

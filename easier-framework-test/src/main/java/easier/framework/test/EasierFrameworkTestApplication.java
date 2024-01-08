@@ -27,6 +27,8 @@ import easier.framework.starter.doc.EnableEasierDoc;
 import easier.framework.starter.job.EnableEasierJob;
 import easier.framework.starter.logging.EnableEasierLogging;
 import easier.framework.starter.mybatis.EnableEasierMybatis;
+import easier.framework.starter.mybatis.lambda.query.LambdaQuery;
+import easier.framework.starter.mybatis.lambda.query.LambdaQuery2;
 import easier.framework.starter.mybatis.repo.Repos;
 import easier.framework.starter.rpc.EnableEasierRpc;
 import easier.framework.starter.web.EnableEasierWeb;
@@ -111,6 +113,8 @@ public class EasierFrameworkTestApplication extends SaOAuth2Template implements
     public void producer() {
         User take = container.asConsumer().poll();
         log.info("asConsumer {}", take);
+        LambdaQuery<User> query1 = Repos.of(User.class).newQuery();
+        LambdaQuery2<User> query2 = new LambdaQuery2<>(User.class);
     }
 
     @Override

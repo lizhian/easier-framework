@@ -38,8 +38,8 @@ public class ObjectMapperHolder implements ApplicationContextAware {
     }
 
 
-    public static ObjectMapper get(boolean autoType) {
-        return autoType ? typedObjectMapper : objectMapper;
+    public static ObjectMapper get(boolean typed) {
+        return typed ? typedObjectMapper : objectMapper;
     }
 
     public static ObjectMapper get() {

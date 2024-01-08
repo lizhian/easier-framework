@@ -31,8 +31,9 @@ public class JsonFieldExpandSerializer extends StdSerializer<Object> implements 
         this.jsonFieldExpandDetails = jsonFieldExpandDetails;
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void serialize(Object value, JsonGenerator generator, SerializerProvider provider) {
         if (value == null) {
             generator.writeNull();
@@ -50,7 +51,7 @@ public class JsonFieldExpandSerializer extends StdSerializer<Object> implements 
                 .outputContext(outputContext)
                 .currentProperty(currentName)
                 .currentValue(value)
-                .currentType(javaType)
+                .currentType(this.javaType)
                 .build();
         for (JsonFieldExpandDetail detail : this.jsonFieldExpandDetails) {
             Annotation annotation = detail.getAnnotation();
